@@ -10,3 +10,107 @@
   -ms-overflow-style: none; /* IE and Edge */
   scrollbar-width: none; /* Firefox */
 }
+
+.rbc-toolbar-label {
+  text-align: right !important;
+  padding: 0px 20px !important;
+}
+
+.rbc-btn-group {
+  font-size: 13px !important;
+}
+
+.rbc-btn-group button {
+  border: none !important;
+  background-color: #f1f0ff !important;
+  margin-left: 2px !important;
+}
+
+.rbc-toolbar button.rbc-active {
+  background-color: #dbdafe !important;
+  box-shadow: none !important;
+}
+
+.rbc-time-view {
+  border-color: #eee !important;
+}
+
+.rbc-header {
+  font-weight: 600 !important;
+  padding: 5px !important;
+}
+
+.rbc-allday-cell {
+  display: none !important;
+}
+
+.rbc-time-content {
+  border: none !important ;
+}
+
+.rbc-time-gutter.rbc-time-column {
+  font-size: 12px !important;
+}
+
+.rbc-time-gutter.rbc-time-column .rbc-timeslot-group {
+  padding: 0px 20px;
+}
+
+.rbc-timeslot-group {
+  background-color: #f7fdff !important;
+}
+
+.rbc-events-container {
+  font-size: 14px !important;
+}
+
+.rbc-event {
+  background-color: #fff !important;
+  color: black !important;
+  border: none !important;
+  /* padding: 10px !important; */
+  /* margin: 2px !important; */
+  /* width: 99% !important; */
+}
+.rbc-event:nth-child(1) {
+  background-color: #dbe7a1 !important;
+}
+.rbc-event:nth-child(2) {
+  background-color: #fefce8 !important;
+}
+.rbc-event:nth-child(3) {
+  background-color: #f2f1ff !important;
+}
+.rbc-event:nth-child(4) {
+  background-color: #fdf2fb !important;
+}
+.rbc-event:nth-child(5) {
+  background-color: #e2f8ff !important;
+}
+.rbc-event:nth-child(6) {
+  background-color: #fefce8 !important;
+}
+.rbc-event:nth-child(7) {
+  background-color: #f2f1ff !important;
+}
+.rbc-event:nth-child(8) {
+  background-color: #fdf2fb !important;
+}
+.rbc-event:nth-child(7) {
+  background-color: #f2f1ff !important;
+}
+.rbc-event:nth-child(8) {
+  background-color: #e2f8ff !important;
+}
+
+.rbc-event-label {
+  color: gray !important;
+  margin-bottom: 5px;
+}
+
+@media (max-width: 768px) {
+  .rbc-toolbar {
+    flex-direction: row !important;
+    justify-content: flex-start !important;
+  }
+}
