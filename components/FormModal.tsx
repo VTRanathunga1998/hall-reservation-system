@@ -25,7 +25,7 @@ const FormModal = ({
   data,
   id,
 }: {
-  table: "student" | "lecturer" | "reservation" | "subject";
+  table: "student" | "lecturer" | "reservation" | "subject" | "department";
   type: "create" | "update" | "delete";
   data?: any;
   id?: number;

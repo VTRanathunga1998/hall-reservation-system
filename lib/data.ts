@@ -94,6 +94,32 @@ export const lecturersData = [
     address: "123 Main St, Anytown, USA",
   },
 ];
+export const departmentsData = [
+  {
+    id: 1,
+    name: "Department of Economics & Statistics",
+  },
+  {
+    id: 2,
+    name: "The Department of English Language Teaching",
+  },
+  {
+    id: 3,
+    name: "Department of Geography & Environmental Management",
+  },
+  {
+    id: 4,
+    name: "Department of Information Technology",
+  },
+  {
+    id: 5,
+    name: "Department of Information Technology",
+  },
+  {
+    id: 6,
+    name: "Department of Languages",
+  },
+];
 
 export const studentsData = [
   {
