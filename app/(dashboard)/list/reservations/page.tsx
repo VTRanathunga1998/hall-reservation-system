@@ -1,22 +1,32 @@
+import {
+  Hall,
+  Lecturer,
+  LectureRoom,
+  Prisma,
+  Reservation,
+  Subject,
+} from "@/app/generated/prisma";
 import FormModal from "@/components/FormModal";
 import Pagination from "@/components/Pagination";
 import Table from "@/components/Table";
 import TableSearch from "@/components/TableSearch";
-import { reservationsData, role } from "@/lib/data";
+import { role } from "@/lib/data";
+import { prisma } from "@/lib/prisma";
+import { ITEM_PER_PAGE } from "@/lib/settings";
 import Image from "next/image";
 import Link from "next/link";
 
-type Reservation = {
-  id: number;
-  reservationId: string;
-  hall: string;
-  room: string;
-  reservedBy: string;
-  startTime: Date;
-  endTime: Date;
+type ReservationList = Reservation & {
+  lectureRoom: LectureRoom & { hall: Hall };
+  lecturer: Lecturer;
+  subject: Subject;
 };
 
-const ReservationsListPage = () => {
+const ReservationsListPage = async ({
+  searchParams,
+}: {
+  searchParams: Promise<{ [key: string]: string | undefined }>;
+}) => {
   const columns = [
     {
       header: "Reservation ID",
@@ -41,18 +51,20 @@ const ReservationsListPage = () => {
     { header: "Actions", accessor: "actions" },
   ];
 
-  const renderRow = (item: Reservation) => (
+  const renderRow = (item: ReservationList) => (
     <tr
       key={item.id}
       className="border-b border-gray-200 even:bg-slate-50 text-sm hover:bg-[#F1F0FF]"
     >
-      <td className="hidden md:table-cell">{item.reservationId}</td>
-      <td>{item.hall}</td>
-      <td className="hidden md:table-cell">{item.room}</td>
-      <td className="hidden md:table-cell">{item.reservedBy}</td>
-      <td>{new Date(item.startTime).toLocaleString()}</td>
-      <td>{new Date(item.endTime).toLocaleString()}</td>
-      <td>
+      <td className="hidden md:table-cell py-4">{item.id}</td>
+      <td className="py-4">{item.lectureRoom.hall.name}</td>
+      <td className="hidden md:table-cell py-4">{item.lectureRoom.name}</td>
+      <td className="hidden md:table-cell py-4">
+        {item.lecturer.name} {item.lecturer.surname}
+      </td>
+      <td className="py-4">{new Date(item.startTime).toLocaleString()}</td>
+      <td className="py-4">{new Date(item.endTime).toLocaleString()}</td>
+      <td className="py-4">
         <div className="flex items-center gap-2">
           <Link href={`/list/reservations/${item.id}`}>
             <button className="w-7 h-7 flex items-center justify-center rounded-full bg-[#C3EBFA] cursor-pointer">
@@ -69,6 +81,75 @@ const ReservationsListPage = () => {
       </td>
     </tr>
   );
+
+  const { page, ...queryParams } = await searchParams;
+
+  const p = page ? parseInt(page) : 1;
+
+  // URL PARAMS CONDITIONS
+  const query: Prisma.ReservationWhereInput = {};
+
+  if (queryParams) {
+    for (const [key, value] of Object.entries(queryParams)) {
+      if (value !== undefined) {
+        switch (key) {
+          case "search":
+            query.OR = [
+              // Search lecturer
+              {
+                lecturer: {
+                  OR: [
+                    { name: { contains: value, mode: "insensitive" } },
+                    { surname: { contains: value, mode: "insensitive" } },
+                  ],
+                },
+              },
+              // Search subject
+              {
+                subject: {
+                  name: { contains: value, mode: "insensitive" },
+                },
+              },
+              // Search lecture room
+              {
+                lectureRoom: {
+                  name: { contains: value, mode: "insensitive" },
+                },
+              },
+              // Search hall name
+              {
+                lectureRoom: {
+                  hall: {
+                    name: { contains: value, mode: "insensitive" },
+                  },
+                },
+              },
+            ];
+            break;
+        }
+      }
+    }
+  }
+
+  const [data, count] = await prisma.$transaction([
+    prisma.reservation.findMany({
+      where: query,
+      take: ITEM_PER_PAGE,
+      skip: ITEM_PER_PAGE * (p - 1),
+      include: {
+        lectureRoom: {
+          include: {
+            hall: true,
+          },
+        },
+        lecturer: true,
+        subject: true,
+      },
+    }),
+    prisma.reservation.count({
+      where: query,
+    }),
+  ]);
 
   return (
     <div className="flex-1 bg-white rounded-md p-4 m-2 mt-0">
@@ -94,10 +175,10 @@ const ReservationsListPage = () => {
       </div>
 
       {/* LIST */}
-      <Table columns={columns} renderRow={renderRow} data={reservationsData} />
+      <Table columns={columns} renderRow={renderRow} data={data} />
 
       {/* PAGINATION */}
-      <Pagination />
+      <Pagination page={p} count={count} />
     </div>
   );
 };

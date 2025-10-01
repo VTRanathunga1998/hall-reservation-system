@@ -1,23 +1,24 @@
-import { Department, Prisma } from "@/app/generated/prisma";
+import { Hall } from "@/app/generated/prisma";
 import FormModal from "@/components/FormModal";
 import Pagination from "@/components/Pagination";
 import Table from "@/components/Table";
 import TableSearch from "@/components/TableSearch";
-import { departmentsData, role } from "@/lib/data";
+import { role } from "@/lib/data";
 import { prisma } from "@/lib/prisma";
 import { ITEM_PER_PAGE } from "@/lib/settings";
 import Image from "next/image";
+import { Prisma } from "@/app/generated/prisma";
 
-type DepartmentList = Department;
+type BuildingList = Hall;
 
-const DepartmentsListPage = async ({
+const BuildingsListPage = async ({
   searchParams,
 }: {
   searchParams: Promise<{ [key: string]: string | undefined }>;
 }) => {
   const columns = [
     {
-      header: "Department Name",
+      header: "Building Name",
       accessor: "name",
     },
     {
@@ -26,7 +27,7 @@ const DepartmentsListPage = async ({
     },
   ];
 
-  const renderRow = (item: DepartmentList) => (
+  const renderRow = (item: BuildingList) => (
     <tr
       key={item.id}
       className="border-b border-gray-200 even:bg-slate-50 text-sm hover:bg-[#F1F0FF]"
@@ -50,7 +51,8 @@ const DepartmentsListPage = async ({
   const p = page ? parseInt(page) : 1;
 
   // URL PARAMS CONDITIONS
-  const query: Prisma.DepartmentWhereInput = {};
+
+  const query: Prisma.HallWhereInput = {};
 
   if (queryParams) {
     for (const [key, value] of Object.entries(queryParams)) {
@@ -65,12 +67,12 @@ const DepartmentsListPage = async ({
   }
 
   const [data, count] = await prisma.$transaction([
-    prisma.department.findMany({
+    prisma.hall.findMany({
       where: query,
       take: ITEM_PER_PAGE,
       skip: ITEM_PER_PAGE * (p - 1),
     }),
-    prisma.department.count({
+    prisma.hall.count({
       where: query,
     }),
   ]);
@@ -79,9 +81,7 @@ const DepartmentsListPage = async ({
     <div className="flex-1 bg-white rounded-md p-4 m-2 mt-0">
       {/* TOP  */}
       <div className="flex items-center justify-between">
-        <h1 className="hidden md:block text-lg font-semibold">
-          All Departments
-        </h1>
+        <h1 className="hidden md:block text-lg font-semibold">All Buildings</h1>
         <div className="flex flex-col md:flex-row items-center gap-4 w-full md:w-auto">
           <TableSearch />
           <div className="flex items-center gap-4 self-end">
@@ -103,4 +103,4 @@ const DepartmentsListPage = async ({
   );
 };
 
-export default DepartmentsListPage;
+export default BuildingsListPage;

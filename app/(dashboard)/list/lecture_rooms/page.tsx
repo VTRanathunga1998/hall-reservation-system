@@ -1,24 +1,32 @@
-import { Department, Prisma } from "@/app/generated/prisma";
+import { Hall, LectureRoom, Prisma } from "@/app/generated/prisma";
 import FormModal from "@/components/FormModal";
 import Pagination from "@/components/Pagination";
 import Table from "@/components/Table";
 import TableSearch from "@/components/TableSearch";
-import { departmentsData, role } from "@/lib/data";
+import { role } from "@/lib/data";
 import { prisma } from "@/lib/prisma";
 import { ITEM_PER_PAGE } from "@/lib/settings";
 import Image from "next/image";
 
-type DepartmentList = Department;
+type LectureRoomList = LectureRoom & { hall: Hall };
 
-const DepartmentsListPage = async ({
+const LectureRoomsListPage = async ({
   searchParams,
 }: {
   searchParams: Promise<{ [key: string]: string | undefined }>;
 }) => {
   const columns = [
     {
-      header: "Department Name",
-      accessor: "name",
+      header: "Lecture Room",
+      accessor: "lectureRoom",
+    },
+    {
+      header: "Building",
+      accessor: "building",
+    },
+    {
+      header: "Capacity",
+      accessor: "capacity",
     },
     {
       header: "Actions",
@@ -26,12 +34,14 @@ const DepartmentsListPage = async ({
     },
   ];
 
-  const renderRow = (item: DepartmentList) => (
+  const renderRow = (item: LectureRoomList) => (
     <tr
       key={item.id}
       className="border-b border-gray-200 even:bg-slate-50 text-sm hover:bg-[#F1F0FF]"
     >
       <td className="py-2">{item.name}</td>
+      <td className="py-2">{item.hall.name}</td>
+      <td className="py-2">{item.maxCapacity}</td>
       <td className="py-2">
         <div className="flex items-center gap-2 py-2">
           {role === "admin" && (
@@ -50,7 +60,7 @@ const DepartmentsListPage = async ({
   const p = page ? parseInt(page) : 1;
 
   // URL PARAMS CONDITIONS
-  const query: Prisma.DepartmentWhereInput = {};
+  const query: Prisma.LectureRoomWhereInput = {};
 
   if (queryParams) {
     for (const [key, value] of Object.entries(queryParams)) {
@@ -65,22 +75,27 @@ const DepartmentsListPage = async ({
   }
 
   const [data, count] = await prisma.$transaction([
-    prisma.department.findMany({
+    prisma.lectureRoom.findMany({
       where: query,
+      include: {
+        hall: true,
+      },
       take: ITEM_PER_PAGE,
       skip: ITEM_PER_PAGE * (p - 1),
     }),
-    prisma.department.count({
+    prisma.lectureRoom.count({
       where: query,
     }),
   ]);
+
+  console.log(data);
 
   return (
     <div className="flex-1 bg-white rounded-md p-4 m-2 mt-0">
       {/* TOP  */}
       <div className="flex items-center justify-between">
         <h1 className="hidden md:block text-lg font-semibold">
-          All Departments
+          All Lecture Rooms
         </h1>
         <div className="flex flex-col md:flex-row items-center gap-4 w-full md:w-auto">
           <TableSearch />
@@ -103,4 +118,4 @@ const DepartmentsListPage = async ({
   );
 };
 
-export default DepartmentsListPage;
+export default LectureRoomsListPage;

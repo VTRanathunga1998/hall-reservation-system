@@ -1,7 +1,7 @@
 import { buildings } from "@/lib/data";
 import BuildingCard from "@/components/BuildingCard";
 
-export default function BuildingsPage() {
+export default function HomePage() {
   return (
     <div className="flex-1 p-2 md:p-4 text-2xl w-full h-full">
       <div className="text-center text-xl text-gray-800 font-bold mb-4 bg-blue-200 p-1">

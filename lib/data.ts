@@ -113,10 +113,6 @@ export const departmentsData = [
   },
   {
     id: 5,
-    name: "Department of Information Technology",
-  },
-  {
-    id: 6,
     name: "Department of Languages",
   },
 ];

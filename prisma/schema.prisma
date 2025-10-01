@@ -1,8 +1,3 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
-// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
 
 generator client {
   provider = "prisma-client-js"
@@ -12,4 +7,95 @@ generator client {
 datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
+}
+
+model Admin {
+  id String @id
+  username String @unique
+}
+
+model Department {
+   id Int @id @default(autoincrement())
+   name String @unique
+   lecturers Lecturer[]
+}
+
+model Hall{
+  id Int @id @default(autoincrement())
+  name String
+  lectureRooms LectureRoom[]
+}
+
+model LectureRoom {
+  id Int @id @default(autoincrement())
+  name String
+  maxCapacity Int
+
+  hallId Int
+  hall Hall @relation(fields: [hallId], references: [id])
+
+  reservations Reservation[]
+}
+
+model Student{
+  id String @id
+  username String @unique
+  name String
+  surname String
+  email String?
+  phone String?
+  address String
+  bloodType String
+  sex UserSex
+  createdAt DateTime @default(now())
+  subjects Subject[]
+}
+
+model Lecturer{
+  id String @id
+  username String @unique
+  name String
+  surname String
+  email String
+  phone String
+  address String
+  bloodType String
+  sex UserSex
+  createdAt DateTime @default(now())
+  subjects Subject[]
+  reservations Reservation[]
+
+  departmentId Int
+  department Department @relation(fields: [departmentId], references: [id])
+}
+
+model Subject{
+  id Int @id @default(autoincrement())
+  code String @unique
+  name String @unique
+  lecturers Lecturer[]
+  students Student[]
+  reservations Reservation[]
+}
+
+model Reservation {
+  id Int @id @default(autoincrement())
+  startTime DateTime
+  endTime DateTime
+  createdAt DateTime @default(now())
+
+  lecRoomId Int
+  lectureRoom LectureRoom @relation(fields: [lecRoomId], references: [id])
+
+  lecturerId String
+  lecturer Lecturer @relation(fields: [lecturerId], references: [id])
+
+  subjectId Int
+  subject Subject @relation(fields: [subjectId], references: [id])
+
+}
+
+enum UserSex {
+  MALE
+  FEMALE
 }

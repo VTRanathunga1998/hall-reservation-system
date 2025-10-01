@@ -1,22 +1,20 @@
+import { Lecturer, Prisma, Subject } from "@/app/generated/prisma";
 import FormModal from "@/components/FormModal";
 import Pagination from "@/components/Pagination";
 import Table from "@/components/Table";
 import TableSearch from "@/components/TableSearch";
 import { lecturersData, role } from "@/lib/data";
+import { prisma } from "@/lib/prisma";
+import { ITEM_PER_PAGE } from "@/lib/settings";
 import Image from "next/image";
-import Link from "next/link";
 
-type Teacher = {
-  id: number;
-  lecturerId: string;
-  name: string;
-  email?: string;
-  phone: string;
-  subjects?: string[];
-  address: string;
-};
+type LecturerList = Lecturer & { subjects: Subject[] };
 
-const LeuturersListPage = () => {
+const LeuturersListPage = async ({
+  searchParams,
+}: {
+  searchParams: Promise<{ [key: string]: string | undefined }>;
+}) => {
   const columns = [
     {
       header: "Name",
@@ -49,16 +47,18 @@ const LeuturersListPage = () => {
     },
   ];
 
-  const renderRow = (item: Teacher) => (
+  const renderRow = (item: LecturerList) => (
     <tr
       key={item.id}
       className="border-b border-gray-200 even:bg-slate-50 text-sm hover:bg-[#F1F0FF]"
     >
-      <td>{item.name}</td>
-      <td className="hidden md:table-cell">{item?.email}</td>
-      <td className="hidden md:table-cell">{item.phone}</td>
-      <td className="hidden lg:table-cell">{item.subjects?.join(", ")}</td>
-      <td className="hidden lg:table-cell">{item.address}</td>
+      <td className="py-4 px-2">{item.username}</td>
+      <td className="hidden md:table-cell py-4 px-2">{item.email}</td>
+      <td className="hidden md:table-cell py-4 px-2">{item.phone}</td>
+      <td className="hidden lg:table-cell py-4 px-2">
+        {item.subjects.map((subject) => subject.name).join(", ")}
+      </td>
+      <td className="hidden lg:table-cell py-4 px-2">{item.address}</td>
       <td>
         <div className="flex items-center gap-2">
           {role === "admin" && (
@@ -71,6 +71,39 @@ const LeuturersListPage = () => {
       </td>
     </tr>
   );
+
+  const { page, ...queryParams } = await searchParams;
+
+  const p = page ? parseInt(page) : 1;
+
+  // URL PARAMS CONDITIONS
+  const query: Prisma.LecturerWhereInput = {};
+
+  if (queryParams) {
+    for (const [key, value] of Object.entries(queryParams)) {
+      if (value !== undefined) {
+        switch (key) {
+          case "search":
+            query.name = { contains: value, mode: "insensitive" };
+            break;
+        }
+      }
+    }
+  }
+
+  const [data, count] = await prisma.$transaction([
+    prisma.lecturer.findMany({
+      where: query,
+      include: {
+        subjects: true,
+      },
+      take: ITEM_PER_PAGE,
+      skip: ITEM_PER_PAGE * (p - 1),
+    }),
+    prisma.lecturer.count({
+      where: query,
+    }),
+  ]);
 
   return (
     <div className="flex-1 bg-white rounded-md p-4 m-2 mt-0">
@@ -91,9 +124,9 @@ const LeuturersListPage = () => {
         </div>
       </div>
       {/* LIST  */}
-      <Table columns={columns} renderRow={renderRow} data={lecturersData} />
+      <Table columns={columns} renderRow={renderRow} data={data} />
       {/* PAGINATION  */}
-      <Pagination />
+      <Pagination page={p} count={count} />
     </div>
   );
 };

@@ -8,11 +8,13 @@ const Table = ({
   data: any[];
 }) => {
   return (
-    <table className="w-full h-full mt-4">
+    <table className="w-full mt-4 mb-2">
       <thead>
         <tr className="text-left text-gray-500 text-sm">
           {columns.map((col) => (
-            <th key={col.accessor} className={col.className}>{col.header}</th>
+            <th key={col.accessor} className={col.className}>
+              {col.header}
+            </th>
           ))}
         </tr>
       </thead>
