@@ -4,7 +4,7 @@ import Image from "next/image";
 export default function BuildingCard({
   building,
 }: {
-  building: { id: string; name: string };
+  building: { id: number; name: string };
 }) {
   return (
     <Link
@@ -24,7 +24,9 @@ export default function BuildingCard({
       {/* Text */}
       <div className="flex-1">
         <h2 className="text-xl font-semibold mb-1">{building.name}</h2>
-        <p className="text-sm text-gray-500">View lecture rooms & reservations</p>
+        <p className="text-sm text-gray-500">
+          View lecture rooms & reservations
+        </p>
       </div>
     </Link>
   );

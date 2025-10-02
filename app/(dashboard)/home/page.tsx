@@ -1,7 +1,9 @@
-import { buildings } from "@/lib/data";
 import BuildingCard from "@/components/BuildingCard";
+import { prisma } from "@/lib/prisma";
 
-export default function HomePage() {
+export default async function HomePage() {
+  const buildings = await prisma.hall.findMany();
+
   return (
     <div className="flex-1 p-2 md:p-4 text-2xl w-full h-full">
       <div className="text-center mb-1 p-2 bg-white rounded-md">
@@ -13,7 +15,7 @@ export default function HomePage() {
         </p>
       </div>
 
-      <div className="flex gap-4 flex-wrap justify-between w-full bg-white rounded-sm p-2">
+      <div className="flex gap-4 flex-wrap w-full bg-white rounded-sm p-2">
         {buildings.map((b) => (
           <BuildingCard key={b.id} building={b} />
         ))}

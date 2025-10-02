@@ -1,11 +1,12 @@
 import Link from "next/link";
 import Image from "next/image";
+import { LectureRoom } from "@/app/generated/prisma";
 
 export default function RoomCard({
   room,
   buildingId,
 }: {
-  room: { id: string; name: string; capacity?: number };
+  room: LectureRoom;
   buildingId: string;
 }) {
   return (
@@ -27,7 +28,7 @@ export default function RoomCard({
       <div className="flex-1">
         <h2 className="text-lg font-bold mb-1">{room.name}</h2>
         <p className="text-sm text-gray-500">
-          Capacity: {room.capacity ?? "N/A"}
+          Capacity: {room.maxCapacity ?? "N/A"}
         </p>
       </div>
     </Link>
