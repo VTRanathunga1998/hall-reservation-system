@@ -10,9 +10,9 @@ import FormModal from "@/components/FormModal";
 import Pagination from "@/components/Pagination";
 import Table from "@/components/Table";
 import TableSearch from "@/components/TableSearch";
-import { role } from "@/lib/data";
 import { prisma } from "@/lib/prisma";
 import { ITEM_PER_PAGE } from "@/lib/settings";
+import { auth } from "@clerk/nextjs/server";
 import Image from "next/image";
 import Link from "next/link";
 
@@ -27,6 +27,10 @@ const ReservationsListPage = async ({
 }: {
   searchParams: Promise<{ [key: string]: string | undefined }>;
 }) => {
+  const { userId, sessionClaims } = await auth();
+  const role = (sessionClaims?.metadata as { role?: string })?.role;
+  const currentUserId = userId;
+
   const columns = [
     {
       header: "Reservation ID",
@@ -48,7 +52,14 @@ const ReservationsListPage = async ({
       header: "End Time",
       accessor: "endTime",
     },
-    { header: "Actions", accessor: "actions" },
+    ...(role === "admin" || role === "lecturer"
+      ? [
+          {
+            header: "Actions",
+            accessor: "action",
+          },
+        ]
+      : []),
   ];
 
   const renderRow = (item: ReservationList) => (
@@ -71,12 +82,13 @@ const ReservationsListPage = async ({
               <Image src="/view.png" alt="View" width={16} height={16} />
             </button>
           </Link>
-          {role === "admin" && (
-            <>
-              <FormModal table="reservation" type="update" data={item} />
-              <FormModal table="reservation" type="delete" id={item.id} />
-            </>
-          )}
+          {role === "admin" ||
+            (role === "lecturer" && (
+              <>
+                <FormModal table="reservation" type="update" data={item} />
+                <FormModal table="reservation" type="delete" id={item.id} />
+              </>
+            ))}
         </div>
       </td>
     </tr>

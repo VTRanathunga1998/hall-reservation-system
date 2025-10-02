@@ -3,38 +3,46 @@ import FormModal from "@/components/FormModal";
 import Pagination from "@/components/Pagination";
 import Table from "@/components/Table";
 import TableSearch from "@/components/TableSearch";
-import { role, subjectsData } from "@/lib/data";
 import { prisma } from "@/lib/prisma";
 import { ITEM_PER_PAGE } from "@/lib/settings";
+import { auth } from "@clerk/nextjs/server";
 import Image from "next/image";
 
 type SubjectList = Subject & { lecturers: Lecturer[] };
-
-const columns = [
-  {
-    header: "Subject Code",
-    accessor: "code",
-  },
-  {
-    header: "Subject Name",
-    accessor: "name",
-  },
-  {
-    header: "Lecturers",
-    accessor: "lecturers",
-    className: "hidden md:table-cell",
-  },
-  {
-    header: "Actions",
-    accessor: "action",
-  },
-];
 
 const SubjectListPage = async ({
   searchParams,
 }: {
   searchParams: Promise<{ [key: string]: string | undefined }>;
 }) => {
+  const { userId, sessionClaims } = await auth();
+  const role = (sessionClaims?.metadata as { role?: string })?.role;
+  const currentUserId = userId;
+
+  const columns = [
+    {
+      header: "Subject Code",
+      accessor: "code",
+    },
+    {
+      header: "Subject Name",
+      accessor: "name",
+    },
+    {
+      header: "Lecturers",
+      accessor: "lecturers",
+      className: "hidden md:table-cell",
+    },
+    ...(role === "admin"
+      ? [
+          {
+            header: "Actions",
+            accessor: "action",
+          },
+        ]
+      : []),
+  ];
+
   const renderRow = (item: SubjectList) => (
     <tr
       key={item.id}

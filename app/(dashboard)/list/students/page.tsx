@@ -3,9 +3,9 @@ import FormModal from "@/components/FormModal";
 import Pagination from "@/components/Pagination";
 import Table from "@/components/Table";
 import TableSearch from "@/components/TableSearch";
-import { lecturersData, role, studentsData } from "@/lib/data";
 import { prisma } from "@/lib/prisma";
 import { ITEM_PER_PAGE } from "@/lib/settings";
+import { auth } from "@clerk/nextjs/server";
 import Image from "next/image";
 
 type StudentList = Student & { subjects: Subject[] };
@@ -15,6 +15,10 @@ const StudentsListPage = async ({
 }: {
   searchParams: Promise<{ [key: string]: string | undefined }>;
 }) => {
+  const { userId, sessionClaims } = await auth();
+  const role = (sessionClaims?.metadata as { role?: string })?.role;
+  const currentUserId = userId;
+
   const columns = [
     {
       header: "Name",
@@ -41,10 +45,14 @@ const StudentsListPage = async ({
       accessor: "address",
       className: "hidden lg:table-cell",
     },
-    {
-      header: "Actions",
-      accessor: "actions",
-    },
+    ...(role === "admin"
+      ? [
+          {
+            header: "Actions",
+            accessor: "action",
+          },
+        ]
+      : []),
   ];
 
   const renderRow = (item: StudentList) => (
