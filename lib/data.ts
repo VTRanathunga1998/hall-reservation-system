@@ -1,27 +1,6 @@
 // TEMPORARY DATA
 
-export const departmentsData = [
-  {
-    id: 1,
-    name: "Department of Economics & Statistics",
-  },
-  {
-    id: 2,
-    name: "The Department of English Language Teaching",
-  },
-  {
-    id: 3,
-    name: "Department of Geography & Environmental Management",
-  },
-  {
-    id: 4,
-    name: "Department of Information Technology",
-  },
-  {
-    id: 5,
-    name: "Department of Languages",
-  },
-];
+
 
 export const hallEvents = [
   {
@@ -61,72 +40,3 @@ export const hallEvents = [
   },
 ];
 
-export interface Building {
-  id: string;
-  name: string;
-  description?: string;
-}
-
-export interface Room {
-  id: string;
-  buildingId: string;
-  name: string;
-  capacity?: number;
-}
-
-export interface Reservation {
-  id: string;
-  roomId: string;
-  title: string;
-  start: Date;
-  end: Date;
-}
-
-// Temporary buildings
-export const buildings: Building[] = [
-  {
-    id: "1",
-    name: "Main Building",
-    description: "Central administration building",
-  },
-  {
-    id: "2",
-    name: "Science Block",
-    description: "Laboratories and lecture halls",
-  },
-  { id: "3", name: "Sports Complex", description: "Gym and indoor stadium" },
-  {
-    id: "4",
-    name: "Main Building II",
-    description: "Central administration building II",
-  },
-  {
-    id: "5",
-    name: "Science Block II",
-    description: "Laboratories and lecture halls II",
-  },
-  {
-    id: "6",
-    name: "Sports Complex II",
-    description: "Gym and indoor stadium II",
-  },
-  {
-    id: "7",
-    name: "Sports Complex III",
-    description: "Gym and indoor stadium III",
-  },
-];
-
-// Temporary rooms
-export const rooms: Room[] = [
-  { id: "101", buildingId: "1", name: "Auditorium A", capacity: 200 },
-  { id: "102", buildingId: "1", name: "Meeting Room A", capacity: 50 },
-  { id: "201", buildingId: "2", name: "Physics Lab", capacity: 40 },
-  { id: "202", buildingId: "2", name: "Chemistry Lab", capacity: 35 },
-  { id: "301", buildingId: "3", name: "Indoor Stadium", capacity: 500 },
-  { id: "103", buildingId: "1", name: "Auditorium B", capacity: 200 },
-  { id: "222", buildingId: "1", name: "Meeting Room B", capacity: 50 },
-  { id: "205", buildingId: "2", name: "Physics Lab II", capacity: 40 },
-  { id: "209", buildingId: "2", name: "Chemistry Lab II", capacity: 35 },
-  { id: "310", buildingId: "3", name: "Indoor Stadium II", capacity: 500 },
-];

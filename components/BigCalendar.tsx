@@ -8,13 +8,22 @@ import {
   NavigateAction,
 } from "react-big-calendar";
 import moment from "moment";
-import { hallEvents } from "@/lib/data";
 import "react-big-calendar/lib/css/react-big-calendar.css";
 import { useState } from "react";
 
 const localizer = momentLocalizer(moment);
 
-const BigCalendar = () => {
+const BigCalendar = ({
+  data,
+}: {
+  data: {
+    title: string;
+    allDay: boolean;
+    start: Date;
+    end: Date;
+    resource: { hall: string; room: string };
+  }[];
+}) => {
   const [view, setView] = useState<View>(Views.WORK_WEEK);
   const [date, setDate] = useState<Date>(new Date());
 
@@ -38,7 +47,7 @@ const BigCalendar = () => {
       <div className="min-w-2xl">
         <Calendar
           localizer={localizer}
-          events={hallEvents}
+          events={data}
           startAccessor="start"
           endAccessor="end"
           views={{ work_week: true, day: true }}
