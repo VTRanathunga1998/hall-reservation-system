@@ -1,4 +1,4 @@
-// import { currentUser } from "@clerk/nextjs/server";
+import { currentUser } from "@clerk/nextjs/server";
 import Image from "next/image";
 import Link from "next/link";
 
@@ -16,13 +16,13 @@ const menuItems = [
         icon: "/building.png",
         label: "Buildings",
         href: "/list/buildings",
-        visible: ["admin", "lecturer", "student"],
+        visible: ["admin"],
       },
       {
         icon: "/classroom.png",
         label: "Lecture Rooms",
         href: "/list/lecture_rooms",
-        visible: ["admin", "lecturer", "student"],
+        visible: ["admin"],
       },
       {
         icon: "/department.png",
@@ -59,10 +59,8 @@ const menuItems = [
 ];
 
 const Menu = async () => {
-  // const user = await currentUser();
-
-  // const role = user?.publicMetadata.role as string;
-
+  const user = await currentUser();
+  const role = user?.publicMetadata.role as string;
   return (
     <div className="mt-4 text-sm">
       {menuItems.map((i) => (
@@ -71,21 +69,18 @@ const Menu = async () => {
             {i.title}
           </span>
           {i.items.map((item) => {
-            return (
-              <Link
-                key={item.label}
-                href={item.href}
-                className="flex items-center justify-center lg:justify-start gap-4 text-gray-500 py-2 rounded-md hover:bg-lamaSkyLight md:px-2"
-              >
-                <Image
-                  src={item.icon}
-                  alt={item.label}
-                  width={20}
-                  height={20}
-                />
-                <span className="hidden lg:block">{item.label}</span>
-              </Link>
-            );
+            if (item.visible.includes(role)) {
+              return (
+                <Link
+                  href={item.href}
+                  key={item.label}
+                  className="flex items-center justify-center lg:justify-start gap-4 text-gray-500 py-2 md:px-2 rounded-md hover:bg-lamaSkyLight"
+                >
+                  <Image src={item.icon} alt="" width={20} height={20} />
+                  <span className="hidden lg:block">{item.label}</span>
+                </Link>
+              );
+            }
           })}
         </div>
       ))}
