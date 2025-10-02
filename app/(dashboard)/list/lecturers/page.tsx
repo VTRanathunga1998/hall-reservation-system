@@ -1,4 +1,4 @@
-import { Lecturer, Prisma, Subject } from "@/app/generated/prisma";
+import { Lecturer, Prisma, Student, Subject } from "@/app/generated/prisma";
 import FormModal from "@/components/FormModal";
 import Pagination from "@/components/Pagination";
 import Table from "@/components/Table";
@@ -97,6 +97,26 @@ const LeuturersListPage = async ({
         }
       }
     }
+  }
+
+  // ROLE CONDITIONS
+
+  switch (role) {
+    case "admin":
+      break;
+    case "lecturer":
+      break;
+    case "student":
+      query.subjects = {
+        some: {
+          students: {
+            some: {
+              id: currentUserId!,
+            },
+          },
+        },
+      };
+      break;
   }
 
   const [data, count] = await prisma.$transaction([

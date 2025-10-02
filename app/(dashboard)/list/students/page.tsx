@@ -99,6 +99,26 @@ const StudentsListPage = async ({
     }
   }
 
+  // ROLE CONDITIONS
+
+  switch (role) {
+    case "admin":
+      break;
+    case "lecturer":
+      query.subjects = {
+        some: {
+          lecturers: {
+            some: {
+              id: currentUserId!,
+            },
+          },
+        },
+      };
+      break;
+    case "student":
+      break;
+  }
+
   const [data, count] = await prisma.$transaction([
     prisma.student.findMany({
       where: query,

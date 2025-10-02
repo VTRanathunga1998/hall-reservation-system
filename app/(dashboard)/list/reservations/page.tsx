@@ -40,6 +40,11 @@ const ReservationsListPage = async ({
     { header: "Hall", accessor: "hall" },
     { header: "Room", accessor: "room", className: "hidden md:table-cell" },
     {
+      header: "Subject",
+      accessor: "subject",
+      className: "hidden md:table-cell",
+    },
+    {
       header: "Reserved By",
       accessor: "reservedBy",
       className: "hidden md:table-cell",
@@ -70,6 +75,7 @@ const ReservationsListPage = async ({
       <td className="hidden md:table-cell py-4">{item.id}</td>
       <td className="py-4">{item.lectureRoom.hall.name}</td>
       <td className="hidden md:table-cell py-4">{item.lectureRoom.name}</td>
+      <td className="hidden md:table-cell py-4">{item.subject.code}</td>
       <td className="hidden md:table-cell py-4">
         {item.lecturer.name} {item.lecturer.surname}
       </td>
@@ -82,13 +88,12 @@ const ReservationsListPage = async ({
               <Image src="/view.png" alt="View" width={16} height={16} />
             </button>
           </Link>
-          {role === "admin" ||
-            (role === "lecturer" && (
-              <>
-                <FormModal table="reservation" type="update" data={item} />
-                <FormModal table="reservation" type="delete" id={item.id} />
-              </>
-            ))}
+          {(role === "admin" || role === "lecturer") && (
+            <>
+              <FormModal table="reservation" type="update" data={item} />
+              <FormModal table="reservation" type="delete" id={item.id} />
+            </>
+          )}
         </div>
       </td>
     </tr>
@@ -141,6 +146,18 @@ const ReservationsListPage = async ({
         }
       }
     }
+  }
+
+  // ROLE CONDITIONS
+
+  switch (role) {
+    case "admin":
+      break;
+    case "lecturer":
+      query.lecturerId = currentUserId!;
+      break;
+    case "student":
+      break;
   }
 
   const [data, count] = await prisma.$transaction([

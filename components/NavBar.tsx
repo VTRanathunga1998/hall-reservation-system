@@ -1,6 +1,5 @@
 import { currentUser } from "@clerk/nextjs/server";
 import { UserButton } from "@clerk/nextjs";
-import Image from "next/image";
 
 const NavBar = async () => {
   const user = await currentUser();
@@ -15,13 +14,6 @@ const NavBar = async () => {
           <span className="text-sm leading-3 font-medium">John Doe</span>
           <span className="text-[10px] text-gray-500 text-right">{role}</span>
         </div>
-        {/* <Image
-          src="/avatar.png"
-          alt="Avatar"
-          width={36}
-          height={36}
-          className="rounded-full"
-        /> */}
         <UserButton />
       </div>
     </div>
