@@ -1,4 +1,5 @@
 import Link from "next/link";
+import Image from "next/image";
 
 export default function BuildingCard({
   building,
@@ -7,10 +8,24 @@ export default function BuildingCard({
 }) {
   return (
     <Link
-      href={`/buildings/${building.id}`}
-      className="w-full md:w-1/4 rounded-2xl odd:bg-[#FAE27C] even:bg-[#CFCEFF] text-gray-800 p-6 shadow-md hover:scale-105 transition-transform md:min-w-sm"
+      href={`/home/${building.id}`}
+      className="w-full md:w-1/4 flex items-center gap-4 rounded-2xl bg-white border border-gray-200 p-6 shadow-md hover:shadow-xl transition-all duration-300 hover:-translate-y-1 md:min-w-sm"
     >
-      {building.name}
+      {/* Building Image */}
+      <div className="flex-shrink-0 w-16 h-16 relative">
+        <Image
+          src="/building.png"
+          alt="Building"
+          fill
+          className="object-contain"
+        />
+      </div>
+
+      {/* Text */}
+      <div className="flex-1">
+        <h2 className="text-xl font-semibold mb-1">{building.name}</h2>
+        <p className="text-sm text-gray-500">View lecture rooms & reservations</p>
+      </div>
     </Link>
   );
 }

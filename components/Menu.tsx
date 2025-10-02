@@ -19,7 +19,7 @@ const menuItems = [
         visible: ["admin", "lecturer", "student"],
       },
       {
-        icon: "/home.png",
+        icon: "/classroom.png",
         label: "Lecture Rooms",
         href: "/list/lecture_rooms",
         visible: ["admin", "lecturer", "student"],
