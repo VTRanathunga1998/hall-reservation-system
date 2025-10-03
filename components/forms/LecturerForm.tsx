@@ -191,7 +191,7 @@ const LecturerForm = ({
           <label className="text-xs text-gray-500">Department</label>
           <select
             className="ring-[1.5px] ring-gray-300 p-2 rounded-md text-sm w-full"
-            {...register("departmentId", { valueAsNumber: true })} // RHF will submit a number
+            {...register("departmentId", { valueAsNumber: true })}
             defaultValue={data?.departmentId}
           >
             {departments.map((d: { id: number; name: string }) => (
@@ -208,13 +208,9 @@ const LecturerForm = ({
           )}
         </div>
       </div>
-      {data && (
-        <input
-          type="hidden"
-          value={data.id}
-          {...register("id", { valueAsNumber: true })}
-        />
-      )}
+      {data && <input type="hidden" value={data.id} {...register("id")} />}
+      {state.error && <span className="text-red-400">{state.message}</span>}
+
       <button className="bg-blue-400 text-white p-2 rounded-md">
         {type === "create" ? "Create" : "Update"}
       </button>

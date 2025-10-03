@@ -8,6 +8,7 @@ import {
   LecturerSchema,
 } from "./formValidationsSchemas";
 import { clerkClient } from "@clerk/nextjs/server";
+import { error } from "console";
 
 type CurrentState = {
   success: boolean;
@@ -139,7 +140,6 @@ export const createLecturer = async (
       message: "Lecturer has been created.",
     };
   } catch (error) {
-    console.log(error);
     return {
       success: false,
       error: true,
@@ -152,13 +152,41 @@ export const updateLecturer = async (
   currentState: CurrentState,
   data: LecturerSchema
 ) => {
+  if (!data.id) {
+    return { success: false, error: true, message: "Lecture ID is not found!" };
+  }
+
   try {
+    const clerk = await clerkClient();
+
+    const user = clerk.users.updateUser(data.id, {
+      username: data.username,
+      password: data.password,
+      firstName: data.name,
+      lastName: data.surname,
+    });
+
     await prisma.lecturer.update({
       where: {
         id: data.id,
       },
       data: {
+        ...(data.password !== "" && { password: data.password }),
+        username: data.username,
+        email: data.email ?? "",
         name: data.name,
+        surname: data.surname,
+        phone: data.phone,
+        address: data.address,
+        bloodType: data.bloodType,
+        birthday: data.birthday,
+        sex: data.sex,
+        subjects: {
+          connect: data.subjects?.map((subjectId) => ({
+            id: subjectId,
+          })),
+        },
+        departmentId: data.departmentId,
       },
     });
 

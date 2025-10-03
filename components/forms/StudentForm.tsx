@@ -10,12 +10,12 @@ const StudentForm = ({
   type,
   data,
   setOpen,
-  relatedData
+  relatedData,
 }: {
   type: "create" | "update";
   data?: any;
   setOpen: Dispatch<SetStateAction<boolean>>;
-  relatedData?:any
+  relatedData?: any;
 }) => {
   const {
     register,
@@ -125,6 +125,7 @@ const StudentForm = ({
           )}
         </div>
       </div>
+
       <button className="bg-blue-400 text-white p-2 rounded-md">
         {type === "create" ? "Create" : "Update"}
       </button>
