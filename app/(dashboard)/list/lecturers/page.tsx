@@ -1,5 +1,5 @@
-import { Lecturer, Prisma, Student, Subject } from "@/app/generated/prisma";
-import FormModal from "@/components/FormModal";
+import { Lecturer, Prisma, Subject } from "@/app/generated/prisma";
+import FormContainer from "@/components/FormContainer";
 import Pagination from "@/components/Pagination";
 import Table from "@/components/Table";
 import TableSearch from "@/components/TableSearch";
@@ -71,8 +71,8 @@ const LeuturersListPage = async ({
         <div className="flex items-center gap-2">
           {role === "admin" && (
             <>
-              <FormModal table="lecturer" type="update" data={item} />
-              <FormModal table="lecturer" type="delete" id={item.id} />
+              <FormContainer table="lecturer" type="update" data={item} />
+              <FormContainer table="lecturer" type="delete" id={item.id} />
             </>
           )}
         </div>
@@ -147,7 +147,9 @@ const LeuturersListPage = async ({
             <button className="w-8 h-8 flex items-center justify-center rounded-full bg-[#FAE27C] cursor-pointer">
               <Image src="/sort.png" alt="" width={14} height={14} />
             </button>
-            {role === "admin" && <FormModal table="lecturer" type="create" />}
+            {role === "admin" && (
+              <FormContainer table="lecturer" type="create" />
+            )}
           </div>
         </div>
       </div>

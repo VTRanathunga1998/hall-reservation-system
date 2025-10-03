@@ -3,8 +3,8 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import InputField from "../InputField";
-import { buildingSchema, BuildingSchema } from "@/lib/formValidationsSchemas";
-import { createBuilding, updateBuilding } from "@/lib/actions";
+
+import { createLectureRoom, updateLectureRoom } from "@/lib/actions";
 import {
   Dispatch,
   SetStateAction,
@@ -14,8 +14,12 @@ import {
 } from "react";
 import { toast } from "react-toastify";
 import { useRouter } from "next/navigation";
+import {
+  lectureRoomSchema,
+  LectureRoomSchema,
+} from "@/lib/formValidationsSchemas";
 
-const BuildingForm = ({
+const LectureRoomForm = ({
   type,
   data,
   setOpen,
@@ -30,12 +34,12 @@ const BuildingForm = ({
     register,
     handleSubmit,
     formState: { errors },
-  } = useForm<BuildingSchema>({
-    resolver: zodResolver(buildingSchema),
+  } = useForm<LectureRoomSchema>({
+    resolver: zodResolver(lectureRoomSchema),
   });
 
   const [state, action, pending] = useActionState(
-    type === "create" ? createBuilding : updateBuilding,
+    type === "create" ? createLectureRoom : updateLectureRoom,
     {
       success: false,
       error: false,
@@ -59,20 +63,51 @@ const BuildingForm = ({
     }
   }, [state, router, setOpen]);
 
+  const { buildings } = relatedData;
+
   return (
     <form className="flex flex-col gap-8" onSubmit={onSubmit}>
       <h1 className="text-xl font-semibold">
-        {type === "create" ? "Create a new builing" : "Update the building"}
+        {type === "create"
+          ? "Create a new lecture room"
+          : "Update the lecture room"}
       </h1>
 
       <div className="flex justify-between flex-wrap gap-4">
         <InputField
-          label="Building Name"
+          label="Lecture Room Name"
           name="name"
           defaultValue={data?.name}
           register={register}
           error={errors?.name}
         />
+        <InputField
+          label="Max Capacity"
+          name="maxCapacity"
+          defaultValue={data?.maxCapacity}
+          register={register}
+          registerOptions={{ valueAsNumber: true }}
+          error={errors?.maxCapacity}
+        />
+        <div className="flex flex-col gap-2 w-full md:w-1/4">
+          <label className="text-xs text-gray-500">Hall</label>
+          <select
+            className="ring-[1.5px] ring-gray-300 p-2 rounded-md text-sm w-full"
+            {...register("hallId", { valueAsNumber: true })}
+            defaultValue={data?.hallId}
+          >
+            {buildings.map((building: { id: number; name: string }) => (
+              <option value={building.id} key={building.id}>
+                {building.name}
+              </option>
+            ))}
+          </select>
+          {errors.hallId?.message && (
+            <p className="text-xs text-red-400">
+              {errors.hallId.message.toString()}
+            </p>
+          )}
+        </div>
         {data && (
           <input
             type="hidden"
@@ -90,4 +125,4 @@ const BuildingForm = ({
   );
 };
 
-export default BuildingForm;
+export default LectureRoomForm;

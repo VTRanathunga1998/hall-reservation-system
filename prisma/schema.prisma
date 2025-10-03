@@ -10,7 +10,7 @@ datasource db {
 }
 
 model Admin {
-  id String @id
+  id String @id 
   username String @unique
 }
 
@@ -48,6 +48,7 @@ model Student{
   bloodType String
   sex UserSex
   createdAt DateTime @default(now())
+  birthday DateTime
   subjects Subject[]
 }
 
@@ -56,7 +57,7 @@ model Lecturer{
   username String @unique
   name String
   surname String
-  email String @unique
+  email String? @unique
   phone String @unique
   address String
   bloodType String
@@ -64,6 +65,7 @@ model Lecturer{
   createdAt DateTime @default(now())
   subjects Subject[]
   reservations Reservation[]
+  birthday DateTime
 
   departmentId Int
   department Department @relation(fields: [departmentId], references: [id])

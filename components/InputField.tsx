@@ -3,12 +3,13 @@ import { FieldError } from "react-hook-form";
 type InputFieldProps = {
   label: string;
   type?: string;
-  register: any;
   name: string;
-  defaultValue?: string;
-  error?: FieldError;
+  register: any;
+  defaultValue?: any;
+  error?: any;
   hidden?: boolean;
   inputProps?: React.InputHTMLAttributes<HTMLInputElement>;
+  registerOptions?: object; // <-- add this
 };
 
 const InputField = ({
@@ -20,13 +21,14 @@ const InputField = ({
   error,
   hidden,
   inputProps,
+  registerOptions,
 }: InputFieldProps) => {
   return (
     <div className={hidden ? "hidden" : "flex flex-col gap-2 w-full md:w-1/4"}>
       <label className="text-xs text-gray-500">{label}</label>
       <input
         type={type}
-        {...register(name)}
+        {...register(name, registerOptions)}
         className="ring-[1.5px] ring-gray-300 p-2 rounded-md text-sm w-full"
         {...inputProps}
         defaultValue={defaultValue}

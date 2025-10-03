@@ -1,5 +1,5 @@
 import { Department, Prisma } from "@/app/generated/prisma";
-import FormModal from "@/components/FormModal";
+import FormContainer from "@/components/FormContainer";
 import Pagination from "@/components/Pagination";
 import Table from "@/components/Table";
 import TableSearch from "@/components/TableSearch";
@@ -40,8 +40,8 @@ const DepartmentsListPage = async ({
         <div className="flex items-center gap-2 py-2">
           {role === "admin" && (
             <>
-              <FormModal table="department" type="update" data={item} />
-              <FormModal table="department" type="delete" id={item.id} />
+              <FormContainer table="department" type="update" data={item} />
+              <FormContainer table="department" type="delete" id={item.id} />
             </>
           )}
         </div>
@@ -95,7 +95,9 @@ const DepartmentsListPage = async ({
             <button className="w-8 h-8 flex items-center justify-center rounded-full bg-[#FAE27C] cursor-pointer">
               <Image src="/sort.png" alt="" width={14} height={14} />
             </button>
-            {role === "admin" && <FormModal table="department" type="create" />}
+            {role === "admin" && (
+              <FormContainer table="department" type="create" />
+            )}
           </div>
         </div>
       </div>

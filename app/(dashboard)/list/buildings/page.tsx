@@ -1,5 +1,4 @@
 import { Hall } from "@/app/generated/prisma";
-import FormModal from "@/components/FormModal";
 import Pagination from "@/components/Pagination";
 import Table from "@/components/Table";
 import TableSearch from "@/components/TableSearch";
@@ -8,6 +7,7 @@ import { ITEM_PER_PAGE } from "@/lib/settings";
 import Image from "next/image";
 import { Prisma } from "@/app/generated/prisma";
 import { auth } from "@clerk/nextjs/server";
+import FormContainer from "@/components/FormContainer";
 
 type BuildingList = Hall;
 
@@ -41,8 +41,8 @@ const BuildingsListPage = async ({
         <div className="flex items-center gap-2 py-2">
           {role === "admin" && (
             <>
-              <FormModal table="building" type="update" data={item} />
-              <FormModal table="building" type="delete" id={item.id} />
+              <FormContainer table="building" type="update" data={item} />
+              <FormContainer table="building" type="delete" id={item.id} />
             </>
           )}
         </div>
@@ -95,7 +95,9 @@ const BuildingsListPage = async ({
             <button className="w-8 h-8 flex items-center justify-center rounded-full bg-[#FAE27C] cursor-pointer">
               <Image src="/sort.png" alt="" width={14} height={14} />
             </button>
-            {role === "admin" && <FormModal table="building" type="create" />}
+            {role === "admin" && (
+              <FormContainer table="building" type="create" />
+            )}
           </div>
         </div>
       </div>

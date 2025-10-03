@@ -3,8 +3,11 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import InputField from "../InputField";
-import { buildingSchema, BuildingSchema } from "@/lib/formValidationsSchemas";
-import { createBuilding, updateBuilding } from "@/lib/actions";
+import {
+  departmentSchema,
+  DepartmentSchema,
+} from "@/lib/formValidationsSchemas";
+import { createDepartment, updateDepartment } from "@/lib/actions";
 import {
   Dispatch,
   SetStateAction,
@@ -15,7 +18,7 @@ import {
 import { toast } from "react-toastify";
 import { useRouter } from "next/navigation";
 
-const BuildingForm = ({
+const DepartmentForm = ({
   type,
   data,
   setOpen,
@@ -30,12 +33,12 @@ const BuildingForm = ({
     register,
     handleSubmit,
     formState: { errors },
-  } = useForm<BuildingSchema>({
-    resolver: zodResolver(buildingSchema),
+  } = useForm<DepartmentSchema>({
+    resolver: zodResolver(departmentSchema),
   });
 
   const [state, action, pending] = useActionState(
-    type === "create" ? createBuilding : updateBuilding,
+    type === "create" ? createDepartment : updateDepartment,
     {
       success: false,
       error: false,
@@ -67,7 +70,7 @@ const BuildingForm = ({
 
       <div className="flex justify-between flex-wrap gap-4">
         <InputField
-          label="Building Name"
+          label="Department Name"
           name="name"
           defaultValue={data?.name}
           register={register}
@@ -90,4 +93,4 @@ const BuildingForm = ({
   );
 };
 
-export default BuildingForm;
+export default DepartmentForm;

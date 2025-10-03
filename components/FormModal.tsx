@@ -1,6 +1,11 @@
 "use client";
 
-import { deleteBuilding } from "@/lib/actions";
+import {
+  deleteBuilding,
+  deleteDepartment,
+  deleteLecturer,
+  deleteLectureRoom,
+} from "@/lib/actions";
 import dynamic from "next/dynamic";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
@@ -13,15 +18,16 @@ import {
 } from "react";
 import { ReactNode } from "react";
 import { toast } from "react-toastify";
+import { FormContainerProps } from "./FormContainer";
 
 const deleteActionMap = {
   building: deleteBuilding,
   subject: deleteBuilding,
-  lecturer: deleteBuilding,
+  lecturer: deleteLecturer,
   reservation: deleteBuilding,
   student: deleteBuilding,
-  lecture_room: deleteBuilding,
-  department: deleteBuilding,
+  lecture_room: deleteLectureRoom,
+  department: deleteDepartment,
 };
 
 const LecturerForm = dynamic(() => import("./forms/LecturerForm"), {
@@ -33,22 +39,60 @@ const StudentForm = dynamic(() => import("./forms/StudentForm"), {
 const BuildingForm = dynamic(() => import("./forms/BuildingForm"), {
   loading: () => <h1>Loading...</h1>,
 });
+const LectureRoomForm = dynamic(() => import("./forms/LectureRoomForm"), {
+  loading: () => <h1>Loading...</h1>,
+});
+const DepartmentForm = dynamic(() => import("./forms/DepartmentForm"), {
+  loading: () => <h1>Loading...</h1>,
+});
 
 const forms: {
   [key: string]: (
     setOpen: Dispatch<SetStateAction<boolean>>,
     type: "create" | "update",
-    data?: any
+    data?: any,
+    relatedData?: any
   ) => ReactNode;
 } = {
-  building: (setOpen, type, data) => (
-    <BuildingForm type={type} data={data} setOpen={setOpen} />
+  building: (setOpen, type, data, relatedData) => (
+    <BuildingForm
+      type={type}
+      data={data}
+      setOpen={setOpen}
+      relatedData={relatedData}
+    />
   ),
-  lecturer: (setOpen, type, data) => (
-    <LecturerForm type={type} data={data} setOpen={setOpen} />
+  lecturer: (setOpen, type, data, relatedData) => (
+    <LecturerForm
+      type={type}
+      data={data}
+      setOpen={setOpen}
+      relatedData={relatedData}
+    />
   ),
-  student: (setOpen, type, data) => (
-    <StudentForm type={type} data={data} setOpen={setOpen} />
+  student: (setOpen, type, data, relatedData) => (
+    <StudentForm
+      type={type}
+      data={data}
+      setOpen={setOpen}
+      relatedData={relatedData}
+    />
+  ),
+  lecture_room: (setOpen, type, data, relatedData) => (
+    <LectureRoomForm
+      type={type}
+      data={data}
+      setOpen={setOpen}
+      relatedData={relatedData}
+    />
+  ),
+  department: (setOpen, type, data, relatedData) => (
+    <DepartmentForm
+      type={type}
+      data={data}
+      setOpen={setOpen}
+      relatedData={relatedData}
+    />
   ),
 };
 
@@ -57,19 +101,8 @@ const FormModal = ({
   type,
   data,
   id,
-}: {
-  table:
-    | "building"
-    | "student"
-    | "lecture_room"
-    | "department"
-    | "lecturer"
-    | "reservation"
-    | "subject";
-  type: "create" | "update" | "delete";
-  data?: any;
-  id?: number | string;
-}) => {
+  relatedData,
+}: FormContainerProps & { relatedData?: any }) => {
   const size = type === "create" ? "w-8 h-8" : "w-7 h-7";
   const bgColor =
     type === "create"
@@ -108,7 +141,7 @@ const FormModal = ({
         </button>
       </form>
     ) : type === "create" || type === "update" ? (
-      forms[table](setOpen, type, data)
+      forms[table](setOpen, type, data, relatedData)
     ) : (
       "Form not found!"
     );
