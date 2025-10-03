@@ -22,7 +22,7 @@ model Department {
 
 model Hall{
   id Int @id @default(autoincrement())
-  name String
+  name String @unique
   lectureRooms LectureRoom[]
 }
 
@@ -56,8 +56,8 @@ model Lecturer{
   username String @unique
   name String
   surname String
-  email String
-  phone String
+  email String @unique
+  phone String @unique
   address String
   bloodType String
   sex UserSex

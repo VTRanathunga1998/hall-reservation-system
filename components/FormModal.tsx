@@ -1,9 +1,28 @@
 "use client";
 
+import { deleteBuilding } from "@/lib/actions";
 import dynamic from "next/dynamic";
 import Image from "next/image";
-import { useState } from "react";
+import { useRouter } from "next/navigation";
+import {
+  Dispatch,
+  SetStateAction,
+  useActionState,
+  useEffect,
+  useState,
+} from "react";
 import { ReactNode } from "react";
+import { toast } from "react-toastify";
+
+const deleteActionMap = {
+  building: deleteBuilding,
+  subject: deleteBuilding,
+  lecturer: deleteBuilding,
+  reservation: deleteBuilding,
+  student: deleteBuilding,
+  lecture_room: deleteBuilding,
+  department: deleteBuilding,
+};
 
 const LecturerForm = dynamic(() => import("./forms/LecturerForm"), {
   loading: () => <h1>Loading...</h1>,
@@ -11,12 +30,26 @@ const LecturerForm = dynamic(() => import("./forms/LecturerForm"), {
 const StudentForm = dynamic(() => import("./forms/StudentForm"), {
   loading: () => <h1>Loading...</h1>,
 });
+const BuildingForm = dynamic(() => import("./forms/BuildingForm"), {
+  loading: () => <h1>Loading...</h1>,
+});
 
 const forms: {
-  [key: string]: (type: "create" | "update", data?: any) => ReactNode;
+  [key: string]: (
+    setOpen: Dispatch<SetStateAction<boolean>>,
+    type: "create" | "update",
+    data?: any
+  ) => ReactNode;
 } = {
-  lecturer: (type, data) => <LecturerForm type={type} data={data} />,
-  student: (type, data) => <StudentForm type={type} data={data} />,
+  building: (setOpen, type, data) => (
+    <BuildingForm type={type} data={data} setOpen={setOpen} />
+  ),
+  lecturer: (setOpen, type, data) => (
+    <LecturerForm type={type} data={data} setOpen={setOpen} />
+  ),
+  student: (setOpen, type, data) => (
+    <StudentForm type={type} data={data} setOpen={setOpen} />
+  ),
 };
 
 const FormModal = ({
@@ -25,7 +58,14 @@ const FormModal = ({
   data,
   id,
 }: {
-  table: "student" | "lecturer" | "reservation" | "subject" | "department";
+  table:
+    | "building"
+    | "student"
+    | "lecture_room"
+    | "department"
+    | "lecturer"
+    | "reservation"
+    | "subject";
   type: "create" | "update" | "delete";
   data?: any;
   id?: number | string;
@@ -41,17 +81,34 @@ const FormModal = ({
   const [open, setOpen] = useState(false);
 
   const Form = () => {
+    const [state, action, pending] = useActionState(deleteActionMap[table], {
+      success: false,
+      error: false,
+      message: "",
+    });
+
+    const router = useRouter();
+
+    useEffect(() => {
+      if (state.success) {
+        toast(state.message);
+        setOpen(false);
+        router.refresh();
+      }
+    }, [state, router, setOpen]);
+
     return type === "delete" && id ? (
-      <form action="" className="p-4 flex flex-col gap-4">
+      <form action={action} className="p-4 flex flex-col gap-4">
+        <input type="hidden" name="id" defaultValue={id} />
         <span className="text-center font-medium">
           All data will be lost. Are you sure you want to delete this {table}?
         </span>
-        <button className="bg-red-700 text-white py-2 px-4 rounded-md border-none w-max self-center">
+        <button className="bg-red-700 text-white py-2 px-4 rounded-md border-none w-max self-center cursor-pointer">
           Delete
         </button>
       </form>
     ) : type === "create" || type === "update" ? (
-      forms[table](type, data)
+      forms[table](setOpen, type, data)
     ) : (
       "Form not found!"
     );
@@ -70,7 +127,7 @@ const FormModal = ({
           <div className="bg-white p-4 rounded-md relative w-[90%] md:w-[70%] lg:w-[60%] xl:w-[50%] 2xl:w-[40%]">
             <Form />
             <div
-              className="absolute top-4 right-4 cursor-pointer"
+              className="absolute top-4 right-4 cursor-pointer "
               onClick={() => setOpen(false)}
             >
               <Image src="/close.png" alt="" width={14} height={14} />

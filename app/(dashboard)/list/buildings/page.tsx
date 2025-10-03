@@ -41,8 +41,8 @@ const BuildingsListPage = async ({
         <div className="flex items-center gap-2 py-2">
           {role === "admin" && (
             <>
-              <FormModal table="department" type="update" data={item} />
-              <FormModal table="department" type="delete" id={item.id} />
+              <FormModal table="building" type="update" data={item} />
+              <FormModal table="building" type="delete" id={item.id} />
             </>
           )}
         </div>
@@ -95,7 +95,7 @@ const BuildingsListPage = async ({
             <button className="w-8 h-8 flex items-center justify-center rounded-full bg-[#FAE27C] cursor-pointer">
               <Image src="/sort.png" alt="" width={14} height={14} />
             </button>
-            {role === "admin" && <FormModal table="department" type="create" />}
+            {role === "admin" && <FormModal table="building" type="create" />}
           </div>
         </div>
       </div>

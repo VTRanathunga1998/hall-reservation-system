@@ -17,7 +17,6 @@ const LectureCalendar = async ({
   const query: Prisma.ReservationWhereInput = {};
 
   // ROLE CONDITIONS
-
   switch (role) {
     case "admin":
       break;
