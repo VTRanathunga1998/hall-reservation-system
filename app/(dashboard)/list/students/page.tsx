@@ -68,7 +68,7 @@ const StudentsListPage = async ({
       </td>
       <td className="hidden lg:table-cell py-4">{item.address}</td>
       <td className="py-4">
-        <div className="flex items-center gap-2">
+        <div className="flex flex-col md:flex-row items-center gap-2">
           {role === "admin" && (
             <>
               <FormContainer table="student" type="update" data={item} />

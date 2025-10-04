@@ -54,7 +54,7 @@ const SubjectListPage = async ({
         {item.lecturers.map((lecturer) => lecturer.name).join(", ")}
       </td>
       <td className="py-4 px-2">
-        <div className="flex items-center gap-2">
+        <div className="flex flex-col md:flex-row items-center gap-2">
           {role === "admin" && (
             <>
               <FormContainer table="subject" type="update" data={item} />

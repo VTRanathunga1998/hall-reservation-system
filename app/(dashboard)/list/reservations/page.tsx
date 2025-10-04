@@ -37,8 +37,8 @@ const ReservationsListPage = async ({
       accessor: "reservationId",
       className: "hidden md:table-cell",
     },
-    { header: "Hall", accessor: "hall" },
-    { header: "Room", accessor: "room", className: "hidden md:table-cell" },
+    { header: "Hall", accessor: "hall", className: "hidden md:table-cell" },
+    { header: "Room", accessor: "room" },
     {
       header: "Subject",
       accessor: "subject",
@@ -73,8 +73,10 @@ const ReservationsListPage = async ({
       className="border-b border-gray-200 even:bg-slate-50 text-sm hover:bg-[#F1F0FF]"
     >
       <td className="hidden md:table-cell py-4">{item.id}</td>
-      <td className="py-4">{item.lectureRoom.hall.name}</td>
-      <td className="hidden md:table-cell py-4">{item.lectureRoom.name}</td>
+      <td className="hidden md:table-cell py-4">
+        {item.lectureRoom.hall.name}
+      </td>
+      <td className="py-4">{item.lectureRoom.name}</td>
       <td className="hidden md:table-cell py-4">{item.subject.code}</td>
       <td className="hidden md:table-cell py-4">
         {item.lecturer.name} {item.lecturer.surname}
@@ -82,12 +84,7 @@ const ReservationsListPage = async ({
       <td className="py-4">{new Date(item.startTime).toLocaleString()}</td>
       <td className="py-4">{new Date(item.endTime).toLocaleString()}</td>
       <td className="py-4">
-        <div className="flex items-center gap-2">
-          <Link href={`/list/reservations/${item.id}`}>
-            <button className="w-7 h-7 flex items-center justify-center rounded-full bg-[#C3EBFA] cursor-pointer">
-              <Image src="/view.png" alt="View" width={16} height={16} />
-            </button>
-          </Link>
+        <div className="flex flex-col md:flex-row items-center gap-2">
           {(role === "admin" || role === "lecturer") && (
             <>
               <FormContainer table="reservation" type="update" data={item} />

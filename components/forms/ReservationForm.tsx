@@ -143,26 +143,44 @@ const ReservationForm = ({
           )}
         </div>
 
-        <InputField
-          label="Start Time"
-          name="startTime"
-          type="datetime-local"
-          register={register}
-          registerOptions={{
-            setValueAs: (val: any) => (val ? new Date(val) : undefined),
-          }}
-          defaultValue={toDatetimeLocalString(data?.startTime)}
-        />
-        <InputField
-          label="End Time"
-          name="endTime"
-          type="datetime-local"
-          register={register}
-          registerOptions={{
-            setValueAs: (val: any) => (val ? new Date(val) : undefined),
-          }}
-          defaultValue={toDatetimeLocalString(data?.endTime)}
-        />
+        <div className="flex flex-wrap gap-4 w-full">
+          {/* Start Time */}
+          <div className="flex flex-col gap-2 w-full md:w-1/3">
+            <label className="text-xs text-gray-500">Start Time</label>
+            <input
+              type="datetime-local"
+              className="ring-[1.5px] ring-gray-300 p-2 rounded-md text-sm w-full"
+              defaultValue={toDatetimeLocalString(data?.startTime)}
+              {...register("startTime", {
+                setValueAs: (val: any) => (val ? new Date(val) : undefined),
+              })}
+            />
+            {errors.startTime?.message && (
+              <p className="text-xs text-red-400">
+                {errors.startTime.message.toString()}
+              </p>
+            )}
+          </div>
+
+          {/* End Time */}
+          <div className="flex flex-col gap-2 w-full md:w-1/3">
+            <label className="text-xs text-gray-500">End Time</label>
+            <input
+              type="datetime-local"
+              className="ring-[1.5px] ring-gray-300 p-2 rounded-md text-sm w-full"
+              defaultValue={toDatetimeLocalString(data?.endTime)}
+              {...register("endTime", {
+                setValueAs: (val: any) => (val ? new Date(val) : undefined),
+              })}
+            />
+            {errors.endTime?.message && (
+              <p className="text-xs text-red-400">
+                {errors.endTime.message.toString()}
+              </p>
+            )}
+          </div>
+        </div>
+
         {data && (
           <input
             type="hidden"
