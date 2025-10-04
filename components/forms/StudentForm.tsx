@@ -3,8 +3,17 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import InputField from "../InputField";
+import {
+  Dispatch,
+  SetStateAction,
+  startTransition,
+  useActionState,
+  useEffect,
+} from "react";
+import { useRouter } from "next/navigation";
+import { toast } from "react-toastify";
 import { studentSchema, StudentSchema } from "@/lib/formValidationsSchemas";
-import { Dispatch, SetStateAction } from "react";
+import { createStudent, updateStudent } from "@/lib/actions";
 
 const StudentForm = ({
   type,
@@ -25,14 +34,36 @@ const StudentForm = ({
     resolver: zodResolver(studentSchema),
   });
 
+  const [state, action, pending] = useActionState(
+    type === "create" ? createStudent : updateStudent,
+    {
+      success: false,
+      error: false,
+      message: "",
+    }
+  );
+
   const onSubmit = handleSubmit((data) => {
-    console.log(data);
+    startTransition(() => {
+      action(data);
+    });
   });
 
+  const router = useRouter();
+
+  useEffect(() => {
+    if (state.success) {
+      toast(state.message);
+      setOpen(false);
+      router.refresh();
+    }
+  }, [state, router, setOpen]);
+
+  const { subjects, departments } = relatedData;
   return (
     <form className="flex flex-col gap-8" onSubmit={onSubmit}>
       <h1 className="text-xl font-semibold">
-        {type === "create" ? "Create a new student" : "Update the student"}
+        {type === "create" ? "Create a new lecturer" : "Update the lecturer"}
       </h1>
       <span className="text-xs text-gray-400 font-medium">
         Authentication Information
@@ -67,17 +98,17 @@ const StudentForm = ({
       <div className="flex justify-between flex-wrap gap-4">
         <InputField
           label="First Name"
-          name="firstName"
-          defaultValue={data?.firstName}
+          name="name"
+          defaultValue={data?.name}
           register={register}
-          error={errors.firstName}
+          error={errors.name}
         />
         <InputField
           label="Last Name"
-          name="lastName"
-          defaultValue={data?.lastName}
+          name="surname"
+          defaultValue={data?.surname}
           register={register}
-          error={errors.lastName}
+          error={errors.surname}
         />
         <InputField
           label="Phone"
@@ -103,11 +134,18 @@ const StudentForm = ({
         <InputField
           label="Birthday"
           name="birthday"
-          defaultValue={data?.birthday}
-          register={register}
-          error={errors.birthday}
           type="date"
+          register={register}
+          registerOptions={{
+            setValueAs: (val: any) => (val ? new Date(val) : undefined),
+          }}
+          defaultValue={
+            data?.birthday
+              ? new Date(data.birthday).toISOString().split("T")[0]
+              : ""
+          }
         />
+
         <div className="flex flex-col gap-2 w-full md:w-1/4">
           <label className="text-xs text-gray-500">Sex</label>
           <select
@@ -115,8 +153,8 @@ const StudentForm = ({
             {...register("sex")}
             defaultValue={data?.sex}
           >
-            <option value="male">Male</option>
-            <option value="female">Female</option>
+            <option value="MALE">Male</option>
+            <option value="FEMALE">Female</option>
           </select>
           {errors.sex?.message && (
             <p className="text-xs text-red-400">
@@ -124,7 +162,54 @@ const StudentForm = ({
             </p>
           )}
         </div>
+        <div className="flex flex-col gap-2 w-full md:w-1/4">
+          <label className="text-xs text-gray-500">Subjects</label>
+          <select
+            multiple
+            className="ring-[1.5px] ring-gray-300 p-2 rounded-md text-sm w-full"
+            {...register("subjects", {
+              setValueAs: (val: any) => {
+                if (Array.isArray(val)) return val.map((v) => Number(v));
+                return [];
+              },
+            })}
+            defaultValue={data?.subjects}
+          >
+            {subjects.map((subject: { id: number; code: string }) => (
+              <option value={subject.id} key={subject.id}>
+                {subject.code}
+              </option>
+            ))}
+          </select>
+          {errors.subjects?.message && (
+            <p className="text-xs text-red-400">
+              {errors.subjects.message.toString()}
+            </p>
+          )}
+        </div>
+        <div className="flex flex-col gap-2 w-full md:w-1/4">
+          <label className="text-xs text-gray-500">Department</label>
+          <select
+            className="ring-[1.5px] ring-gray-300 p-2 rounded-md text-sm w-full"
+            {...register("departmentId", { valueAsNumber: true })}
+            defaultValue={data?.departmentId}
+          >
+            {departments.map((d: { id: number; name: string }) => (
+              <option value={d.id} key={d.id}>
+                {d.name}
+              </option>
+            ))}
+          </select>
+
+          {errors.departmentId?.message && (
+            <p className="text-xs text-red-400">
+              {errors.departmentId.message.toString()}
+            </p>
+          )}
+        </div>
       </div>
+      {data && <input type="hidden" value={data.id} {...register("id")} />}
+      {state.error && <span className="text-red-400">{state.message}</span>}
 
       <button className="bg-blue-400 text-white p-2 rounded-md">
         {type === "create" ? "Create" : "Update"}

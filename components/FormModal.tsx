@@ -5,6 +5,8 @@ import {
   deleteDepartment,
   deleteLecturer,
   deleteLectureRoom,
+  deleteStudent,
+  deleteSubject,
 } from "@/lib/actions";
 import dynamic from "next/dynamic";
 import Image from "next/image";
@@ -22,10 +24,10 @@ import { FormContainerProps } from "./FormContainer";
 
 const deleteActionMap = {
   building: deleteBuilding,
-  subject: deleteBuilding,
+  subject: deleteSubject,
   lecturer: deleteLecturer,
   reservation: deleteBuilding,
-  student: deleteBuilding,
+  student: deleteStudent,
   lecture_room: deleteLectureRoom,
   department: deleteDepartment,
 };
@@ -43,6 +45,9 @@ const LectureRoomForm = dynamic(() => import("./forms/LectureRoomForm"), {
   loading: () => <h1>Loading...</h1>,
 });
 const DepartmentForm = dynamic(() => import("./forms/DepartmentForm"), {
+  loading: () => <h1>Loading...</h1>,
+});
+const SubjectForm = dynamic(() => import("./forms/SubjectForm"), {
   loading: () => <h1>Loading...</h1>,
 });
 
@@ -88,6 +93,14 @@ const forms: {
   ),
   department: (setOpen, type, data, relatedData) => (
     <DepartmentForm
+      type={type}
+      data={data}
+      setOpen={setOpen}
+      relatedData={relatedData}
+    />
+  ),
+  subject: (setOpen, type, data, relatedData) => (
+    <SubjectForm
       type={type}
       data={data}
       setOpen={setOpen}
