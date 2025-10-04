@@ -29,6 +29,7 @@ const LecturerForm = ({
   const {
     register,
     handleSubmit,
+    setValue,
     formState: { errors },
   } = useForm<LecturerSchema>({
     resolver: zodResolver(lecturerSchema),
@@ -43,11 +44,17 @@ const LecturerForm = ({
     }
   );
 
-  const onSubmit = handleSubmit((data) => {
-    startTransition(() => {
-      action(data);
-    });
-  });
+  const onSubmit = handleSubmit(
+    (data) => {
+      // console.log("Submitted Data:", data);
+      startTransition(() => {
+        action(data);
+      });
+    }
+    // (errors) => {
+    //   console.log("Validation errors:", errors);
+    // }
+  );
 
   const router = useRouter();
 
@@ -60,6 +67,7 @@ const LecturerForm = ({
   }, [state, router, setOpen]);
 
   const { subjects, departments } = relatedData;
+
   return (
     <form className="flex flex-col gap-8" onSubmit={onSubmit}>
       <h1 className="text-xl font-semibold">
@@ -167,20 +175,25 @@ const LecturerForm = ({
           <select
             multiple
             className="ring-[1.5px] ring-gray-300 p-2 rounded-md text-sm w-full"
-            {...register("subjects", {
-              setValueAs: (val: any) => {
-                if (Array.isArray(val)) return val.map((v) => Number(v));
-                return [];
-              },
-            })}
-            defaultValue={data?.subjects}
+            onChange={(e) => {
+              const selected = Array.from(e.target.selectedOptions, (option) =>
+                Number(option.value)
+              );
+              setValue("subjects", selected.length > 0 ? selected : undefined, {
+                shouldValidate: true,
+              });
+            }}
+            defaultValue={data?.subjects?.map((s: { id: number }) =>
+              s.id.toString()
+            )}
           >
             {subjects.map((subject: { id: number; code: string }) => (
-              <option value={subject.id} key={subject.id}>
+              <option key={subject.id} value={subject.id}>
                 {subject.code}
               </option>
             ))}
           </select>
+
           {errors.subjects?.message && (
             <p className="text-xs text-red-400">
               {errors.subjects.message.toString()}

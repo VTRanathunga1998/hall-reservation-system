@@ -165,9 +165,9 @@ export const updateLecturer = async (
   try {
     const clerk = await clerkClient();
 
-    const user = clerk.users.updateUser(data.id, {
+    await clerk.users.updateUser(data.id, {
       username: data.username,
-      password: data.password,
+      ...(data.password ? { password: data.password } : {}),
       firstName: data.name,
       lastName: data.surname,
     });
@@ -187,11 +187,14 @@ export const updateLecturer = async (
         bloodType: data.bloodType,
         birthday: data.birthday,
         sex: data.sex,
-        subjects: {
-          connect: data.subjects?.map((subjectId) => ({
-            id: subjectId,
-          })),
-        },
+        ...(data.subjects !== undefined
+          ? {
+              subjects: {
+                set: data.subjects.map((subjectId) => ({ id: subjectId })),
+              },
+            }
+          : {}),
+
         departmentId: data.departmentId,
       },
     });
@@ -302,7 +305,7 @@ export const updateStudent = async (
   try {
     const clerk = await clerkClient();
 
-    const user = clerk.users.updateUser(data.id, {
+    clerk.users.updateUser(data.id, {
       username: data.username,
       password: data.password,
       firstName: data.name,
@@ -324,11 +327,13 @@ export const updateStudent = async (
         bloodType: data.bloodType,
         birthday: data.birthday,
         sex: data.sex,
-        subjects: {
-          connect: data.subjects?.map((subjectId) => ({
-            id: subjectId,
-          })),
-        },
+        ...(data.subjects !== undefined
+          ? {
+              subjects: {
+                set: data.subjects.map((subjectId) => ({ id: subjectId })),
+              },
+            }
+          : {}),
         departmentId: data.departmentId,
       },
     });
@@ -336,14 +341,13 @@ export const updateStudent = async (
     return {
       success: true,
       error: false,
-      message: "Lecturer has been updated.",
+      message: "Student has been updated.",
     };
   } catch (error) {
-    console.log("error");
     return {
       success: false,
       error: true,
-      message: "A lecturer updating failed.",
+      message: "A student updating failed.",
     };
   }
 };
@@ -355,7 +359,7 @@ export const deleteStudent = async (
   const id = data.get("id") as string;
 
   try {
-    await prisma.lecturer.delete({
+    await prisma.student.delete({
       where: {
         id: id,
       },
@@ -364,14 +368,14 @@ export const deleteStudent = async (
     return {
       success: true,
       error: false,
-      message: "Lecturer has been deleted.",
+      message: "Student has been deleted.",
     };
   } catch (error) {
     // console.log(error);
     return {
       success: false,
       error: true,
-      message: "A lecturer deleting failed.",
+      message: "A student deleting failed.",
     };
   }
 };

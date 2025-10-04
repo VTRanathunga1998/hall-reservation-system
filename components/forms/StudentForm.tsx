@@ -29,6 +29,7 @@ const StudentForm = ({
   const {
     register,
     handleSubmit,
+    setValue,
     formState: { errors },
   } = useForm<StudentSchema>({
     resolver: zodResolver(studentSchema),
@@ -63,7 +64,7 @@ const StudentForm = ({
   return (
     <form className="flex flex-col gap-8" onSubmit={onSubmit}>
       <h1 className="text-xl font-semibold">
-        {type === "create" ? "Create a new lecturer" : "Update the lecturer"}
+        {type === "create" ? "Create a new student" : "Update the student"}
       </h1>
       <span className="text-xs text-gray-400 font-medium">
         Authentication Information
@@ -167,20 +168,25 @@ const StudentForm = ({
           <select
             multiple
             className="ring-[1.5px] ring-gray-300 p-2 rounded-md text-sm w-full"
-            {...register("subjects", {
-              setValueAs: (val: any) => {
-                if (Array.isArray(val)) return val.map((v) => Number(v));
-                return [];
-              },
-            })}
-            defaultValue={data?.subjects}
+            onChange={(e) => {
+              const selected = Array.from(e.target.selectedOptions, (option) =>
+                Number(option.value)
+              );
+              setValue("subjects", selected.length > 0 ? selected : undefined, {
+                shouldValidate: true,
+              });
+            }}
+            defaultValue={data?.subjects?.map((s: { id: number }) =>
+              s.id.toString()
+            )}
           >
             {subjects.map((subject: { id: number; code: string }) => (
-              <option value={subject.id} key={subject.id}>
+              <option key={subject.id} value={subject.id}>
                 {subject.code}
               </option>
             ))}
           </select>
+
           {errors.subjects?.message && (
             <p className="text-xs text-red-400">
               {errors.subjects.message.toString()}
