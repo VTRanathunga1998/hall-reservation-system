@@ -6,7 +6,7 @@ import {
   Reservation,
   Subject,
 } from "@/app/generated/prisma";
-import FormModal from "@/components/FormModal";
+import FormContainer from "@/components/FormContainer";
 import Pagination from "@/components/Pagination";
 import Table from "@/components/Table";
 import TableSearch from "@/components/TableSearch";
@@ -90,8 +90,8 @@ const ReservationsListPage = async ({
           </Link>
           {(role === "admin" || role === "lecturer") && (
             <>
-              <FormModal table="reservation" type="update" data={item} />
-              <FormModal table="reservation" type="delete" id={item.id} />
+              <FormContainer table="reservation" type="update" data={item} />
+              <FormContainer table="reservation" type="delete" id={item.id} />
             </>
           )}
         </div>
@@ -197,7 +197,7 @@ const ReservationsListPage = async ({
               <Image src="/sort.png" alt="Sort" width={14} height={14} />
             </button>
             {role === "admin" && (
-              <FormModal table="reservation" type="create" />
+              <FormContainer table="reservation" type="create" />
             )}
           </div>
         </div>

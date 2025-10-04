@@ -6,6 +6,7 @@ import {
   DepartmentSchema,
   LectureRoomSchema,
   LecturerSchema,
+  ReservationSchema,
   StudentSchema,
   SubjectSchema,
 } from "./formValidationsSchemas";
@@ -305,9 +306,9 @@ export const updateStudent = async (
   try {
     const clerk = await clerkClient();
 
-    clerk.users.updateUser(data.id, {
+    await clerk.users.updateUser(data.id, {
       username: data.username,
-      password: data.password,
+      ...(data.password ? { password: data.password } : {}),
       firstName: data.name,
       lastName: data.surname,
     });
@@ -381,7 +382,6 @@ export const deleteStudent = async (
 };
 
 //Lecture Romm
-
 export const createLectureRoom = async (
   currentState: CurrentState,
   data: LectureRoomSchema
@@ -466,7 +466,6 @@ export const deleteLectureRoom = async (
 };
 
 //Department
-
 export const createDepartment = async (
   currentState: CurrentState,
   data: DepartmentSchema
@@ -549,7 +548,6 @@ export const deleteDepartment = async (
 };
 
 //Subject
-
 export const createSubject = async (
   currentState: CurrentState,
   data: SubjectSchema
@@ -628,6 +626,96 @@ export const deleteSubject = async (
       success: false,
       error: true,
       message: "A subject deleting failed.",
+    };
+  }
+};
+
+//Reservation
+export const createReservation = async (
+  currentState: CurrentState,
+  data: ReservationSchema
+) => {
+  try {
+    await prisma.reservation.create({
+      data: {
+        startTime: data.startTime,
+        endTime: data.endTime,
+        lecRoomId: data.lecRoomId,
+        subjectId: data.subjectId,
+        lecturerId: data.lecturerId,
+      },
+    });
+
+    return {
+      success: true,
+      error: false,
+      message: "Reservation has been created.",
+    };
+  } catch (error) {
+    console.log(error);
+    return {
+      success: false,
+      error: true,
+      message: "A reservation added failed.",
+    };
+  }
+};
+
+export const updateReservation = async (
+  currentState: CurrentState,
+  data: ReservationSchema
+) => {
+  try {
+    await prisma.reservation.update({
+      where: {
+        id: Number(data.id),
+      },
+      data: {
+        startTime: data.startTime,
+        endTime: data.endTime,
+        lecRoomId: data.lecRoomId,
+        subjectId: data.subjectId,
+        lecturerId: data.lecturerId,
+      },
+    });
+
+    return {
+      success: true,
+      error: false,
+      message: "Reservation has been updated.",
+    };
+  } catch (error) {
+    return {
+      success: false,
+      error: true,
+      message: "A reservation updating failed.",
+    };
+  }
+};
+
+export const deleteReservation = async (
+  currentState: CurrentState,
+  data: FormData
+) => {
+  const id = data.get("id") as string;
+
+  try {
+    await prisma.reservation.delete({
+      where: {
+        id: parseInt(id),
+      },
+    });
+
+    return {
+      success: true,
+      error: false,
+      message: "Reservation has been deleted.",
+    };
+  } catch (error) {
+    return {
+      success: false,
+      error: true,
+      message: "A reservation deleting failed.",
     };
   }
 };

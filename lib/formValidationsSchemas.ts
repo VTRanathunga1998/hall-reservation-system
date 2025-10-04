@@ -94,3 +94,24 @@ export const subjectSchema = z.object({
 });
 
 export type SubjectSchema = z.infer<typeof subjectSchema>;
+
+//reservation schema
+export const reservationSchema = z
+  .object({
+    id: z.number().optional(),
+    startTime: z.date({ message: "Start Time is required!" }),
+    endTime: z.date({ message: "End Time is required!" }),
+    lecRoomId: z.number({ message: "Lecture room is required!" }),
+    subjectId: z.number({ message: "Subject is required!" }),
+    lecturerId: z.string({ message: "Lecturer is required!" }),
+  })
+  .refine((data) => data.startTime > new Date(), {
+    message: "Reservation must start in the future",
+    path: ["startTime"],
+  })
+  .refine((data) => data.endTime > data.startTime, {
+    message: "End time must be after start time",
+    path: ["endTime"],
+  });
+
+export type ReservationSchema = z.infer<typeof reservationSchema>;

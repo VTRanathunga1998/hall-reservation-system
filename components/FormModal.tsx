@@ -5,6 +5,7 @@ import {
   deleteDepartment,
   deleteLecturer,
   deleteLectureRoom,
+  deleteReservation,
   deleteStudent,
   deleteSubject,
 } from "@/lib/actions";
@@ -26,7 +27,7 @@ const deleteActionMap = {
   building: deleteBuilding,
   subject: deleteSubject,
   lecturer: deleteLecturer,
-  reservation: deleteBuilding,
+  reservation: deleteReservation,
   student: deleteStudent,
   lecture_room: deleteLectureRoom,
   department: deleteDepartment,
@@ -48,6 +49,9 @@ const DepartmentForm = dynamic(() => import("./forms/DepartmentForm"), {
   loading: () => <h1>Loading...</h1>,
 });
 const SubjectForm = dynamic(() => import("./forms/SubjectForm"), {
+  loading: () => <h1>Loading...</h1>,
+});
+const ReservationForm = dynamic(() => import("./forms/ReservationForm"), {
   loading: () => <h1>Loading...</h1>,
 });
 
@@ -101,6 +105,14 @@ const forms: {
   ),
   subject: (setOpen, type, data, relatedData) => (
     <SubjectForm
+      type={type}
+      data={data}
+      setOpen={setOpen}
+      relatedData={relatedData}
+    />
+  ),
+  reservation: (setOpen, type, data, relatedData) => (
+    <ReservationForm
       type={type}
       data={data}
       setOpen={setOpen}

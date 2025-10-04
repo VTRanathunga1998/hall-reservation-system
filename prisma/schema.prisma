@@ -25,6 +25,7 @@ model Hall{
   id Int @id @default(autoincrement())
   name String @unique
   lectureRooms LectureRoom[]
+
 }
 
 model LectureRoom {
