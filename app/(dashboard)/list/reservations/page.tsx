@@ -6,6 +6,7 @@ import {
   Reservation,
   Subject,
 } from "@/app/generated/prisma";
+import EmptyState from "@/components/EmptyState";
 import FormContainer from "@/components/FormContainer";
 import Pagination from "@/components/Pagination";
 import Table from "@/components/Table";
@@ -200,11 +201,22 @@ const ReservationsListPage = async ({
         </div>
       </div>
 
-      {/* LIST */}
-      <Table columns={columns} renderRow={renderRow} data={data} />
+      {/* CONTENT */}
+      {count === 0 ? (
+        <EmptyState
+          title="No reservations found"
+          description="Start by adding a new reservations."
+          imageSrc="/no-data.gif"
+        />
+      ) : (
+        <>
+          {/* LIST */}
+          <Table columns={columns} renderRow={renderRow} data={data} />
 
-      {/* PAGINATION */}
-      <Pagination page={p} count={count} />
+          {/* PAGINATION */}
+          <Pagination page={p} count={count} />
+        </>
+      )}
     </div>
   );
 };

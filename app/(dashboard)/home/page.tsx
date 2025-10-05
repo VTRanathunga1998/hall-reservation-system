@@ -1,4 +1,5 @@
 import BuildingCard from "@/components/BuildingCard";
+import EmptyState from "@/components/EmptyState";
 import { prisma } from "@/lib/prisma";
 
 export default async function HomePage() {
@@ -16,9 +17,15 @@ export default async function HomePage() {
       </div>
 
       <div className="flex gap-4 flex-wrap w-full bg-white rounded-sm p-2">
-        {buildings.map((b) => (
-          <BuildingCard key={b.id} building={b} />
-        ))}
+        {buildings.length > 0 ? (
+          buildings.map((b) => <BuildingCard key={b.id} building={b} />)
+        ) : (
+          <EmptyState
+            title="No buildings found"
+            description="Start by adding a new building"
+            imageSrc="/no-data.gif"
+          />
+        )}
       </div>
     </div>
   );

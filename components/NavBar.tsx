@@ -11,7 +11,9 @@ const NavBar = async () => {
       {/*Icons and Server*/}
       <div className="flex items-center gap-6 justify-end w-full">
         <div className="flex flex-col">
-          <span className="text-sm leading-3 font-medium">John Doe</span>
+          <span className="text-sm leading-3 font-medium">
+            {user?.username || "User"}{" "}
+          </span>
           <span className="text-[10px] text-gray-500 text-right">{role}</span>
         </div>
         <UserButton />

@@ -1,4 +1,5 @@
 import { Prisma, Student, Subject } from "@/app/generated/prisma";
+import EmptyState from "@/components/EmptyState";
 import FormContainer from "@/components/FormContainer";
 import Pagination from "@/components/Pagination";
 import Table from "@/components/Table";
@@ -147,14 +148,28 @@ const StudentsListPage = async ({
             <button className="w-8 h-8 flex items-center justify-center rounded-full bg-[#FAE27C] cursor-pointer">
               <Image src="/sort.png" alt="" width={14} height={14} />
             </button>
-            {role === "admin" && <FormContainer table="student" type="create" />}
+            {role === "admin" && (
+              <FormContainer table="student" type="create" />
+            )}
           </div>
         </div>
       </div>
-      {/* LIST  */}
-      <Table columns={columns} renderRow={renderRow} data={data} />
-      {/* PAGINATION  */}
-      <Pagination page={p} count={count} />
+
+      {/* CONTENT */}
+      {count === 0 ? (
+        <EmptyState
+          title="No students found"
+          description="Start by adding a new student."
+          imageSrc="/no-data.gif"
+        />
+      ) : (
+        <>
+          {/* LIST  */}
+          <Table columns={columns} renderRow={renderRow} data={data} />
+          {/* PAGINATION  */}
+          <Pagination page={p} count={count} />
+        </>
+      )}
     </div>
   );
 };

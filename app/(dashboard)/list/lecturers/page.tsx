@@ -1,4 +1,5 @@
 import { Lecturer, Prisma, Subject } from "@/app/generated/prisma";
+import EmptyState from "@/components/EmptyState";
 import FormContainer from "@/components/FormContainer";
 import Pagination from "@/components/Pagination";
 import Table from "@/components/Table";
@@ -153,10 +154,22 @@ const LeuturersListPage = async ({
           </div>
         </div>
       </div>
-      {/* LIST  */}
-      <Table columns={columns} renderRow={renderRow} data={data} />
-      {/* PAGINATION  */}
-      <Pagination page={p} count={count} />
+
+      {/* CONTENT */}
+      {count === 0 ? (
+        <EmptyState
+          title="No lecturers found"
+          description="Start by adding a new lecturer."
+          imageSrc="/no-data.gif"
+        />
+      ) : (
+        <>
+          {/* LIST  */}
+          <Table columns={columns} renderRow={renderRow} data={data} />
+          {/* PAGINATION  */}
+          <Pagination page={p} count={count} />
+        </>
+      )}
     </div>
   );
 };

@@ -1,4 +1,5 @@
 import { Hall, LectureRoom, Prisma } from "@/app/generated/prisma";
+import EmptyState from "@/components/EmptyState";
 import FormContainer from "@/components/FormContainer";
 import Pagination from "@/components/Pagination";
 import Table from "@/components/Table";
@@ -114,10 +115,21 @@ const LectureRoomsListPage = async ({
           </div>
         </div>
       </div>
-      {/* LIST  */}
-      <Table columns={columns} renderRow={renderRow} data={data} />
-      {/* PAGINATION  */}
-      <Pagination page={p} count={count} />
+      {/* CONTENT */}
+      {count === 0 ? (
+        <EmptyState
+          title="No lecturer rooms found"
+          description="Start by adding a new lecturer room."
+          imageSrc="/no-data.gif"
+        />
+      ) : (
+        <>
+          {/* LIST  */}
+          <Table columns={columns} renderRow={renderRow} data={data} />
+          {/* PAGINATION  */}
+          <Pagination page={p} count={count} />
+        </>
+      )}
     </div>
   );
 };

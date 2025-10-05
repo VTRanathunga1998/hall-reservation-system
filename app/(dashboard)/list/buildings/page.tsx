@@ -8,6 +8,7 @@ import Image from "next/image";
 import { Prisma } from "@/app/generated/prisma";
 import { auth } from "@clerk/nextjs/server";
 import FormContainer from "@/components/FormContainer";
+import EmptyState from "@/components/EmptyState";
 
 type BuildingList = Hall;
 
@@ -101,10 +102,21 @@ const BuildingsListPage = async ({
           </div>
         </div>
       </div>
-      {/* LIST  */}
-      <Table columns={columns} renderRow={renderRow} data={data} />
-      {/* PAGINATION  */}
-      <Pagination page={p} count={count} />
+      {/* CONTENT */}
+      {count === 0 ? (
+        <EmptyState
+          title="No buildings found"
+          description="Start by adding a new building."
+          imageSrc="/no-data.gif"
+        />
+      ) : (
+        <>
+          {/* LIST */}
+          <Table columns={columns} renderRow={renderRow} data={data} />
+          {/* PAGINATION */}
+          <Pagination page={p} count={count} />
+        </>
+      )}
     </div>
   );
 };
