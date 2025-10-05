@@ -34,6 +34,7 @@ const FormContainer = async ({ table, type, data, id }: FormContainerProps) => {
           select: {
             id: true,
             code: true,
+            departmentId: true,
           },
         });
         const departments = await prisma.department.findMany({

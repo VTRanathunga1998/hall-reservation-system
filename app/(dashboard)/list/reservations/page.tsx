@@ -15,7 +15,6 @@ import { prisma } from "@/lib/prisma";
 import { ITEM_PER_PAGE } from "@/lib/settings";
 import { auth } from "@clerk/nextjs/server";
 import Image from "next/image";
-import Link from "next/link";
 
 type ReservationList = Reservation & {
   lectureRoom: LectureRoom & { hall: Hall };
@@ -194,7 +193,7 @@ const ReservationsListPage = async ({
             <button className="w-8 h-8 flex items-center justify-center rounded-full bg-[#FAE27C] cursor-pointer">
               <Image src="/sort.png" alt="Sort" width={14} height={14} />
             </button>
-            {role === "admin" && (
+            {(role === "admin" || role === "lecturer") && (
               <FormContainer table="reservation" type="create" />
             )}
           </div>

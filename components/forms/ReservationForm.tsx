@@ -1,8 +1,9 @@
 "use client";
 
+import { useAuth } from "@clerk/nextjs";
+
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
-import InputField from "../InputField";
 import {
   reservationSchema,
   ReservationSchema,
@@ -30,6 +31,11 @@ const ReservationForm = ({
   setOpen: Dispatch<SetStateAction<boolean>>;
   relatedData?: any;
 }) => {
+  const { userId, sessionClaims } = useAuth();
+
+  const role = (sessionClaims?.metadata as { role?: string })?.role;
+  const currentUserId = userId;
+
   const {
     register,
     handleSubmit,
@@ -48,7 +54,6 @@ const ReservationForm = ({
   );
 
   const onSubmit = handleSubmit((data) => {
-    console.log(data);
     startTransition(() => {
       action(data);
     });
@@ -151,7 +156,7 @@ const ReservationForm = ({
           )}
         </div>
 
-        <div className="flex flex-col gap-2 w-full md:w-1/4">
+        {/* <div className="flex flex-col gap-2 w-full md:w-1/4">
           <label className="text-xs text-gray-500">Lecturer</label>
           <select
             className="ring-[1.5px] ring-gray-300 p-2 rounded-md text-sm w-full"
@@ -169,7 +174,43 @@ const ReservationForm = ({
               {errors.lecturerId.message.toString()}
             </p>
           )}
-        </div>
+        </div> */}
+
+        {role === "lecturer" ? (
+          <>
+            {/* Hidden input ensures value is submitted */}
+            <input
+              type="hidden"
+              value={
+                lectures.find(
+                  (lec: { id: string; name: string }) =>
+                    lec.id === currentUserId
+                )?.id || ""
+              }
+              {...register("lecturerId")}
+            />
+          </>
+        ) : (
+          <div className="flex flex-col gap-2 w-full md:w-1/4">
+            <label className="text-xs text-gray-500">Lecturer</label>
+            <select
+              className="ring-[1.5px] ring-gray-300 p-2 rounded-md text-sm w-full"
+              {...register("lecturerId")}
+              defaultValue={data?.lecturerId}
+            >
+              {lectures.map((lecturer: { id: string; name: string }) => (
+                <option value={lecturer.id} key={lecturer.id}>
+                  {lecturer.name}
+                </option>
+              ))}
+            </select>
+            {errors.lecturerId?.message && (
+              <p className="text-xs text-red-400">
+                {errors.lecturerId.message.toString()}
+              </p>
+            )}
+          </div>
+        )}
 
         <div className="flex flex-wrap gap-4 w-full">
           {/* Start Time */}
