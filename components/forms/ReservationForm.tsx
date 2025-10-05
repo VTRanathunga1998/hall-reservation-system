@@ -14,6 +14,7 @@ import {
   startTransition,
   useActionState,
   useEffect,
+  useState,
 } from "react";
 import { toast } from "react-toastify";
 import { useRouter } from "next/navigation";
@@ -74,7 +75,18 @@ const ReservationForm = ({
     return localISOTime;
   }
 
-  const { subjects, lecRooms, lectures } = relatedData;
+  const { subjects, lecRooms, lectures, departments } = relatedData;
+
+  // Department State
+  const [depId, setDepId] = useState<number>(
+    data?.departmentId || departments?.[0]?.id || 0
+  );
+
+  // Filtered subjects
+  const filteredSubjects = subjects.filter(
+    (s: { id: number; code: string; departmentId: number }) =>
+      s.departmentId === depId
+  );
 
   return (
     <form className="flex flex-col gap-8" onSubmit={onSubmit}>
@@ -105,13 +117,28 @@ const ReservationForm = ({
           )}
         </div>
         <div className="flex flex-col gap-2 w-full md:w-1/4">
+          <label className="text-xs text-gray-500">Department</label>
+          <select
+            className="ring-[1.5px] ring-gray-300 p-2 rounded-md text-sm w-full"
+            value={depId}
+            onChange={(e) => setDepId(Number(e.target.value))}
+          >
+            {departments.map((d: { id: number; name: string }) => (
+              <option value={d.id} key={d.id}>
+                {d.name}
+              </option>
+            ))}
+          </select>
+        </div>
+
+        <div className="flex flex-col gap-2 w-full md:w-1/4">
           <label className="text-xs text-gray-500">Subject</label>
           <select
             className="ring-[1.5px] ring-gray-300 p-2 rounded-md text-sm w-full"
             {...register("subjectId", { valueAsNumber: true })}
-            defaultValue={data?.code}
+            defaultValue={data?.subjectId}
           >
-            {subjects.map((s: { id: number; code: string }) => (
+            {filteredSubjects.map((s: { id: number; code: string }) => (
               <option value={s.id} key={s.id}>
                 {s.code}
               </option>
@@ -123,6 +150,7 @@ const ReservationForm = ({
             </p>
           )}
         </div>
+
         <div className="flex flex-col gap-2 w-full md:w-1/4">
           <label className="text-xs text-gray-500">Lecturer</label>
           <select

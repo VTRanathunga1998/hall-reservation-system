@@ -19,6 +19,7 @@ model Department {
    name String @unique
    lecturers Lecturer[]
    students Student[]
+   subjects Subject[]
 }
 
 model Hall{
@@ -83,6 +84,9 @@ model Subject{
   lecturers Lecturer[]
   students Student[]
   reservations Reservation[]
+
+  departmentId Int
+  department Department @relation(fields: [departmentId], references: [id])
 }
 
 model Reservation {

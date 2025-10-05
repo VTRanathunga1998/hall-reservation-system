@@ -65,11 +65,24 @@ const FormContainer = async ({ table, type, data, id }: FormContainerProps) => {
           departments: studentDepartments,
         };
         break;
+      case "subject":
+        const subjectDepartments = await prisma.department.findMany({
+          select: {
+            id: true,
+            name: true,
+          },
+        });
+
+        relatedDate = {
+          departments: subjectDepartments,
+        };
+        break;
       case "reservation":
         const reservationSubjects = await prisma.subject.findMany({
           select: {
             id: true,
             code: true,
+            departmentId: true,
           },
         });
         const lecRooms = await prisma.lectureRoom.findMany({
@@ -84,10 +97,17 @@ const FormContainer = async ({ table, type, data, id }: FormContainerProps) => {
             name: true,
           },
         });
+        const reservationDepartments = await prisma.department.findMany({
+          select: {
+            id: true,
+            name: true,
+          },
+        });
         relatedDate = {
           subjects: reservationSubjects,
           lecRooms: lecRooms,
           lectures: lectures,
+          departments: reservationDepartments,
         };
         break;
     }

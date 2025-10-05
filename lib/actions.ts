@@ -557,6 +557,7 @@ export const createSubject = async (
       data: {
         name: data.name,
         code: data.code,
+        departmentId: data.departmentId,
       },
     });
 
@@ -587,6 +588,7 @@ export const updateSubject = async (
       data: {
         name: data.name,
         code: data.code,
+        departmentId: data.departmentId,
       },
     });
 

@@ -91,6 +91,7 @@ export const subjectSchema = z.object({
   id: z.number().optional(),
   code: z.string().min(3, { message: "Subject code is required!" }),
   name: z.string().min(3, { message: "Subject name is required!" }),
+  departmentId: z.number().min(1, { message: "Department is required!" }),
 });
 
 export type SubjectSchema = z.infer<typeof subjectSchema>;
