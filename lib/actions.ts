@@ -586,6 +586,7 @@ export const updateSubject = async (
       },
       data: {
         name: data.name,
+        code: data.code,
       },
     });
 
