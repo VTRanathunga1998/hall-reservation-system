@@ -89,7 +89,12 @@ const ReservationForm = ({
 
   // Department State
   const [depId, setDepId] = useState<number>(
-    data?.subject.departmentId || departments?.[0]?.id || 0
+    role === "lecturer"
+      ? lectures.find(
+          (lec: { id: string; name: string; departmentId: number }) =>
+            lec.id === currentUserId
+        )?.departmentId
+      : data?.subject.departmentId || departments?.[0]?.id || 0
   );
 
   // Filtered subjects
@@ -153,20 +158,23 @@ const ReservationForm = ({
             </p>
           )}
         </div>
-        <div className="flex flex-col gap-2 w-full md:w-1/4">
-          <label className="text-xs text-gray-500">Department</label>
-          <select
-            className="ring-[1.5px] ring-gray-300 p-2 rounded-md text-sm w-full"
-            value={depId}
-            onChange={(e) => setDepId(Number(e.target.value))}
-          >
-            {departments.map((d: { id: number; name: string }) => (
-              <option value={d.id} key={d.id}>
-                {d.name}
-              </option>
-            ))}
-          </select>
-        </div>
+
+        {role !== "lecturer" && (
+          <div className="flex flex-col gap-2 w-full md:w-1/4">
+            <label className="text-xs text-gray-500">Department</label>
+            <select
+              className="ring-[1.5px] ring-gray-300 p-2 rounded-md text-sm w-full"
+              value={depId}
+              onChange={(e) => setDepId(Number(e.target.value))}
+            >
+              {departments.map((d: { id: number; name: string }) => (
+                <option value={d.id} key={d.id}>
+                  {d.name}
+                </option>
+              ))}
+            </select>
+          </div>
+        )}
 
         <div className="flex flex-col gap-2 w-full md:w-1/4">
           <label className="text-xs text-gray-500">Subject</label>

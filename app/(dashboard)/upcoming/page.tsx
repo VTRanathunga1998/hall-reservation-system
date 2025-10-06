@@ -40,7 +40,7 @@ export default async function Upcoming() {
     <div className="flex-1 p-2 md:p-4 text-2xl w-full h-full">
       <div className="text-center mb-1 p-2 bg-white rounded-md">
         <h1 className="text-xl md:text-3xl font-extrabold text-gray-900 mb-2">
-          Upcoming Events
+          Upcoming Lectures
         </h1>
       </div>
 

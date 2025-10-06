@@ -34,9 +34,9 @@ const EventCard: React.FC<EventCardProps> = ({
   })}`;
 
   return (
-    <div className="flex flex-col md:flex-row items-stretch bg-white shadow-sm hover:shadow-md transition-shadow overflow-hidden border border-gray-100 w-full max-w-full md:max-w-3xl ">
+    <div className="flex flex-col md:flex-row items-stretch bg-[#C4C4C4] shadow-sm hover:shadow-md transition-shadow overflow-hidden border border-gray-100 w-full max-w-full md:max-w-3xl ">
       {/* Left Date Box */}
-      <div className="flex flex-row-reverse md:flex-col justify-center items-center md:w-1/4 bg-[#636363] text-white p-4 gap-2 md:gap-1">
+      <div className="flex flex-row-reverse md:flex-col justify-center items-center md:w-1/6 bg-[#FF8A8A] p-4 gap-2 md:gap-1">
         {/* Day */}
         <span className="text-xl md:text-3xl font-bold">{day}</span>
         {/* Month */}
