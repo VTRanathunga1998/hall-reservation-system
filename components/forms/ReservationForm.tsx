@@ -80,9 +80,12 @@ const ReservationForm = ({
     return localISOTime;
   }
 
-  console.log(data)
+  const { subjects, lecRooms, lecHalls, lectures, departments } = relatedData;
 
-  const { subjects, lecRooms, lectures, departments } = relatedData;
+  // Hall State
+  const [hallId, setHallId] = useState<number>(
+    data?.lectureRoom.hall.id || lecHalls?.[0]?.id || 0
+  );
 
   // Department State
   const [depId, setDepId] = useState<number>(
@@ -101,6 +104,11 @@ const ReservationForm = ({
       s.departmentId === depId
   );
 
+  // Filtered lecture rooms
+  const filteredLectureRooms = lecRooms.filter(
+    (s: { id: number; name: string; hallId: number }) => s.hallId === hallId
+  );
+
   return (
     <form className="flex flex-col gap-8" onSubmit={onSubmit}>
       <h1 className="text-xl font-semibold">
@@ -111,17 +119,33 @@ const ReservationForm = ({
 
       <div className="flex justify-between flex-wrap gap-4">
         <div className="flex flex-col gap-2 w-full md:w-1/4">
+          <label className="text-xs text-gray-500">Building</label>
+          <select
+            className="ring-[1.5px] ring-gray-300 p-2 rounded-md text-sm w-full"
+            value={hallId}
+            onChange={(e) => setHallId(Number(e.target.value))}
+          >
+            {lecHalls.map((d: { id: number; name: string }) => (
+              <option value={d.id} key={d.id}>
+                {d.name}
+              </option>
+            ))}
+          </select>
+        </div>
+        <div className="flex flex-col gap-2 w-full md:w-1/4">
           <label className="text-xs text-gray-500">Lecture Room</label>
           <select
             className="ring-[1.5px] ring-gray-300 p-2 rounded-md text-sm w-full"
             {...register("lecRoomId", { valueAsNumber: true })}
             defaultValue={data?.hallId}
           >
-            {lecRooms.map((lecRoom: { id: number; name: string }) => (
-              <option value={lecRoom.id} key={lecRoom.id}>
-                {lecRoom.name}
-              </option>
-            ))}
+            {filteredLectureRooms.map(
+              (lecRoom: { id: number; name: string }) => (
+                <option value={lecRoom.id} key={lecRoom.id}>
+                  {lecRoom.name}
+                </option>
+              )
+            )}
           </select>
           {errors.lecRoomId?.message && (
             <p className="text-xs text-red-400">

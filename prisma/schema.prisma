@@ -45,8 +45,8 @@ model Student{
   username String @unique
   name String
   surname String
-  email String?
-  phone String?
+  email String? @unique
+  phone String? @unique
   address String
   bloodType String
   sex UserSex
