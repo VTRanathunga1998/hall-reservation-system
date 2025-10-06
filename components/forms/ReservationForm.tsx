@@ -156,26 +156,6 @@ const ReservationForm = ({
           )}
         </div>
 
-        {/* <div className="flex flex-col gap-2 w-full md:w-1/4">
-          <label className="text-xs text-gray-500">Lecturer</label>
-          <select
-            className="ring-[1.5px] ring-gray-300 p-2 rounded-md text-sm w-full"
-            {...register("lecturerId")}
-            defaultValue={data?.lecturer}
-          >
-            {lectures.map((lecturer: { id: number; name: string }) => (
-              <option value={lecturer.id} key={lecturer.id}>
-                {lecturer.name}
-              </option>
-            ))}
-          </select>
-          {errors.lecturerId?.message && (
-            <p className="text-xs text-red-400">
-              {errors.lecturerId.message.toString()}
-            </p>
-          )}
-        </div> */}
-
         {role === "lecturer" ? (
           <>
             {/* Hidden input ensures value is submitted */}
