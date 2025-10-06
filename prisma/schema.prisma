@@ -103,10 +103,10 @@ model Reservation {
 
   subjectId Int
   subject Subject @relation(fields: [subjectId], references: [id])
-
 }
 
 enum UserSex {
   MALE
   FEMALE
 }
+

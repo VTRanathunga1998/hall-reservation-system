@@ -156,3 +156,15 @@ ALTER TABLE "public"."_LecturerToSubject" ADD CONSTRAINT "_LecturerToSubject_A_f
 
 -- AddForeignKey
 ALTER TABLE "public"."_LecturerToSubject" ADD CONSTRAINT "_LecturerToSubject_B_fkey" FOREIGN KEY ("B") REFERENCES "public"."Subject"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- Enable gist index support
+CREATE EXTENSION IF NOT EXISTS btree_gist;
+
+-- Prevent overlapping reservations in the same lecture room
+ALTER TABLE "Reservation"
+
+ADD CONSTRAINT reservation_no_overlap
+EXCLUDE USING gist (
+  "lecRoomId" WITH =,
+  tstzrange("startTime", "endTime") WITH &&
+);

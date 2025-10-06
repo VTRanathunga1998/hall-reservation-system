@@ -639,6 +639,27 @@ export const createReservation = async (
   data: ReservationSchema
 ) => {
   try {
+    // Check for overlapping reservations in the same room
+    const overlap = await prisma.reservation.findFirst({
+      where: {
+        lecRoomId: data.lecRoomId,
+        OR: [
+          {
+            startTime: { lt: data.endTime },
+            endTime: { gt: data.startTime },
+          },
+        ],
+      },
+    });
+
+    if (overlap) {
+      return {
+        success: false,
+        error: true,
+        message: "This lecture room is already reserved for the selected time.",
+      };
+    }
+
     await prisma.reservation.create({
       data: {
         startTime: data.startTime,
@@ -659,7 +680,7 @@ export const createReservation = async (
     return {
       success: false,
       error: true,
-      message: "A reservation added failed.",
+      message: "Failed to create reservation.",
     };
   }
 };
