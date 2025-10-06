@@ -80,16 +80,24 @@ const ReservationForm = ({
     return localISOTime;
   }
 
+  console.log(data)
+
   const { subjects, lecRooms, lectures, departments } = relatedData;
 
   // Department State
   const [depId, setDepId] = useState<number>(
-    data?.departmentId || departments?.[0]?.id || 0
+    data?.subject.departmentId || departments?.[0]?.id || 0
   );
 
   // Filtered subjects
   const filteredSubjects = subjects.filter(
     (s: { id: number; code: string; departmentId: number }) =>
+      s.departmentId === depId
+  );
+
+  // Filtered lecturers
+  const filteredLecturers = lectures.filter(
+    (s: { id: string; code: string; departmentId: number }) =>
       s.departmentId === depId
   );
 
@@ -178,9 +186,9 @@ const ReservationForm = ({
               {...register("lecturerId")}
               defaultValue={data?.lecturerId}
             >
-              {lectures.map((lecturer: { id: string; name: string }) => (
-                <option value={lecturer.id} key={lecturer.id}>
-                  {lecturer.name}
+              {filteredLecturers.map((s: { id: string; name: string }) => (
+                <option value={s.id} key={s.id}>
+                  {s.name}
                 </option>
               ))}
             </select>

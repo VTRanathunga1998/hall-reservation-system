@@ -33,7 +33,7 @@ const ReservationsListPage = async ({
 
   const columns = [
     {
-      header: "Reservation ID",
+      header: "ID",
       accessor: "reservationId",
       className: "hidden md:table-cell",
     },
@@ -44,11 +44,16 @@ const ReservationsListPage = async ({
       accessor: "subject",
       className: "hidden md:table-cell",
     },
-    {
-      header: "Reserved By",
-      accessor: "reservedBy",
-      className: "hidden md:table-cell",
-    },
+    ...(role === "admin"
+      ? [
+          {
+            header: "Reserved By",
+            accessor: "reservedBy",
+            className: "hidden md:table-cell",
+          },
+        ]
+      : []),
+
     {
       header: "Start Time",
       accessor: "startTime",
@@ -78,9 +83,12 @@ const ReservationsListPage = async ({
       </td>
       <td className="py-4">{item.lectureRoom.name}</td>
       <td className="hidden md:table-cell py-4">{item.subject.code}</td>
-      <td className="hidden md:table-cell py-4">
-        {item.lecturer.name} {item.lecturer.surname}
-      </td>
+      {role === "admin" && (
+        <td className="hidden md:table-cell py-4">
+          {item.lecturer.name} {item.lecturer.surname}
+        </td>
+      )}
+
       <td className="py-4">{new Date(item.startTime).toLocaleString()}</td>
       <td className="py-4">{new Date(item.endTime).toLocaleString()}</td>
       <td className="py-4">
@@ -169,7 +177,7 @@ const ReservationsListPage = async ({
           },
         },
         lecturer: true,
-        subject: true,
+        subject: { select: { name: true, code: true, departmentId: true } },
       },
     }),
     prisma.reservation.count({

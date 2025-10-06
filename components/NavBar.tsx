@@ -1,5 +1,6 @@
 import { currentUser } from "@clerk/nextjs/server";
 import { UserButton } from "@clerk/nextjs";
+import UserMenu from "./UserMenu";
 
 const NavBar = async () => {
   const user = await currentUser();
@@ -16,7 +17,8 @@ const NavBar = async () => {
           </span>
           <span className="text-[10px] text-gray-500 text-right">{role}</span>
         </div>
-        <UserButton />
+        {/* <UserButton />  */}
+        <UserMenu />
       </div>
     </div>
   );

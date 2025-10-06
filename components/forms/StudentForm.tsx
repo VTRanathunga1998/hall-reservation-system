@@ -9,6 +9,7 @@ import {
   startTransition,
   useActionState,
   useEffect,
+  useState,
 } from "react";
 import { useRouter } from "next/navigation";
 import { toast } from "react-toastify";
@@ -61,6 +62,18 @@ const StudentForm = ({
   }, [state, router, setOpen]);
 
   const { subjects, departments } = relatedData;
+
+  // Department State
+  const [depId, setDepId] = useState<number>(
+    data?.departmentId || departments?.[0]?.id || 0
+  );
+
+  // Filtered subjects
+  const filteredSubjects = subjects.filter(
+    (s: { id: number; code: string; departmentId: number }) =>
+      s.departmentId === depId
+  );
+
   return (
     <form className="flex flex-col gap-8" onSubmit={onSubmit}>
       <h1 className="text-xl font-semibold">
@@ -164,6 +177,27 @@ const StudentForm = ({
           )}
         </div>
         <div className="flex flex-col gap-2 w-full md:w-1/4">
+          <label className="text-xs text-gray-500">Department</label>
+          <select
+            className="ring-[1.5px] ring-gray-300 p-2 rounded-md text-sm w-full"
+            {...register("departmentId", { valueAsNumber: true })}
+            value={depId}
+            onChange={(e) => setDepId(Number(e.target.value))}
+          >
+            {departments.map((d: { id: number; name: string }) => (
+              <option value={d.id} key={d.id}>
+                {d.name}
+              </option>
+            ))}
+          </select>
+
+          {errors.departmentId?.message && (
+            <p className="text-xs text-red-400">
+              {errors.departmentId.message.toString()}
+            </p>
+          )}
+        </div>
+        <div className="flex flex-col gap-2 w-full md:w-1/4">
           <label className="text-xs text-gray-500">Subjects</label>
           <select
             multiple
@@ -180,9 +214,9 @@ const StudentForm = ({
               s.id.toString()
             )}
           >
-            {subjects.map((subject: { id: number; code: string }) => (
-              <option key={subject.id} value={subject.id}>
-                {subject.code}
+            {filteredSubjects.map((s: { id: number; code: string }) => (
+              <option value={s.id} key={s.id}>
+                {s.code}
               </option>
             ))}
           </select>
@@ -190,26 +224,6 @@ const StudentForm = ({
           {errors.subjects?.message && (
             <p className="text-xs text-red-400">
               {errors.subjects.message.toString()}
-            </p>
-          )}
-        </div>
-        <div className="flex flex-col gap-2 w-full md:w-1/4">
-          <label className="text-xs text-gray-500">Department</label>
-          <select
-            className="ring-[1.5px] ring-gray-300 p-2 rounded-md text-sm w-full"
-            {...register("departmentId", { valueAsNumber: true })}
-            defaultValue={data?.departmentId}
-          >
-            {departments.map((d: { id: number; name: string }) => (
-              <option value={d.id} key={d.id}>
-                {d.name}
-              </option>
-            ))}
-          </select>
-
-          {errors.departmentId?.message && (
-            <p className="text-xs text-red-400">
-              {errors.departmentId.message.toString()}
             </p>
           )}
         </div>

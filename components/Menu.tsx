@@ -13,6 +13,12 @@ const menuItems = [
         visible: ["admin", "lecturer", "student"],
       },
       {
+        icon: "/upcoming.png",
+        label: "Upcoming",
+        href: "/upcoming",
+        visible: ["student"],
+      },
+      {
         icon: "/building.png",
         label: "Buildings",
         href: "/list/buildings",

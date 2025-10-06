@@ -61,13 +61,13 @@ const LeuturersListPage = async ({
       key={item.id}
       className="border-b border-gray-200 even:bg-slate-50 text-sm hover:bg-[#F1F0FF]"
     >
-      <td className="py-4 px-2">{item.username}</td>
-      <td className="hidden md:table-cell py-4 px-2">{item.email}</td>
-      <td className="hidden md:table-cell py-4 px-2">{item.phone}</td>
-      <td className="hidden lg:table-cell py-4 px-2">
+      <td className="py-4">{item.username}</td>
+      <td className="hidden md:table-cell py-4">{item.email}</td>
+      <td className="hidden md:table-cell py-4">{item.phone}</td>
+      <td className="hidden lg:table-cell py-4">
         {item.subjects.map((subject) => subject.code).join(", ")}
       </td>
-      <td className="hidden lg:table-cell py-4 px-2">{item.address}</td>
+      <td className="hidden lg:table-cell py-4">{item.address}</td>
       <td>
         <div className="flex flex-col md:flex-row items-center gap-2">
           {role === "admin" && (

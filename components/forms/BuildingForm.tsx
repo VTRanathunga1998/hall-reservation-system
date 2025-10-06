@@ -66,13 +66,18 @@ const BuildingForm = ({
       </h1>
 
       <div className="flex justify-between flex-wrap gap-4">
-        <InputField
-          label="Building Name"
-          name="name"
-          defaultValue={data?.name}
-          register={register}
-          error={errors?.name}
-        />
+        <div className={"flex flex-col gap-2 w-full"}>
+          <label className="text-xs text-gray-500">Building Name</label>
+          <input
+            type={type}
+            {...register("name")}
+            className="ring-[1.5px] ring-gray-300 p-2 rounded-md text-sm w-full"
+            defaultValue={data?.name}
+          />
+          {errors?.name && (
+            <p className="text-xs text-red-400">{errors?.name.toString()}</p>
+          )}
+        </div>
         {data && (
           <input
             type="hidden"

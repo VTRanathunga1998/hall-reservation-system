@@ -16,7 +16,11 @@ const LoginPage = () => {
     const role = user?.publicMetadata.role;
 
     if (role) {
-      router.push(`/home`);
+      if (role === "student") {
+        router.push(`/upcoming`);
+      } else {
+        router.push(`/home`);
+      }
     }
   }, [user, router]);
 
