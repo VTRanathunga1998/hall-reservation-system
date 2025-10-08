@@ -39,6 +39,8 @@ const ReservationForm = ({
   const role = (sessionClaims?.metadata as { role?: string })?.role;
   const currentUserId = userId;
 
+  const { subjects, lecRooms, lecHalls, lectures, departments } = relatedData;
+
   const defaultStartTime = data?.startTime
     ? new Date(data.startTime)
     : undefined;
@@ -85,8 +87,6 @@ const ReservationForm = ({
       toast.error(state.message);
     }
   }, [state, router, setOpen]);
-
-  const { subjects, lecRooms, lecHalls, lectures, departments } = relatedData;
 
   // Hall State
   const [hallId, setHallId] = useState<number>(
@@ -135,18 +135,6 @@ const ReservationForm = ({
       setValue("subjectId", filteredSubjects[0].id);
     }
   }, [lecId, filteredSubjects, setValue]);
-
-  // Convert UTC ISO string from backend to local Date
-  function parseUTCToLocal(dateString?: string | null): Date | undefined {
-    if (!dateString) return undefined;
-    return new Date(dateString); // Date object automatically converts UTC to local
-  }
-
-  // Convert local Date to ISO string for backend
-  function localDateToUTCString(date?: Date | null): string | undefined {
-    if (!date) return undefined;
-    return date.toISOString(); // saves UTC string
-  }
 
   return (
     <form className="flex flex-col gap-8" onSubmit={onSubmit}>
