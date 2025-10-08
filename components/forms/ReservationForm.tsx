@@ -39,14 +39,24 @@ const ReservationForm = ({
   const role = (sessionClaims?.metadata as { role?: string })?.role;
   const currentUserId = userId;
 
+  const defaultStartTime = data?.startTime
+    ? new Date(data.startTime)
+    : undefined;
+  const defaultEndTime = data?.endTime ? new Date(data.endTime) : undefined;
+
   const {
     register,
     handleSubmit,
     formState: { errors },
     control,
     watch,
+    setValue,
   } = useForm<ReservationSchema>({
     resolver: zodResolver(reservationSchema),
+    defaultValues: {
+      startTime: defaultStartTime,
+      endTime: defaultEndTime,
+    },
   });
 
   const [state, action, pending] = useActionState(
@@ -76,17 +86,6 @@ const ReservationForm = ({
     }
   }, [state, router, setOpen]);
 
-  function toDatetimeLocalString(dateString?: string) {
-    if (!dateString) return "";
-    const date = new Date(dateString);
-    // Adjust to local time and strip seconds/millis
-    const tzOffset = date.getTimezoneOffset() * 60000;
-    const localISOTime = new Date(date.getTime() - tzOffset)
-      .toISOString()
-      .slice(0, 16);
-    return localISOTime;
-  }
-
   const { subjects, lecRooms, lecHalls, lectures, departments } = relatedData;
 
   // Hall State
@@ -104,10 +103,21 @@ const ReservationForm = ({
       : data?.subject.departmentId || departments?.[0]?.id || 0
   );
 
+  // Lecturer State
+  const [lecId, setLecId] = useState<string>(() => {
+    if (role === "lecturer") {
+      return currentUserId || "";
+    } else {
+      const firstLecturer = lectures.find(
+        (lec: any) => lec.departmentId === depId
+      );
+      return firstLecturer ? firstLecturer.id : "";
+    }
+  });
+
   // Filtered subjects
-  const filteredSubjects = subjects.filter(
-    (s: { id: number; code: string; departmentId: number }) =>
-      s.departmentId === depId
+  const filteredSubjects = subjects.filter((subject: any) =>
+    subject.lecturers.some((lec: any) => lec.id === lecId)
   );
 
   // Filtered lecturers
@@ -120,6 +130,23 @@ const ReservationForm = ({
   const filteredLectureRooms = lecRooms.filter(
     (s: { id: number; name: string; hallId: number }) => s.hallId === hallId
   );
+  useEffect(() => {
+    if (filteredSubjects.length > 0) {
+      setValue("subjectId", filteredSubjects[0].id);
+    }
+  }, [lecId, filteredSubjects, setValue]);
+
+  // Convert UTC ISO string from backend to local Date
+  function parseUTCToLocal(dateString?: string | null): Date | undefined {
+    if (!dateString) return undefined;
+    return new Date(dateString); // Date object automatically converts UTC to local
+  }
+
+  // Convert local Date to ISO string for backend
+  function localDateToUTCString(date?: Date | null): string | undefined {
+    if (!date) return undefined;
+    return date.toISOString(); // saves UTC string
+  }
 
   return (
     <form className="flex flex-col gap-8" onSubmit={onSubmit}>
@@ -172,7 +199,16 @@ const ReservationForm = ({
             <select
               className="ring-[1.5px] ring-gray-300 p-2 rounded-md text-sm w-full"
               value={depId}
-              onChange={(e) => setDepId(Number(e.target.value))}
+              onChange={(e) => {
+                const newDepId = Number(e.target.value);
+                setDepId(newDepId);
+
+                // Automatically select the first lecturer from the new department
+                const firstLecturer = lectures.find(
+                  (lec: any) => lec.departmentId === newDepId
+                );
+                setLecId(firstLecturer ? firstLecturer.id : "");
+              }}
             >
               {departments.map((d: { id: number; name: string }) => (
                 <option value={d.id} key={d.id}>
@@ -180,6 +216,34 @@ const ReservationForm = ({
                 </option>
               ))}
             </select>
+          </div>
+        )}
+
+        {role === "lecturer" ? (
+          <>
+            {/* Hidden input ensures value is submitted */}
+            <input type="hidden" value={lecId} {...register("lecturerId")} />
+          </>
+        ) : (
+          <div className="flex flex-col gap-2 w-full md:w-1/4">
+            <label className="text-xs text-gray-500">Lecturer</label>
+            <select
+              className="ring-[1.5px] ring-gray-300 p-2 rounded-md text-sm w-full"
+              {...register("lecturerId")}
+              value={lecId}
+              onChange={(e) => setLecId(e.target.value)}
+            >
+              {filteredLecturers.map((s: { id: string; name: string }) => (
+                <option value={s.id} key={s.id}>
+                  {s.name}
+                </option>
+              ))}
+            </select>
+            {errors.lecturerId?.message && (
+              <p className="text-xs text-red-400">
+                {errors.lecturerId.message.toString()}
+              </p>
+            )}
           </div>
         )}
 
@@ -203,42 +267,6 @@ const ReservationForm = ({
           )}
         </div>
 
-        {role === "lecturer" ? (
-          <>
-            {/* Hidden input ensures value is submitted */}
-            <input
-              type="hidden"
-              value={
-                lectures.find(
-                  (lec: { id: string; name: string }) =>
-                    lec.id === currentUserId
-                )?.id || ""
-              }
-              {...register("lecturerId")}
-            />
-          </>
-        ) : (
-          <div className="flex flex-col gap-2 w-full md:w-1/4">
-            <label className="text-xs text-gray-500">Lecturer</label>
-            <select
-              className="ring-[1.5px] ring-gray-300 p-2 rounded-md text-sm w-full"
-              {...register("lecturerId")}
-              defaultValue={data?.lecturerId}
-            >
-              {filteredLecturers.map((s: { id: string; name: string }) => (
-                <option value={s.id} key={s.id}>
-                  {s.name}
-                </option>
-              ))}
-            </select>
-            {errors.lecturerId?.message && (
-              <p className="text-xs text-red-400">
-                {errors.lecturerId.message.toString()}
-              </p>
-            )}
-          </div>
-        )}
-
         <div className="flex flex-wrap gap-4 w-full">
           {/* Start Time */}
           <div className="flex flex-col gap-2 w-full md:w-1/3">
@@ -249,7 +277,7 @@ const ReservationForm = ({
               name="startTime"
               render={({ field }) => (
                 <DatePicker
-                  selected={field.value ? new Date(field.value) : null}
+                  selected={field.value} // this must be a Date object
                   onChange={(date) => field.onChange(date)}
                   showTimeSelect
                   timeIntervals={15}
@@ -257,8 +285,8 @@ const ReservationForm = ({
                   placeholderText="Select start time"
                   className="ring-[1.5px] ring-gray-300 p-2 rounded-md text-sm w-full"
                   minDate={new Date()}
-                  minTime={setHours(setMinutes(new Date(), 0), 8)} // 👈 from 8 AM
-                  maxTime={setHours(setMinutes(new Date(), 0), 20)} // 👈 to 8 PM
+                  minTime={setHours(setMinutes(new Date(), 0), 8)}
+                  maxTime={setHours(setMinutes(new Date(), 0), 20)}
                 />
               )}
             />
@@ -279,20 +307,19 @@ const ReservationForm = ({
               name="endTime"
               render={({ field }) => (
                 <DatePicker
-                  selected={field.value ? new Date(field.value) : null}
+                  selected={field.value}
                   onChange={(date) => field.onChange(date)}
                   showTimeSelect
                   timeIntervals={15}
                   dateFormat="Pp"
                   placeholderText="Select end time"
                   className="ring-[1.5px] ring-gray-300 p-2 rounded-md text-sm w-full"
-                  minDate={watch("startTime") || new Date()}
+                  minDate={watch("startTime") ?? new Date()}
                   minTime={setHours(setMinutes(new Date(), 0), 8)}
                   maxTime={setHours(setMinutes(new Date(), 0), 20)}
                 />
               )}
             />
-
             {errors.endTime?.message && (
               <p className="text-xs text-red-400">
                 {errors.endTime.message.toString()}
