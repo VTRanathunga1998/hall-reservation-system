@@ -6,6 +6,10 @@ export default function BuildingCard({
 }: {
   building: { id: number; name: string };
 }) {
+  function capitalize(str: string) {
+    return str.charAt(0).toUpperCase() + str.slice(1);
+  }
+
   return (
     <Link
       href={`/home/${building.id}`}
@@ -23,7 +27,9 @@ export default function BuildingCard({
 
       {/* Text */}
       <div className="flex-1">
-        <h2 className="text-xl font-semibold mb-1">{building.name}</h2>
+        <h2 className="text-xl font-semibold mb-1">
+          {building.name}
+        </h2>
         <p className="text-sm text-gray-500">
           View lecture rooms & reservations
         </p>

@@ -19,7 +19,6 @@ const BuildingsListPage = async ({
 }) => {
   const { userId, sessionClaims } = await auth();
   const role = (sessionClaims?.metadata as { role?: string })?.role;
-  const currentUserId = userId;
 
   const columns = [
     {

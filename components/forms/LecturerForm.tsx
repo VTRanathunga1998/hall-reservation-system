@@ -45,17 +45,11 @@ const LecturerForm = ({
     }
   );
 
-  const onSubmit = handleSubmit(
-    (data) => {
-      // console.log("Submitted Data:", data);
-      startTransition(() => {
-        action(data);
-      });
-    }
-    // (errors) => {
-    //   console.log("Validation errors:", errors);
-    // }
-  );
+  const onSubmit = handleSubmit((data) => {
+    startTransition(() => {
+      action(data);
+    });
+  });
 
   const router = useRouter();
 

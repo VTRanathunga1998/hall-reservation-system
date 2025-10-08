@@ -12,6 +12,7 @@ import {
 } from "./formValidationsSchemas";
 import { clerkClient } from "@clerk/nextjs/server";
 import { error } from "console";
+import { Prisma } from "@/app/generated/prisma";
 
 type CurrentState = {
   success: boolean;
@@ -20,7 +21,6 @@ type CurrentState = {
 };
 
 //Building
-
 export const createBuilding = async (
   currentState: CurrentState,
   data: BuildingSchema
@@ -28,7 +28,12 @@ export const createBuilding = async (
   try {
     await prisma.hall.create({
       data: {
-        name: data.name,
+        name: data.name
+          .toLowerCase()
+          .split(" ")
+          .filter(Boolean)
+          .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+          .join(" "),
       },
     });
 
@@ -37,12 +42,24 @@ export const createBuilding = async (
       error: false,
       message: "Building has been created.",
     };
-  } catch (error) {
-    console.log(error);
+  } catch (dbError: any) {
+    // Prisma unique constraint errors
+    let friendlyMessage = "A database error occurred.";
+
+    if (dbError.code === "P2002") {
+      const field = dbError.meta?.target?.[0];
+      switch (field) {
+        case "name":
+          friendlyMessage = "That building name is already taken.";
+          break;
+        default:
+          friendlyMessage = "A record with the same value already exists.";
+      }
+    }
     return {
       success: false,
       error: true,
-      message: "A bulding added failed.",
+      message: friendlyMessage,
     };
   }
 };
@@ -51,14 +68,18 @@ export const updateBuilding = async (
   currentState: CurrentState,
   data: BuildingSchema
 ) => {
-  console.log("Hello");
   try {
     await prisma.hall.update({
       where: {
         id: Number(data.id),
       },
       data: {
-        name: data.name,
+        name: data.name
+          .toLowerCase()
+          .split(" ")
+          .filter(Boolean)
+          .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+          .join(" "),
       },
     });
 
@@ -128,7 +149,12 @@ export const createLecturer = async (
           id: user.id,
           username: data.username,
           email: data.email ?? "",
-          name: data.name,
+          name: data.name
+            .toLowerCase()
+            .split(" ")
+            .filter(Boolean)
+            .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+            .join(" "),
           surname: data.surname,
           phone: data.phone,
           address: data.address,
@@ -242,7 +268,12 @@ export const updateLecturer = async (
         data: {
           username: data.username,
           email: data.email ?? "",
-          name: data.name,
+          name: data.name
+            .toLowerCase()
+            .split(" ")
+            .filter(Boolean)
+            .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+            .join(" "),
           surname: data.surname,
           phone: data.phone,
           address: data.address,
@@ -409,7 +440,12 @@ export const createStudent = async (
         id: createdUser.id,
         username: data.username,
         email: data.email ?? "",
-        name: data.name,
+        name: data.name
+          .toLowerCase()
+          .split(" ")
+          .filter(Boolean)
+          .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+          .join(" "),
         surname: data.surname,
         phone: data.phone ?? "",
         address: data.address,
@@ -504,7 +540,12 @@ export const updateStudent = async (
         ...(data.password !== "" && { password: data.password }),
         username: data.username,
         email: data.email ?? "",
-        name: data.name,
+        name: data.name
+          .toLowerCase()
+          .split(" ")
+          .filter(Boolean)
+          .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+          .join(" "),
         surname: data.surname,
         phone: data.phone,
         address: data.address,
@@ -629,7 +670,6 @@ export const createLectureRoom = async (
       message: "Building has been created.",
     };
   } catch (error) {
-    console.log(error);
     return {
       success: false,
       error: true,
@@ -701,7 +741,12 @@ export const createDepartment = async (
   try {
     await prisma.department.create({
       data: {
-        name: data.name,
+        name: data.name
+          .toLowerCase()
+          .split(" ")
+          .filter(Boolean)
+          .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+          .join(" "),
       },
     });
 
@@ -711,7 +756,6 @@ export const createDepartment = async (
       message: "Department has been created.",
     };
   } catch (error) {
-    console.log(error);
     return {
       success: false,
       error: true,
@@ -730,7 +774,12 @@ export const updateDepartment = async (
         id: Number(data.id),
       },
       data: {
-        name: data.name,
+        name: data.name
+          .toLowerCase()
+          .split(" ")
+          .filter(Boolean)
+          .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+          .join(" "),
       },
     });
 
@@ -783,7 +832,12 @@ export const createSubject = async (
   try {
     await prisma.subject.create({
       data: {
-        name: data.name,
+        name: data.name
+          .toLowerCase()
+          .split(" ")
+          .filter(Boolean)
+          .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+          .join(" "),
         code: data.code,
         departmentId: data.departmentId,
       },
@@ -795,7 +849,6 @@ export const createSubject = async (
       message: "Subject has been created.",
     };
   } catch (error) {
-    console.log(error);
     return {
       success: false,
       error: true,
@@ -814,7 +867,12 @@ export const updateSubject = async (
         id: Number(data.id),
       },
       data: {
-        name: data.name,
+        name: data.name
+          .toLowerCase()
+          .split(" ")
+          .filter(Boolean)
+          .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+          .join(" "),
         code: data.code,
         departmentId: data.departmentId,
       },
@@ -904,7 +962,6 @@ export const createReservation = async (
       message: "Reservation has been created.",
     };
   } catch (error) {
-    console.log(error);
     return {
       success: false,
       error: true,
