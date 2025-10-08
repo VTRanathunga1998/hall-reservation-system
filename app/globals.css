@@ -1,4 +1,6 @@
 @import "tailwindcss";
+@import "react-datepicker/dist/react-datepicker.css";
+
 
 /* Hide scrollbar for Webkit-based browsers (Chrome, Safari) */
 .scrollbar-hidden::-webkit-scrollbar {

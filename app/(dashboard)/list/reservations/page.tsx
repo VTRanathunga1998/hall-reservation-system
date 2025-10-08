@@ -55,6 +55,10 @@ const ReservationsListPage = async ({
       : []),
 
     {
+      header: "Date",
+      accessor: "date",
+    },
+    {
       header: "Start Time",
       accessor: "startTime",
     },
@@ -89,8 +93,20 @@ const ReservationsListPage = async ({
         </td>
       )}
 
-      <td className="py-4">{new Date(item.startTime).toLocaleString()}</td>
-      <td className="py-4">{new Date(item.endTime).toLocaleString()}</td>
+      <td className="py-4">{new Date(item.startTime).toLocaleDateString()}</td>
+      <td className="py-4">
+        {new Date(item.startTime).toLocaleTimeString([], {
+          hour: "2-digit",
+          minute: "2-digit",
+        })}
+      </td>
+      <td className="py-4">
+        {new Date(item.endTime).toLocaleTimeString([], {
+          hour: "2-digit",
+          minute: "2-digit",
+        })}
+      </td>
+
       <td className="py-4">
         <div className="flex flex-col md:flex-row items-center gap-2">
           {(role === "admin" || role === "lecturer") && (
