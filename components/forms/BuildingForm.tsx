@@ -2,7 +2,6 @@
 
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
-import InputField from "../InputField";
 import { buildingSchema, BuildingSchema } from "@/lib/formValidationsSchemas";
 import { createBuilding, updateBuilding } from "@/lib/actions";
 import {
@@ -56,6 +55,8 @@ const BuildingForm = ({
       toast(state.message);
       setOpen(false);
       router.refresh();
+    } else if (state.error) {
+      toast.error(state.message);
     }
   }, [state, router, setOpen]);
 
@@ -75,7 +76,7 @@ const BuildingForm = ({
             defaultValue={data?.name}
           />
           {errors?.name && (
-            <p className="text-xs text-red-400">{errors?.name.toString()}</p>
+            <p className="text-xs text-red-400">{errors?.name.message}</p>
           )}
         </div>
         {data && (
@@ -88,7 +89,10 @@ const BuildingForm = ({
       </div>
       {state.error && <span className="text-red-400">{state.message}</span>}
 
-      <button className="bg-blue-400 text-white p-2 rounded-md cursor-pointer">
+      <button
+        disabled={pending}
+        className="bg-blue-400 text-white p-2 rounded-md cursor-pointer"
+      >
         {type === "create" ? "Create" : "Update"}
       </button>
     </form>

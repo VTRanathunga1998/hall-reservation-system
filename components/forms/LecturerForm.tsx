@@ -64,6 +64,8 @@ const LecturerForm = ({
       toast(state.message);
       setOpen(false);
       router.refresh();
+    } else if (state.error) {
+      toast.error(state.message);
     }
   }, [state, router, setOpen]);
 
@@ -237,7 +239,10 @@ const LecturerForm = ({
       {data && <input type="hidden" value={data.id} {...register("id")} />}
       {state.error && <span className="text-red-400">{state.message}</span>}
 
-      <button className="bg-blue-400 text-white p-2 rounded-md">
+      <button
+        disabled={pending}
+        className="bg-blue-400 text-white p-2 rounded-md"
+      >
         {type === "create" ? "Create" : "Update"}
       </button>
     </form>

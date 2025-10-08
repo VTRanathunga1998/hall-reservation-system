@@ -152,6 +152,8 @@ const FormModal = ({
         toast(state.message);
         setOpen(false);
         router.refresh();
+      } else if (state.error) {
+        toast.error(state.message);
       }
     }, [state, router, setOpen]);
 
@@ -161,8 +163,17 @@ const FormModal = ({
         <span className="text-center font-medium">
           All data will be lost. Are you sure you want to delete this {table}?
         </span>
-        <button className="bg-red-700 text-white py-2 px-4 rounded-md border-none w-max self-center cursor-pointer">
-          Delete
+
+        <button
+          type="submit"
+          disabled={pending}
+          className={`py-2 px-4 rounded-md border-none w-max self-center cursor-pointer text-white transition-all ${
+            pending
+              ? "bg-gray-400 cursor-not-allowed"
+              : "bg-red-700 hover:bg-red-800"
+          }`}
+        >
+          {pending ? "Deleting..." : "Delete"}
         </button>
       </form>
     ) : type === "create" || type === "update" ? (
