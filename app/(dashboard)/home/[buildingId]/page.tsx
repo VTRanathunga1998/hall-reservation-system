@@ -5,17 +5,22 @@ import { prisma } from "@/lib/prisma";
 export default async function BuildingDetail({
   params,
 }: {
-  params: { buildingId: string };
+  params: Promise<{ buildingId: string }>;
 }) {
-  const { buildingId } = params;
+  const { buildingId } = await params;
 
+  // Convert the route param to a number
+  const buildingIdNum = parseInt(buildingId);
+
+  // Fetch rooms for this building
   const buildingRooms = await prisma.lectureRoom.findMany({
-    where: { hallId: parseInt(buildingId) },
+    where: { hallId: buildingIdNum },
   });
 
   return (
     <div className="flex flex-col p-2 gap-2">
-      <div className="text-center mb-1 bg-white rounded-md p-2">
+      {/* Header */}
+      <div className="text-center mb-1 bg-white rounded-md p-2 shadow-sm">
         <h1 className="text-3xl font-extrabold text-gray-900 mb-2">
           Lecture Halls
         </h1>
@@ -24,10 +29,11 @@ export default async function BuildingDetail({
         </p>
       </div>
 
-      <div className="flex gap-4 flex-wrap bg-white rounded-sm p-2">
+      {/* Room List */}
+      <div className="flex gap-4 flex-wrap bg-white rounded-sm p-2 shadow-sm">
         {buildingRooms.length > 0 ? (
           buildingRooms.map((room) => (
-            <RoomCard key={room.id} room={room} buildingId={buildingId} />
+            <RoomCard key={room.id} room={room} buildingId={buildingIdNum} />
           ))
         ) : (
           <EmptyState

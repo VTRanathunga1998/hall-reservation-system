@@ -7,18 +7,28 @@ import TableSearch from "@/components/TableSearch";
 import { prisma } from "@/lib/prisma";
 import { ITEM_PER_PAGE } from "@/lib/settings";
 import { auth } from "@clerk/nextjs/server";
-import Image from "next/image";
 
 type DepartmentList = Department;
 
 const DepartmentsListPage = async ({
   searchParams,
 }: {
-  searchParams: { [key: string]: string | undefined };
+  searchParams: Promise<{ [key: string]: string | undefined }>; 
 }) => {
   const { userId, sessionClaims } = await auth();
   const role = (sessionClaims?.metadata as { role?: string })?.role;
-  const currentUserId = userId;
+
+  const resolvedSearchParams = await searchParams;
+
+  const page = resolvedSearchParams.page
+    ? parseInt(resolvedSearchParams.page)
+    : 1;
+
+  const queryParams = { ...resolvedSearchParams };
+  delete queryParams.page;
+
+  const p = page ? page : 1;
+
 
   const columns = [
     {
@@ -49,10 +59,6 @@ const DepartmentsListPage = async ({
       </td>
     </tr>
   );
-
-  const { page, ...queryParams } = await searchParams;
-
-  const p = page ? parseInt(page) : 1;
 
   // URL PARAMS CONDITIONS
   const query: Prisma.DepartmentWhereInput = {};

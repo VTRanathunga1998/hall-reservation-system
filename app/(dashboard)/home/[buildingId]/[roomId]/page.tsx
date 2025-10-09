@@ -6,8 +6,9 @@ import { auth } from "@clerk/nextjs/server";
 const LectureCalendar = async ({
   params,
 }: {
-  params: { buildingId: string; roomId: string };
+  params: Promise<{ buildingId: string; roomId: string }>;
 }) => {
+  // ✅ Await params (required in Next.js 15+)
   const { buildingId, roomId } = await params;
 
   const { userId, sessionClaims } = await auth();

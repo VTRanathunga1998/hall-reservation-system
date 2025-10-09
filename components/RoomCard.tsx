@@ -7,7 +7,7 @@ export default function RoomCard({
   buildingId,
 }: {
   room: LectureRoom;
-  buildingId: string;
+  buildingId: number;
 }) {
   return (
     <Link
