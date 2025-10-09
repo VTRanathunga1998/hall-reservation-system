@@ -1,4 +1,4 @@
-import { Department, Prisma } from "@/app/generated/prisma";
+import { Department, Prisma } from "@prisma/client";
 import EmptyState from "@/components/EmptyState";
 import FormContainer from "@/components/FormContainer";
 import Pagination from "@/components/Pagination";
@@ -13,7 +13,7 @@ type DepartmentList = Department;
 const DepartmentsListPage = async ({
   searchParams,
 }: {
-  searchParams: Promise<{ [key: string]: string | undefined }>; 
+  searchParams: Promise<{ [key: string]: string | undefined }>;
 }) => {
   const { userId, sessionClaims } = await auth();
   const role = (sessionClaims?.metadata as { role?: string })?.role;
@@ -28,7 +28,6 @@ const DepartmentsListPage = async ({
   delete queryParams.page;
 
   const p = page ? page : 1;
-
 
   const columns = [
     {

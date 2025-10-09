@@ -1,4 +1,4 @@
-import { Prisma } from "@/app/generated/prisma";
+import { Prisma } from "@prisma/client";
 import BigCalendar from "@/components/BigCalendar";
 import { prisma } from "@/lib/prisma";
 import { auth } from "@clerk/nextjs/server";

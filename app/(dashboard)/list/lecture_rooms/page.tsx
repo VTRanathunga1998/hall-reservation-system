@@ -1,4 +1,4 @@
-import { Hall, LectureRoom, Prisma } from "@/app/generated/prisma";
+import { Hall, LectureRoom, Prisma } from "@prisma/client";
 import EmptyState from "@/components/EmptyState";
 import FormContainer from "@/components/FormContainer";
 import Pagination from "@/components/Pagination";
@@ -68,7 +68,6 @@ const LectureRoomsListPage = async ({
       </td>
     </tr>
   );
-
 
   // URL PARAMS CONDITIONS
   const query: Prisma.LectureRoomWhereInput = {};

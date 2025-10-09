@@ -1,6 +1,6 @@
 import Link from "next/link";
 import Image from "next/image";
-import { LectureRoom } from "@/app/generated/prisma";
+import { LectureRoom } from "@prisma/client";
 
 export default function RoomCard({
   room,

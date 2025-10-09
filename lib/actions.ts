@@ -11,8 +11,7 @@ import {
   SubjectSchema,
 } from "./formValidationsSchemas";
 import { clerkClient } from "@clerk/nextjs/server";
-import { error } from "console";
-import { Prisma } from "@/app/generated/prisma";
+
 
 type CurrentState = {
   success: boolean;

@@ -1,4 +1,4 @@
-import { Prisma, Student, Subject } from "@/app/generated/prisma";
+import { Prisma, Student, Subject } from "@prisma/client";
 import EmptyState from "@/components/EmptyState";
 import FormContainer from "@/components/FormContainer";
 import Pagination from "@/components/Pagination";
@@ -91,7 +91,6 @@ const StudentsListPage = async ({
       </td>
     </tr>
   );
-
 
   // URL PARAMS CONDITIONS
   const query: Prisma.StudentWhereInput = {};
