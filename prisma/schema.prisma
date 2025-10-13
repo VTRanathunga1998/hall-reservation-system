@@ -59,9 +59,11 @@ model Student{
   department Department @relation(fields: [departmentId], references: [id])
 }
 
-model Lecturer{
+model Lecturer {
   id String @id
   username String @unique
+
+  title LecturerTitle @default(MS) 
   name String
   surname String
   email String? @unique
@@ -106,5 +108,13 @@ model Reservation {
 enum UserSex {
   MALE
   FEMALE
+}
+
+enum LecturerTitle {
+  PROF
+  DR
+  MR
+  MRS
+  MS
 }
 

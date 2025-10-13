@@ -1,4 +1,4 @@
-import { Lecturer, Prisma, Subject } from "@prisma/client";
+import { Department, Lecturer, Prisma, Subject } from "@prisma/client";
 import EmptyState from "@/components/EmptyState";
 import FormContainer from "@/components/FormContainer";
 import Pagination from "@/components/Pagination";
@@ -8,7 +8,7 @@ import { prisma } from "@/lib/prisma";
 import { ITEM_PER_PAGE } from "@/lib/settings";
 import { auth } from "@clerk/nextjs/server";
 
-type LecturerList = Lecturer & { subjects: Subject[] };
+type LecturerList = Lecturer & { subjects: Subject[]; department: Department };
 
 const LeuturersListPage = async ({
   searchParams,
@@ -34,6 +34,10 @@ const LeuturersListPage = async ({
     {
       header: "Name",
       accessor: "name",
+    },
+    {
+      header: "Department",
+      accessor: "department",
     },
     {
       header: "Email",
@@ -65,7 +69,10 @@ const LeuturersListPage = async ({
       key={item.id}
       className="border-b border-gray-200 even:bg-slate-50 text-sm hover:bg-[#F1F0FF]"
     >
-      <td className="py-4">{item.username}</td>
+      <td className="py-4">
+        {item.title + ". " + item.name + " " + item.surname}
+      </td>
+      <td className="">{item.department.name}</td>
       <td className="hidden md:table-cell py-4">{item.email}</td>
       <td className="hidden md:table-cell py-4">{item.phone}</td>
       <td className="hidden lg:table-cell py-4">
@@ -126,6 +133,11 @@ const LeuturersListPage = async ({
       where: query,
       include: {
         subjects: true,
+        department: {
+          select: {
+            name: true,
+          },
+        },
       },
       take: ITEM_PER_PAGE,
       skip: ITEM_PER_PAGE * (p - 1),

@@ -145,6 +145,7 @@ export const createLecturer = async (
         data: {
           id: user.id,
           username: data.username,
+          title: data.title,
           email: data.email ?? "",
           name: data.name
             .toLowerCase()
@@ -262,6 +263,7 @@ export const updateLecturer = async (
         data: {
           username: data.username,
           email: data.email ?? "",
+          title: data.title,
           name: data.name
             .toLowerCase()
             .split(" ")

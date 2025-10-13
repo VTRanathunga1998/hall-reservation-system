@@ -111,6 +111,25 @@ const LecturerForm = ({
       <span className="text-xs text-gray-400 font-medium">
         Personal Information
       </span>
+      <div className="flex flex-col gap-2 w-full md:w-1/4">
+        <label className="text-xs text-gray-500">Title</label>
+        <select
+          className="ring-[1.5px] ring-gray-300 p-2 rounded-md text-sm w-full"
+          {...register("title")}
+          defaultValue={data?.title}
+        >
+          <option value="PROF">PROF</option>
+          <option value="DR">DR</option>
+          <option value="MR">MR</option>
+          <option value="MRS">MRS</option>
+          <option value="MS">MS</option>
+        </select>
+        {errors.title?.message && (
+          <p className="text-xs text-red-400">
+            {errors.title.message.toString()}
+          </p>
+        )}
+      </div>
       <div className="flex justify-between flex-wrap gap-4">
         <InputField
           label="First Name"
