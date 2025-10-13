@@ -138,6 +138,13 @@ const FormModal = ({
 
   const [open, setOpen] = useState(false);
 
+  useEffect(() => {
+    document.body.style.overflow = open ? "hidden" : "auto";
+    return () => {
+      document.body.style.overflow = "auto";
+    };
+  }, [open]);
+
   const Form = () => {
     const [state, action, pending] = useActionState(deleteActionMap[table], {
       success: false,

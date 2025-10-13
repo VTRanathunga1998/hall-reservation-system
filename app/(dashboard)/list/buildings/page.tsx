@@ -48,7 +48,7 @@ const BuildingsListPage = async ({
     >
       <td className="py-2">{item.name}</td>
       <td className="py-2">
-        <div className="flex flex-col md:flex-row items-center gap-2 py-2">
+        <div className="flex items-center gap-2 py-2">
           {role === "admin" && (
             <>
               <FormContainer table="building" type="update" data={item} />
