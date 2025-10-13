@@ -12,7 +12,6 @@ import {
 } from "./formValidationsSchemas";
 import { clerkClient } from "@clerk/nextjs/server";
 
-
 type CurrentState = {
   success: boolean;
   error: boolean;
@@ -124,7 +123,6 @@ export const deleteBuilding = async (
 };
 
 //Lecturer
-
 export const createLecturer = async (
   currentState: CurrentState,
   data: LecturerSchema
@@ -156,9 +154,6 @@ export const createLecturer = async (
             .join(" "),
           surname: data.surname,
           phone: data.phone,
-          address: data.address,
-          bloodType: data.bloodType,
-          birthday: data.birthday,
           sex: data.sex,
           subjects: {
             connect: data.subjects?.map((subjectId) => ({
@@ -275,9 +270,6 @@ export const updateLecturer = async (
             .join(" "),
           surname: data.surname,
           phone: data.phone,
-          address: data.address,
-          bloodType: data.bloodType,
-          birthday: data.birthday,
           sex: data.sex,
           ...(data.subjects !== undefined
             ? {
@@ -447,9 +439,6 @@ export const createStudent = async (
           .join(" "),
         surname: data.surname,
         phone: data.phone ?? "",
-        address: data.address,
-        bloodType: data.bloodType,
-        birthday: data.birthday,
         sex: data.sex,
         subjects: {
           connect: data.subjects?.map((subjectId) => ({
@@ -547,9 +536,6 @@ export const updateStudent = async (
           .join(" "),
         surname: data.surname,
         phone: data.phone,
-        address: data.address,
-        bloodType: data.bloodType,
-        birthday: data.birthday,
         sex: data.sex,
         ...(data.subjects !== undefined
           ? {

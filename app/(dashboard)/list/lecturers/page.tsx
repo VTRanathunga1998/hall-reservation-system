@@ -7,7 +7,6 @@ import TableSearch from "@/components/TableSearch";
 import { prisma } from "@/lib/prisma";
 import { ITEM_PER_PAGE } from "@/lib/settings";
 import { auth } from "@clerk/nextjs/server";
-import Image from "next/image";
 
 type LecturerList = Lecturer & { subjects: Subject[] };
 
@@ -51,12 +50,6 @@ const LeuturersListPage = async ({
       accessor: "subjects",
       className: "hidden lg:table-cell",
     },
-
-    {
-      header: "Address",
-      accessor: "address",
-      className: "hidden lg:table-cell",
-    },
     ...(role === "admin"
       ? [
           {
@@ -76,9 +69,10 @@ const LeuturersListPage = async ({
       <td className="hidden md:table-cell py-4">{item.email}</td>
       <td className="hidden md:table-cell py-4">{item.phone}</td>
       <td className="hidden lg:table-cell py-4">
-        {item.subjects.map((subject) => subject.code).join(", ")}
+        {item.subjects && item.subjects.length > 0
+          ? item.subjects.map((subject) => subject.code).join(", ")
+          : "-"}
       </td>
-      <td className="hidden lg:table-cell py-4">{item.address}</td>
       <td>
         <div className="flex flex-col md:flex-row items-center gap-2">
           {role === "admin" && (

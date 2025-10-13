@@ -133,34 +133,6 @@ const LecturerForm = ({
           register={register}
           error={errors.phone}
         />
-        <InputField
-          label="Address"
-          name="address"
-          defaultValue={data?.address}
-          register={register}
-          error={errors.address}
-        />
-        <InputField
-          label="Blood Type"
-          name="bloodType"
-          defaultValue={data?.bloodType}
-          register={register}
-          error={errors.bloodType}
-        />
-        <InputField
-          label="Birthday"
-          name="birthday"
-          type="date"
-          register={register}
-          registerOptions={{
-            setValueAs: (val: any) => (val ? new Date(val) : undefined),
-          }}
-          defaultValue={
-            data?.birthday
-              ? new Date(data.birthday).toISOString().split("T")[0]
-              : ""
-          }
-        />
 
         <div className="flex flex-col gap-2 w-full md:w-1/4">
           <label className="text-xs text-gray-500">Sex</label>
@@ -235,7 +207,7 @@ const LecturerForm = ({
 
       <button
         disabled={pending}
-        className="bg-blue-400 text-white p-2 rounded-md"
+        className="bg-blue-400 text-white p-2 rounded-md cursor-pointer"
       >
         {type === "create" ? "Create" : "Update"}
       </button>

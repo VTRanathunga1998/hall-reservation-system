@@ -51,11 +51,8 @@ model Student{
   surname String
   email String? @unique
   phone String? @unique
-  address String
-  bloodType String
   sex UserSex
   createdAt DateTime @default(now())
-  birthday DateTime
   subjects Subject[]
 
   departmentId Int
@@ -69,13 +66,10 @@ model Lecturer{
   surname String
   email String? @unique
   phone String @unique
-  address String
-  bloodType String
   sex UserSex
   createdAt DateTime @default(now())
   subjects Subject[]
   reservations Reservation[]
-  birthday DateTime
 
   departmentId Int
   department Department @relation(fields: [departmentId], references: [id])
