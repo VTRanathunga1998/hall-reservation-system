@@ -1,4 +1,5 @@
-import { PrismaClient } from "@prisma/client";
+import { LecturerTitle, PrismaClient, UserSex } from "@prisma/client";
+import { clerkClient } from "@clerk/nextjs/server";
 
 const prisma = new PrismaClient();
 
@@ -1901,6 +1902,323 @@ async function main() {
   }
 
   console.log(`✅ Seeded ${buildings.length} buildings.`);
+
+  //Adding Lecturers
+
+  const lecturersData = [
+    {
+      username: "ami_gunarathna",
+      title: LecturerTitle.Dr,
+      name: "A.M.I.",
+      surname: "Gunarathna",
+      email: "amig@gmail.com",
+      phone: "0710000001",
+      sex: UserSex.MALE,
+      departmentName: "Department of Economics & Statistics",
+      password: "@Abc5273",
+    },
+    {
+      username: "hms_priyanath",
+      title: LecturerTitle.Prof,
+      name: "H.M.S.",
+      surname: "Priyanath",
+      email: "hmsp@gmail.com",
+      phone: "0710000002",
+      sex: UserSex.MALE,
+      departmentName: "Department of Economics & Statistics",
+      password: "@Abc5273",
+    },
+    {
+      username: "m_sunil_shantha",
+      title: LecturerTitle.Prof,
+      name: "M.",
+      surname: "Sunil Shantha",
+      email: "mss@gmail.com",
+      phone: "0710000003",
+      sex: UserSex.MALE,
+      departmentName: "Department of Economics & Statistics",
+      password: "@Abc5273",
+    },
+    {
+      username: "a_shanthaarachchi",
+      title: LecturerTitle.Prof,
+      name: "A.",
+      surname: "Aruna Shanthaarachchi",
+      email: "aas@gmail.com",
+      phone: "0710000004",
+      sex: UserSex.MALE,
+      departmentName: "Department of Economics & Statistics",
+      password: "@Abc5273",
+    },
+    {
+      username: "grsrc_samaraweera",
+      title: LecturerTitle.Prof,
+      name: "G.R.S.R.C.",
+      surname: "Samaraweera",
+      email: "grs@gmail.com",
+      phone: "0710000005",
+      sex: UserSex.FEMALE,
+      departmentName: "Department of Economics & Statistics",
+      password: "@Abc5273",
+    },
+    {
+      username: "sjmng_samarakoon",
+      title: LecturerTitle.Prof,
+      name: "S.J.M.N.G.",
+      surname: "Samarakoon",
+      email: "sjmn@gmail.com",
+      phone: "0710000006",
+      sex: UserSex.FEMALE,
+      departmentName: "Department of Economics & Statistics",
+      password: "@Abc5273",
+    },
+    {
+      username: "rmlr_rathnayake",
+      title: LecturerTitle.Dr,
+      name: "R.M.L.",
+      surname: "Rathnayake",
+      email: "rmlr@gmail.com",
+      phone: "0710000007",
+      sex: UserSex.FEMALE,
+      departmentName: "Department of Economics & Statistics",
+      password: "@Abc5273",
+    },
+    {
+      username: "dj_jagoda",
+      title: LecturerTitle.Mrs,
+      name: "D.J.",
+      surname: "Jagoda",
+      email: "djj@gmail.com",
+      phone: "0710000008",
+      sex: UserSex.FEMALE,
+      departmentName: "Department of Economics & Statistics",
+      password: "@Abc5273",
+    },
+    {
+      username: "macss_fernando",
+      title: LecturerTitle.Dr,
+      name: "M.A.C.S.S.",
+      surname: "Fernando",
+      email: "macsf@gmail.com",
+      phone: "0710000009",
+      sex: UserSex.MALE,
+      departmentName: "Department of Economics & Statistics",
+      password: "@Abc5273",
+    },
+    {
+      username: "us_thathsarani",
+      title: LecturerTitle.Dr,
+      name: "U.S.",
+      surname: "Thathsarani",
+      email: "ust@gmail.com",
+      phone: "0710000010",
+      sex: UserSex.FEMALE,
+      departmentName: "Department of Economics & Statistics",
+      password: "@Abc5273",
+    },
+    {
+      username: "mdjw_wijesinghe",
+      title: LecturerTitle.Mrs,
+      name: "M.D.J.W.",
+      surname: "Wijesinghe",
+      email: "mdjw@gmail.com",
+      phone: "0710000011",
+      sex: UserSex.FEMALE,
+      departmentName: "Department of Economics & Statistics",
+      password: "@Abc5273",
+    },
+    {
+      username: "rahm_rupasingha",
+      title: LecturerTitle.Dr,
+      name: "R.A.H.M.",
+      surname: "Rupasingha",
+      email: "rahmr@gmail.com",
+      phone: "0710000012",
+      sex: UserSex.FEMALE,
+      departmentName: "Department of Economics & Statistics",
+      password: "@Abc5273",
+    },
+    {
+      username: "wa_senathissa",
+      title: LecturerTitle.Mr,
+      name: "W.A.",
+      surname: "Senathissa",
+      email: "was@gmail.com",
+      phone: "0710000013",
+      sex: UserSex.MALE,
+      departmentName: "Department of Economics & Statistics",
+      password: "@Abc5273",
+    },
+    {
+      username: "lp_himali",
+      title: LecturerTitle.Mrs,
+      name: "L.P.",
+      surname: "Himali",
+      email: "lph@gmail.com",
+      phone: "0710000014",
+      sex: UserSex.FEMALE,
+      departmentName: "Department of Economics & Statistics",
+      password: "@Abc5273",
+    },
+    {
+      username: "nc_weeraratne",
+      title: LecturerTitle.Mr,
+      name: "N.C.",
+      surname: "Weeraratne",
+      email: "ncw@gmail.com",
+      phone: "0710000015",
+      sex: UserSex.MALE,
+      departmentName: "Department of Economics & Statistics",
+      password: "@Abc5273",
+    },
+    {
+      username: "nm_wijesekara",
+      title: LecturerTitle.Mrs,
+      name: "N.M.",
+      surname: "Wijesekara",
+      email: "nmw@gmail.com",
+      phone: "0710000016",
+      sex: UserSex.FEMALE,
+      departmentName: "Department of Economics & Statistics",
+      password: "@Abc5273",
+    },
+    {
+      username: "ks_ranasinghe",
+      title: LecturerTitle.Mrs,
+      name: "K.S.",
+      surname: "Ranasinghe",
+      email: "ksr@gmail.com",
+      phone: "0710000017",
+      sex: UserSex.FEMALE,
+      departmentName: "Department of Economics & Statistics",
+      password: "@Abc5273",
+    },
+    {
+      username: "r_weerakoon",
+      title: LecturerTitle.Mr,
+      name: "R.",
+      surname: "Weerakoon",
+      email: "rw@gmail.com",
+      phone: "0710000018",
+      sex: UserSex.MALE,
+      departmentName: "Department of Economics & Statistics",
+      password: "@Abc5273",
+    },
+    {
+      username: "vpg_priyankara",
+      title: LecturerTitle.Mr,
+      name: "V.P.G.",
+      surname: "Priyankara",
+      email: "vpgp@gmail.com",
+      phone: "0710000019",
+      sex: UserSex.MALE,
+      departmentName: "Department of Economics & Statistics",
+      password: "@Abc5273",
+    },
+    {
+      username: "rmnb_rathnayake",
+      title: LecturerTitle.Mr,
+      name: "R.M.N.B.",
+      surname: "Rathnayake",
+      email: "rmnb@gmail.com",
+      phone: "0710000020",
+      sex: UserSex.MALE,
+      departmentName: "Department of Economics & Statistics",
+      password: "@Abc5273",
+    },
+    {
+      username: "wrys_samarasekara",
+      title: LecturerTitle.Mr,
+      name: "W.R.Y.S.",
+      surname: "Samarasekara",
+      email: "wrys@gmail.com",
+      phone: "0710000021",
+      sex: UserSex.MALE,
+      departmentName: "Department of Economics & Statistics",
+      password: "@Abc5273",
+    },
+    {
+      username: "jdu_indumini",
+      title: LecturerTitle.Mrs,
+      name: "J.D.U.",
+      surname: "Indumini",
+      email: "jdu@gmail.com",
+      phone: "0710000022",
+      sex: UserSex.FEMALE,
+      departmentName: "Department of Economics & Statistics",
+      password: "@Abc5273",
+    },
+    {
+      username: "kt_dananjali",
+      title: LecturerTitle.Mrs,
+      name: "K.T.",
+      surname: "Dananjali",
+      email: "ktd@gmail.com",
+      phone: "0710000023",
+      sex: UserSex.FEMALE,
+      departmentName: "Department of Economics & Statistics",
+      password: "@Abc5273",
+    },
+  ];
+
+  // ---------- STEP 3: CREATE LECTURERS IN CLERK + DB ----------
+  const clerk = await clerkClient();
+
+  for (const lec of lecturersData) {
+    try {
+      // Find department
+      const department = departments.find((d) => d.name === lec.departmentName);
+      if (!department) {
+        console.warn(`Department not found for ${lec.username}, skipping`);
+        continue;
+      }
+
+      // Step 1: Create Clerk user
+      const user = await clerk.users.createUser({
+        username: lec.username,
+        emailAddress: [lec.email],
+        password: lec.password,
+        firstName: lec.name,
+        lastName: lec.surname,
+        publicMetadata: { role: "lecturer" },
+      });
+
+      console.log(`Created Clerk user: ${lec.username}`);
+
+      // Step 2: Create Lecturer in Prisma DB
+      await prisma.lecturer.create({
+        data: {
+          id: user.id, // Clerk userId
+          username: lec.username,
+          title: lec.title,
+          name: lec.name,
+          surname: lec.surname,
+          email: lec.email,
+          phone: lec.phone,
+          sex: lec.sex,
+          departmentId: department.id,
+        },
+      });
+
+      console.log(
+        `Added lecturer ${lec.username} (${lec.name} ${lec.surname})`
+      );
+    } catch (error: any) {
+      // Handle Clerk or Prisma errors
+      console.error(`Failed to create ${lec.username}:`, error.message);
+
+      // Rollback Clerk user if Prisma failed
+      if (error.code?.startsWith("P")) {
+        const user = await clerk.users.getUserList({
+          username: [lec.username],
+        });
+        if (user?.data?.[0]?.id) {
+          await clerk.users.deleteUser(user.data[0].id);
+          console.log(`Rolled back Clerk user for ${lec.username}`);
+        }
+      }
+    }
+  }
 }
 
 main()

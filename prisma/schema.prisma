@@ -112,9 +112,9 @@ enum UserSex {
 
 enum LecturerTitle {
  Prof
-  Dr
-  Mr
-  Mrs
-  Ms
+ Dr
+ Mr
+ Mrs
+ Ms
 }
 
