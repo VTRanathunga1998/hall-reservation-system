@@ -42,7 +42,7 @@ export const lecturerSchema = z.object({
     .string()
     .min(3, { message: "Username must be at least 3 characters long!" })
     .max(20, { message: "Username must be at most 20 characters long!" }),
-  title: z.enum(["PROF", "DR", "MR", "MRS", "MS"], {
+  title: z.enum(["Prof", "Dr", "Mr", "Mrs", "Ms"], {
     message: "Profession is required!",
   }),
   email: z

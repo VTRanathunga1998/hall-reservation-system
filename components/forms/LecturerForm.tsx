@@ -118,11 +118,11 @@ const LecturerForm = ({
           {...register("title")}
           defaultValue={data?.title}
         >
-          <option value="PROF">PROF</option>
-          <option value="DR">DR</option>
-          <option value="MR">MR</option>
-          <option value="MRS">MRS</option>
-          <option value="MS">MS</option>
+          <option value="Prof">Prof</option>
+          <option value="Dr">Dr</option>
+          <option value="Mr">Mr</option>
+          <option value="Mrs">Mrs</option>
+          <option value="Ms">Ms</option>
         </select>
         {errors.title?.message && (
           <p className="text-xs text-red-400">

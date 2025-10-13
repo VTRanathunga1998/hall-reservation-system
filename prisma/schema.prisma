@@ -63,7 +63,7 @@ model Lecturer {
   id String @id
   username String @unique
 
-  title LecturerTitle @default(MS) 
+  title LecturerTitle @default(Mr) 
   name String
   surname String
   email String? @unique
@@ -80,7 +80,7 @@ model Lecturer {
 model Subject{
   id Int @id @default(autoincrement())
   code String @unique
-  name String @unique
+  name String 
   lecturers Lecturer[]
   students Student[]
   reservations Reservation[]
@@ -111,10 +111,10 @@ enum UserSex {
 }
 
 enum LecturerTitle {
-  PROF
-  DR
-  MR
-  MRS
-  MS
+ Prof
+  Dr
+  Mr
+  Mrs
+  Ms
 }
 
