@@ -69,8 +69,16 @@ const StudentsListPage = async ({
       <td className="hidden md:table-cell py-4">{item.email || "-"}</td>
       <td className="hidden md:table-cell py-4">{item.phone || "-"}</td>
       <td className="hidden lg:table-cell py-4">
-        {item.subjects.map((subject) => subject.code).join(", ")}
+        {item.subjects && item.subjects.length > 0
+          ? item.subjects.length > 3
+            ? `${item.subjects
+                .slice(0, 3)
+                .map((s) => s.code)
+                .join(", ")}...`
+            : item.subjects.map((s) => s.code).join(", ")
+          : "-"}
       </td>
+
       <td className="py-4">
         <div className="flex flex-col md:flex-row items-center gap-2">
           {role === "admin" && (
