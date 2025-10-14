@@ -77,7 +77,12 @@ const LeuturersListPage = async ({
       <td className="hidden md:table-cell py-4">{item.phone}</td>
       <td className="hidden lg:table-cell py-4">
         {item.subjects && item.subjects.length > 0
-          ? item.subjects.map((subject) => subject.code).join(", ")
+          ? item.subjects.length > 3
+            ? `${item.subjects
+                .slice(0, 3)
+                .map((s) => s.code)
+                .join(", ")}...`
+            : item.subjects.map((s) => s.code).join(", ")
           : "-"}
       </td>
       <td>
@@ -102,6 +107,7 @@ const LeuturersListPage = async ({
         switch (key) {
           case "search":
             query.name = { contains: value, mode: "insensitive" };
+            query.surname = { contains: value, mode: "insensitive" };
             break;
         }
       }
