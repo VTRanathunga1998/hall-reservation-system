@@ -103,11 +103,13 @@ const LeuturersListPage = async ({
 
   if (queryParams) {
     for (const [key, value] of Object.entries(queryParams)) {
-      if (value !== undefined) {
+      if (value !== undefined && value !== "") {
         switch (key) {
           case "search":
-            query.name = { contains: value, mode: "insensitive" };
-            query.surname = { contains: value, mode: "insensitive" };
+            query.OR = [
+              { name: { contains: value, mode: "insensitive" } },
+              { surname: { contains: value, mode: "insensitive" } },
+            ];
             break;
         }
       }
