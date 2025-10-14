@@ -220,7 +220,32 @@
 @media (max-width: 768px) {
   .cl-internal-ca5yvo {
     flex-direction: column !important;
-    align-items: stretch !important;
+    align-items: center !important;
+    justify-content: center !important;
+    text-align: center !important;
+    gap: 0.75rem !important;
+  }
+
+  /* Make text and buttons take full width or look balanced */
+  .cl-internal-ca5yvo p,
+  .cl-internal-ca5yvo span {
+    text-align: center !important;
+    width: 100% !important;
+  }
+
+  /* Center buttons */
+  .cl-internal-ca5yvo button {
+    width: auto !important; /* or 100% if you want full-width buttons */
+    margin: 0 auto !important;
+  }
+
+  /* Make profile preview (avatar + username) centered */
+  .cl-userPreview {
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: center !important;
+    justify-content: center !important;
+    text-align: center !important;
   }
 }
 
@@ -228,6 +253,10 @@
   .rbc-toolbar {
     flex-direction: row !important;
     justify-content: flex-start !important;
+  }
+  .cl-internal-1wx8640 {
+    display: block !important; /* or 'block' if you prefer vertical stacking */
+    width: 100% !important;
   }
 }
 
