@@ -32,7 +32,7 @@ const StudentsListPage = async ({
 
   const columns = [
     {
-      header: "Name",
+      header: "Username",
       accessor: "name",
     },
     {
