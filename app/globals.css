@@ -1,7 +1,6 @@
 @import "tailwindcss";
 @import "react-datepicker/dist/react-datepicker.css";
 
-
 /* Hide scrollbar for Webkit-based browsers (Chrome, Safari) */
 .scrollbar-hidden::-webkit-scrollbar {
   display: none;
@@ -110,9 +109,122 @@
   margin-bottom: 5px;
 }
 
+.cl-profileSection.cl-profileSection__emailAddresses.cl-internal-1ek0dft {
+  display: none !important;
+}
+
+.cl-profileSection.cl-profileSection__danger.cl-internal-62rzw8 {
+  display: none !important;
+}
+
+.cl-internal-pe6vm4 {
+  display: none !important;
+}
+
+.cl-cardBox.cl-internal-mkizyn {
+  box-shadow: none !important;
+}
+
+.cl-navbar.cl-internal-1pcqqbp {
+  background: white !important;
+}
+
+.cl-internal-15hkgn2 {
+  background: none !important;
+}
+
+.cl-pageScrollBox.cl-internal-evyuu2 {
+  border: none !important;
+  box-shadow: none !important;
+}
+
+.cl-navbarMobileMenuRow.cl-internal-1x28sfr {
+  display: flex !important;
+  justify-content: flex-end !important;
+  align-items: center !important;
+}
+
+.cl-navbarMobileMenuRow.cl-internal-1x28sfr {
+  background: white !important;
+}
+
+.cl-internal-l2l775 {
+  display: none !important;
+}
+
+.cl-cardBox.cl-internal-mkizyn {
+  width: 100% !important;
+}
+
+/* =========================
+   Clerk UserProfile Overrides
+   ========================= */
+
+/* Make the Clerk container stretch full width */
+.cl-userProfile-root,
+.cl-rootBox {
+  width: 100% !important;
+  max-width: none !important;
+  height: 100% !important;
+}
+
+/* Remove card-like borders and spacing */
+.cl-cardBox {
+  border: none !important;
+  box-shadow: none !important;
+  width: 100% !important;
+  max-width: none !important;
+  padding: 0 !important;
+}
+
+/* Scroll box and content stretch */
+.cl-scrollBox,
+.cl-pageScrollBox,
+.cl-page {
+  width: 100% !important;
+  max-width: none !important;
+  padding: 1rem !important;
+  box-sizing: border-box !important;
+}
+
+/* Make profile form inputs full width */
+.cl-formFieldInput,
+.cl-profileSectionItem input {
+  width: 100% !important;
+  border-radius: 0.5rem !important;
+}
+
+/* Target the container */
+.cl-internal-1habej8 {
+  display: flex !important;
+  flex-direction: row !important;
+  align-items: flex-start; /* Align checkbox with label text */
+  gap: 0.5rem; /* optional spacing */
+}
+
+/* Make the checkbox small */
+.cl-internal-1habej8 .cl-formFieldInput[type="checkbox"] {
+  flex: 0 0 1.25rem; /* fixed width, won't grow */
+  height: 1.25rem;
+}
+
+/* Make the label take remaining space */
+.cl-internal-1habej8 label {
+  flex: 1; /* take remaining width */
+  display: flex;
+  flex-direction: column; /* Keep title above description */
+  gap: 0.25rem; /* spacing between title and description */
+}
+
 @media (max-width: 768px) {
   .rbc-toolbar {
     flex-direction: row !important;
     justify-content: flex-start !important;
+  }
+}
+
+@media (min-width: 768px) {
+  .cl-navbarMobileMenuRow.cl-internal-1x28sfr {
+    display: none !important;
   }
 }
