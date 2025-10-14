@@ -216,6 +216,14 @@
   gap: 0.25rem; /* spacing between title and description */
 }
 
+/* Small screens: flex-column */
+@media (max-width: 768px) {
+  .cl-internal-ca5yvo {
+    flex-direction: column !important;
+    align-items: stretch !important;
+  }
+}
+
 @media (max-width: 768px) {
   .rbc-toolbar {
     flex-direction: row !important;
