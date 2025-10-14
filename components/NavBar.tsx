@@ -17,8 +17,8 @@ const NavBar = async () => {
           </span>
           <span className="text-[10px] text-gray-500 text-right">{role}</span>
         </div>
-        {/* <UserButton />  */}
-        <UserMenu />
+        <UserButton />
+        {/* <UserMenu /> */}
       </div>
     </div>
   );
