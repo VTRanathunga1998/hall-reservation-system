@@ -63,7 +63,7 @@ const SubjectListPage = async ({
       <td className=" py-4 px-2">{item.code}</td>
       <td className=" py-4 px-2">{item.name}</td>
       <td className="hidden md:table-cell py-4 px-2">
-        {item.lecturers.map((lecturer) => lecturer.name).join(", ")}
+        {item.lecturers.map((lecturer) => lecturer.surname).join(", ")}
       </td>
       <td className="py-4 px-2">
         <div className="flex flex-col md:flex-row items-center gap-2">

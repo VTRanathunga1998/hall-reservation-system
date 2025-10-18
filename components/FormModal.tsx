@@ -199,8 +199,8 @@ const FormModal = ({
         <Image src={`/${type}.png`} alt="" height={16} width={16} />
       </button>
       {open && (
-        <div className="fixed inset-0 bg-black/60 z-[150] flex items-center justify-center">
-          <div className="bg-white p-4 rounded-md relative w-[90%] md:w-[70%] lg:w-[60%] xl:w-[50%] 2xl:w-[40%] max-h-[90vh] overflow-y-auto scrollbar-hidden">
+        <div id="datepicker-portal" className="fixed inset-0 bg-black/60 z-[150] flex items-center justify-center">
+          <div className="bg-white p-4 rounded-md relative w-[90%] md:w-[70%] lg:w-[60%] xl:w-[50%] 2xl:w-[50%] max-h-[90vh] overflow-y-auto scrollbar-hidden">
             <Form />
             <div
               className="absolute top-4 right-4 cursor-pointer"

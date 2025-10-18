@@ -3,7 +3,7 @@
 import { useAuth } from "@clerk/nextjs";
 
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Controller, useForm } from "react-hook-form";
+import { Controller, useWatch, useForm } from "react-hook-form";
 import {
   reservationSchema,
   ReservationSchema,
@@ -21,7 +21,8 @@ import { toast } from "react-toastify";
 import { useRouter } from "next/navigation";
 
 import DatePicker from "react-datepicker";
-import { setHours, setMinutes } from "date-fns";
+
+import { setHours, setMinutes, isSameDay } from "date-fns";
 
 const ReservationForm = ({
   type,
@@ -221,11 +222,13 @@ const ReservationForm = ({
               value={lecId}
               onChange={(e) => setLecId(e.target.value)}
             >
-              {filteredLecturers.map((s: { id: string; name: string }) => (
-                <option value={s.id} key={s.id}>
-                  {s.name}
-                </option>
-              ))}
+              {filteredLecturers.map(
+                (s: { id: string; name: string; surname: string }) => (
+                  <option value={s.id} key={s.id}>
+                    {s.name} {s.surname}
+                  </option>
+                )
+              )}
             </select>
             {errors.lecturerId?.message && (
               <p className="text-xs text-red-400">
@@ -259,26 +262,29 @@ const ReservationForm = ({
           {/* Start Time */}
           <div className="flex flex-col gap-2 w-full md:w-1/3">
             <label className="text-xs text-gray-500">Start Time</label>
-
             <Controller
               control={control}
               name="startTime"
               render={({ field }) => (
                 <DatePicker
-                  selected={field.value} // this must be a Date object
+                  selected={field.value}
                   onChange={(date) => field.onChange(date)}
                   showTimeSelect
                   timeIntervals={15}
                   dateFormat="Pp"
                   placeholderText="Select start time"
                   className="ring-[1.5px] ring-gray-300 p-2 rounded-md text-sm w-full"
+                  portalId="datepicker-portal"
                   minDate={new Date()}
+                  filterDate={(date) => {
+                    const day = date.getDay();
+                    return day !== 0 && day !== 6; // disable weekends
+                  }}
                   minTime={setHours(setMinutes(new Date(), 0), 8)}
                   maxTime={setHours(setMinutes(new Date(), 0), 20)}
                 />
               )}
             />
-
             {errors.startTime?.message && (
               <p className="text-xs text-red-400">
                 {errors.startTime.message.toString()}
@@ -289,24 +295,37 @@ const ReservationForm = ({
           {/* End Time */}
           <div className="flex flex-col gap-2 w-full md:w-1/3">
             <label className="text-xs text-gray-500">End Time</label>
-
             <Controller
               control={control}
               name="endTime"
-              render={({ field }) => (
-                <DatePicker
-                  selected={field.value}
-                  onChange={(date) => field.onChange(date)}
-                  showTimeSelect
-                  timeIntervals={15}
-                  dateFormat="Pp"
-                  placeholderText="Select end time"
-                  className="ring-[1.5px] ring-gray-300 p-2 rounded-md text-sm w-full"
-                  minDate={watch("startTime") ?? new Date()}
-                  minTime={setHours(setMinutes(new Date(), 0), 8)}
-                  maxTime={setHours(setMinutes(new Date(), 0), 20)}
-                />
-              )}
+              render={({ field }) => {
+                const startTime = useWatch({ control, name: "startTime" });
+
+                return (
+                  <DatePicker
+                    selected={field.value}
+                    onChange={(date) => field.onChange(date)}
+                    showTimeSelect
+                    timeIntervals={15}
+                    dateFormat="Pp"
+                    placeholderText="Select end time"
+                    className="ring-[1.5px] ring-gray-300 p-2 rounded-md text-sm w-full"
+                    portalId="datepicker-portal"
+                    minDate={startTime || new Date()}
+                    filterDate={(date) => {
+                      const day = date.getDay();
+                      return day !== 0 && day !== 6; // disable weekends
+                    }}
+                    minTime={
+                      startTime &&
+                      isSameDay(startTime, field.value || startTime)
+                        ? startTime
+                        : setHours(setMinutes(new Date(), 0), 8)
+                    }
+                    maxTime={setHours(setMinutes(new Date(), 0), 20)}
+                  />
+                );
+              }}
             />
             {errors.endTime?.message && (
               <p className="text-xs text-red-400">

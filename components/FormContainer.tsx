@@ -106,6 +106,7 @@ const FormContainer = async ({ table, type, data, id }: FormContainerProps) => {
           select: {
             id: true,
             name: true,
+            surname: true,
             departmentId: true,
           },
         });
