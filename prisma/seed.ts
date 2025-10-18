@@ -1858,6 +1858,166 @@ async function main() {
       name: "Dissertation / Practical Training",
       departmentName: "Department of Social Sciences",
     },
+
+    //Dep. Geogrphy
+
+    // Year I Semester I
+    {
+      code: "GEO 111",
+      name: "Introduction to Physical and Human Geography",
+      departmentName: "The Department of Geography",
+    },
+
+    // Year I Semester II
+    {
+      code: "GEO 121",
+      name: "Basic Cartography",
+      departmentName: "The Department of Geography",
+    },
+
+    // Year II Semester I
+    {
+      code: "GEO 211",
+      name: "Advanced Cartography and Field Techniques",
+      departmentName: "The Department of Geography",
+    },
+    {
+      code: "GEO 212",
+      name: "Geomorphology",
+      departmentName: "The Department of Geography",
+    },
+    {
+      code: "GEO 213",
+      name: "Environmental Geography",
+      departmentName: "The Department of Geography",
+    },
+
+    // Year II Semester II
+    {
+      code: "GEO 221",
+      name: "Basic Geographical Information Systems (GIS)",
+      departmentName: "The Department of Geography",
+    },
+    {
+      code: "GEO 222",
+      name: "Climatology",
+      departmentName: "The Department of Geography",
+    },
+    {
+      code: "GEO 223",
+      name: "Population Geography",
+      departmentName: "The Department of Geography",
+    },
+
+    // Year III Semester I
+    {
+      code: "GEO 311",
+      name: "Quantitative Geography",
+      departmentName: "The Department of Geography",
+    },
+    {
+      code: "GEO 312",
+      name: "Regional Development and Planning",
+      departmentName: "The Department of Geography",
+    },
+    {
+      code: "GEO 313",
+      name: "Bio Geography",
+      departmentName: "The Department of Geography",
+    },
+    {
+      code: "GEO 314",
+      name: "Remote Sensing",
+      departmentName: "The Department of Geography",
+    },
+    {
+      code: "GEO 315",
+      name: "Urban Geography",
+      departmentName: "The Department of Geography",
+    },
+
+    // Year III Semester II
+    {
+      code: "GEO 321",
+      name: "Human Resource Management",
+      departmentName: "The Department of Geography",
+    },
+    {
+      code: "GEO 322",
+      name: "Land Use Planning",
+      departmentName: "The Department of Geography",
+    },
+    {
+      code: "GEO 323",
+      name: "Recreation Geography",
+      departmentName: "The Department of Geography",
+    },
+    {
+      code: "GEO 324",
+      name: "Advanced Geographical Information Systems (GIS)",
+      departmentName: "The Department of Geography",
+    },
+    {
+      code: "GEO 325",
+      name: "Hydrology & Watershed Management",
+      departmentName: "The Department of Geography",
+    },
+    {
+      code: "GEO 326",
+      name: "Scientific Report Writing",
+      departmentName: "The Department of Geography",
+    },
+
+    // Year IV Semester I
+    {
+      code: "GEO 411",
+      name: "Research Methods in Geography",
+      departmentName: "The Department of Geography",
+    },
+    {
+      code: "GEO 412",
+      name: "Natural Hazards and Disaster Management",
+      departmentName: "The Department of Geography",
+    },
+    {
+      code: "GEO 413",
+      name: "Project Planning & Management",
+      departmentName: "The Department of Geography",
+    },
+
+    // Optional Courses (choose two)
+    {
+      code: "GEO 414",
+      name: "Medical Geography",
+      departmentName: "The Department of Geography",
+    },
+    {
+      code: "GEO 415",
+      name: "Settlement Geography",
+      departmentName: "The Department of Geography",
+    },
+    {
+      code: "GEO 416",
+      name: "Tropical Agro Forestry",
+      departmentName: "The Department of Geography",
+    },
+    {
+      code: "GEO 417",
+      name: "Industrial Geography",
+      departmentName: "The Department of Geography",
+    },
+    {
+      code: "GEO 418",
+      name: "Political Geography",
+      departmentName: "The Department of Geography",
+    },
+
+    // Year IV Semester II
+    {
+      code: "GEO 421",
+      name: "Dissertation / Practical Training",
+      departmentName: "The Department of Geography",
+    },
   ];
 
   for (const sub of subjectsData) {

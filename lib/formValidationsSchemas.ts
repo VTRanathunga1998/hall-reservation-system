@@ -68,7 +68,7 @@ export type LecturerSchema = z.infer<typeof lecturerSchema>;
 //lectureRoom schema
 export const lectureRoomSchema = z.object({
   id: z.number().optional(),
-  name: z.string().min(3, { message: "Name is required!" }),
+  name: z.string().min(1, { message: "Name is required!" }),
   hallId: z.number().min(1, { message: "Hall is required!" }),
   maxCapacity: z.number().min(1, { message: "Max capacity is required!" }),
 });
