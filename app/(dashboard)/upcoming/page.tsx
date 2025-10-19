@@ -46,19 +46,35 @@ export default async function Upcoming() {
 
       <div className="flex flex-col gap-4 w-full bg-white rounded-sm p-2">
         {reservations.length > 0 ? (
-          reservations.map((res) => (
-            <EventCard
-              key={res.id}
-              id={res.id}
-              hallId={res.lecRoomId}
-              roomId={res.lectureRoom.hallId}
-              title={res.subject.name}
-              subject={res.subject.code}
-              startTime={new Date(res.startTime)}
-              endTime={new Date(res.endTime)}
-              lecturer={`${res.lecturer.name} ${res.lecturer.surname}`}
-            />
-          ))
+          reservations.map((res) => {
+            const start = new Date(res.startTime);
+            const end = new Date(res.endTime);
+
+            const formattedStart = start.toLocaleTimeString("en-LK", {
+              hour: "2-digit",
+              minute: "2-digit",
+              timeZone: "Asia/Colombo",
+            });
+            const formattedEnd = end.toLocaleTimeString("en-LK", {
+              hour: "2-digit",
+              minute: "2-digit",
+              timeZone: "Asia/Colombo",
+            });
+
+            return (
+              <EventCard
+                key={res.id}
+                id={res.id}
+                hallId={res.lectureRoom.hallId}
+                roomId={res.lecRoomId}
+                title={res.subject.name}
+                subject={res.subject.code}
+                startTime={formattedStart}
+                endTime={formattedEnd}
+                lecturer={`${res.lecturer.name} ${res.lecturer.surname}`}
+              />
+            );
+          })
         ) : (
           <EmptyState
             title="No upcoming events found"

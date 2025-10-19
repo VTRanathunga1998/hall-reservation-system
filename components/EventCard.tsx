@@ -5,8 +5,8 @@ interface EventCardProps {
   id: number;
   title: string;
   subject: string;
-  startTime: Date;
-  endTime: Date;
+  startTime: string; // ISO string
+  endTime: string; // ISO string
   lecturer: string;
   hallId: number;
   roomId: number;
@@ -22,24 +22,34 @@ const EventCard: React.FC<EventCardProps> = ({
   endTime,
   lecturer,
 }) => {
-  const month = startTime.toLocaleString("en-US", { month: "short" });
-  const day = startTime.getDate();
+  // Convert to Date
+  const start = new Date(startTime);
+  const end = new Date(endTime);
 
-  const timeString = `${startTime.toLocaleTimeString([], {
+  const month = start.toLocaleString("en-LK", {
+    month: "short",
+    timeZone: "Asia/Colombo",
+  });
+  const day = start.toLocaleString("en-LK", {
+    day: "2-digit",
+    timeZone: "Asia/Colombo",
+  });
+
+  const timeString = `${start.toLocaleTimeString("en-LK", {
     hour: "2-digit",
     minute: "2-digit",
-  })} - ${endTime.toLocaleTimeString([], {
+    timeZone: "Asia/Colombo",
+  })} - ${end.toLocaleTimeString("en-LK", {
     hour: "2-digit",
     minute: "2-digit",
+    timeZone: "Asia/Colombo",
   })}`;
 
   return (
     <div className="flex flex-col md:flex-row items-stretch bg-[#C4C4C4] shadow-sm hover:shadow-md transition-shadow overflow-hidden border border-gray-100 w-full max-w-full md:max-w-3xl ">
       {/* Left Date Box */}
       <div className="flex flex-row-reverse md:flex-col justify-center items-center md:w-1/6 bg-[#FF8A8A] p-4 gap-2 md:gap-1">
-        {/* Day */}
         <span className="text-xl md:text-3xl font-bold">{day}</span>
-        {/* Month */}
         <span className="uppercase tracking-wide font-bold text-xl md:text-xl">
           {month}
         </span>
