@@ -53,7 +53,7 @@ const LectureCalendar = async ({
         lectureRoom: {
           select: { name: true, hall: { select: { name: true } } },
         },
-        lecturer: { select: { name: true } },
+        lecturer: { select: { name: true, surname: true } },
       },
     }),
 
@@ -71,7 +71,9 @@ const LectureCalendar = async ({
   const data = resData.map((reservation) => ({
     title:
       (reservation.subject?.code ?? "No Subject") +
-      (reservation.lecturer ? ` - ${reservation.lecturer.name}` : ""),
+      (reservation.lecturer
+        ? ` - ${reservation.lecturer.name} ${reservation.lecturer.surname}`
+        : ""),
     allDay: false,
     start: new Date(reservation.startTime),
     end: new Date(reservation.endTime),
