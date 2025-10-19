@@ -39,13 +39,6 @@ const EventCard: React.FC<EventCardProps> = ({
   const month = start.toLocaleString(LOCALE, { month: "short", timeZone: TZ });
   const day = start.toLocaleString(LOCALE, { day: "2-digit", timeZone: TZ });
 
-  const dateLabel = start.toLocaleDateString(LOCALE, {
-    weekday: "short",
-    day: "numeric",
-    month: "short",
-    timeZone: TZ,
-  });
-
   const timeString = `${start.toLocaleTimeString(LOCALE, {
     hour: "2-digit",
     minute: "2-digit",
@@ -66,7 +59,8 @@ const EventCard: React.FC<EventCardProps> = ({
         <span className="text-2xl md:text-3xl font-bold text-white leading-none">
           {day}
         </span>
-        <span className="uppercase tracking-wide font-semibold text-sm text-white">
+        <span className="text-white md:hidden"> - </span>
+        <span className="uppercase tracking-wide font-semibold md:text-sm text-md text-white">
           {month}
         </span>
       </div>
