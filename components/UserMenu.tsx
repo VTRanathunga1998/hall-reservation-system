@@ -29,13 +29,15 @@ const UserMenu = () => {
         onClick={() => setOpen((prev) => !prev)}
         className="flex items-center gap-2 focus:outline-none cursor-pointer"
       >
-        <Image
-          src={user.imageUrl || "/noAvatar.png"}
-          alt="user avatar"
-          width={32}
-          height={32}
-          className="rounded-full border"
-        />
+        <div className="w-8 h-8 rounded-full overflow-hidden border border-gray-300">
+          <Image
+            src={user.imageUrl || "/noAvatar.png"}
+            alt="user avatar"
+            width={32}
+            height={32}
+            className="object-cover w-full h-full"
+          />
+        </div>
       </button>
 
       {/* Dropdown */}

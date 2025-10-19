@@ -107,13 +107,20 @@ const ReservationForm = ({
   // Lecturer State
   const [lecId, setLecId] = useState<string>(() => {
     if (role === "lecturer") {
+      // If current user is a lecturer
       return currentUserId || "";
-    } else {
-      const firstLecturer = lectures.find(
-        (lec: any) => lec.departmentId === depId
-      );
-      return firstLecturer ? firstLecturer.id : "";
     }
+
+    if (data?.lecturerId) {
+      // When editing existing data
+      return data.lecturerId;
+    }
+
+    // Otherwise, get first lecturer in the same department
+    const firstLecturer = lectures.find(
+      (lec: any) => lec.departmentId === depId
+    );
+    return firstLecturer ? firstLecturer.id : "";
   });
 
   // Filtered subjects
