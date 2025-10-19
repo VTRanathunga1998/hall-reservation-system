@@ -103,17 +103,23 @@ const ReservationsListPage = async ({
         </td>
       )}
 
-      <td className="py-4">{new Date(item.startTime).toLocaleDateString()}</td>
       <td className="py-4">
-        {new Date(item.startTime).toLocaleTimeString([], {
-          hour: "2-digit",
-          minute: "2-digit",
+        {new Date(item.startTime).toLocaleDateString("en-LK", {
+          timeZone: "Asia/Colombo",
         })}
       </td>
       <td className="py-4">
-        {new Date(item.endTime).toLocaleTimeString([], {
+        {new Date(item.startTime).toLocaleTimeString("en-LK", {
           hour: "2-digit",
           minute: "2-digit",
+          timeZone: "Asia/Colombo",
+        })}
+      </td>
+      <td className="py-4">
+        {new Date(item.endTime).toLocaleTimeString("en-LK", {
+          hour: "2-digit",
+          minute: "2-digit",
+          timeZone: "Asia/Colombo",
         })}
       </td>
 
