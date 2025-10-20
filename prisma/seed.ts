@@ -2067,7 +2067,7 @@ async function main() {
       phone: "0710000001",
       sex: UserSex.MALE,
       departmentName: "Department of Economics & Statistics",
-      password: "@Abc5273",
+      password: "@Abc321!",
     },
     {
       username: "hms_priyanath",
@@ -2078,7 +2078,7 @@ async function main() {
       phone: "0710000002",
       sex: UserSex.MALE,
       departmentName: "Department of Economics & Statistics",
-      password: "@Abc5273",
+      password: "@Abc321!",
     },
     {
       username: "m_sunil_shantha",
@@ -2089,7 +2089,7 @@ async function main() {
       phone: "0710000003",
       sex: UserSex.MALE,
       departmentName: "Department of Economics & Statistics",
-      password: "@Abc5273",
+      password: "@Abc321!",
     },
     {
       username: "a_shanthaarachchi",
@@ -2100,7 +2100,7 @@ async function main() {
       phone: "0710000004",
       sex: UserSex.MALE,
       departmentName: "Department of Economics & Statistics",
-      password: "@Abc5273",
+      password: "@Abc321!",
     },
     {
       username: "grsrc_samaraweera",
@@ -2111,7 +2111,7 @@ async function main() {
       phone: "0710000005",
       sex: UserSex.FEMALE,
       departmentName: "Department of Economics & Statistics",
-      password: "@Abc5273",
+      password: "@Abc321!",
     },
     {
       username: "sjmng_samarakoon",
@@ -2122,7 +2122,7 @@ async function main() {
       phone: "0710000006",
       sex: UserSex.FEMALE,
       departmentName: "Department of Economics & Statistics",
-      password: "@Abc5273",
+      password: "@Abc321!",
     },
     {
       username: "rmlr_rathnayake",
@@ -2133,7 +2133,7 @@ async function main() {
       phone: "0710000007",
       sex: UserSex.FEMALE,
       departmentName: "Department of Economics & Statistics",
-      password: "@Abc5273",
+      password: "@Abc321!",
     },
     {
       username: "dj_jagoda",
@@ -2144,7 +2144,7 @@ async function main() {
       phone: "0710000008",
       sex: UserSex.FEMALE,
       departmentName: "Department of Economics & Statistics",
-      password: "@Abc5273",
+      password: "@Abc321!",
     },
     {
       username: "macss_fernando",
@@ -2155,7 +2155,7 @@ async function main() {
       phone: "0710000009",
       sex: UserSex.MALE,
       departmentName: "Department of Economics & Statistics",
-      password: "@Abc5273",
+      password: "@Abc321!",
     },
     {
       username: "us_thathsarani",
@@ -2166,7 +2166,7 @@ async function main() {
       phone: "0710000010",
       sex: UserSex.FEMALE,
       departmentName: "Department of Economics & Statistics",
-      password: "@Abc5273",
+      password: "@Abc321!",
     },
     {
       username: "mdjw_wijesinghe",
@@ -2177,7 +2177,7 @@ async function main() {
       phone: "0710000011",
       sex: UserSex.FEMALE,
       departmentName: "Department of Economics & Statistics",
-      password: "@Abc5273",
+      password: "@Abc321!",
     },
     {
       username: "rahm_rupasingha",
@@ -2188,7 +2188,7 @@ async function main() {
       phone: "0710000012",
       sex: UserSex.FEMALE,
       departmentName: "Department of Economics & Statistics",
-      password: "@Abc5273",
+      password: "@Abc321!",
     },
     {
       username: "wa_senathissa",
@@ -2199,7 +2199,7 @@ async function main() {
       phone: "0710000013",
       sex: UserSex.MALE,
       departmentName: "Department of Economics & Statistics",
-      password: "@Abc5273",
+      password: "@Abc321!",
     },
     {
       username: "lp_himali",
@@ -2210,7 +2210,7 @@ async function main() {
       phone: "0710000014",
       sex: UserSex.FEMALE,
       departmentName: "Department of Economics & Statistics",
-      password: "@Abc5273",
+      password: "@Abc321!",
     },
     {
       username: "nc_weeraratne",
@@ -2221,7 +2221,7 @@ async function main() {
       phone: "0710000015",
       sex: UserSex.MALE,
       departmentName: "Department of Economics & Statistics",
-      password: "@Abc5273",
+      password: "@Abc321!",
     },
     {
       username: "nm_wijesekara",
@@ -2232,7 +2232,7 @@ async function main() {
       phone: "0710000016",
       sex: UserSex.FEMALE,
       departmentName: "Department of Economics & Statistics",
-      password: "@Abc5273",
+      password: "@Abc321!",
     },
     {
       username: "ks_ranasinghe",
@@ -2243,7 +2243,7 @@ async function main() {
       phone: "0710000017",
       sex: UserSex.FEMALE,
       departmentName: "Department of Economics & Statistics",
-      password: "@Abc5273",
+      password: "@Abc321!",
     },
     {
       username: "r_weerakoon",
@@ -2254,7 +2254,7 @@ async function main() {
       phone: "0710000018",
       sex: UserSex.MALE,
       departmentName: "Department of Economics & Statistics",
-      password: "@Abc5273",
+      password: "@Abc321!",
     },
     {
       username: "vpg_priyankara",
@@ -2265,7 +2265,7 @@ async function main() {
       phone: "0710000019",
       sex: UserSex.MALE,
       departmentName: "Department of Economics & Statistics",
-      password: "@Abc5273",
+      password: "@Abc321!",
     },
     {
       username: "rmnb_rathnayake",
@@ -2276,7 +2276,7 @@ async function main() {
       phone: "0710000020",
       sex: UserSex.MALE,
       departmentName: "Department of Economics & Statistics",
-      password: "@Abc5273",
+      password: "@Abc321!",
     },
     {
       username: "wrys_samarasekara",
@@ -2287,7 +2287,7 @@ async function main() {
       phone: "0710000021",
       sex: UserSex.MALE,
       departmentName: "Department of Economics & Statistics",
-      password: "@Abc5273",
+      password: "@Abc321!",
     },
     {
       username: "jdu_indumini",
@@ -2298,7 +2298,7 @@ async function main() {
       phone: "0710000022",
       sex: UserSex.FEMALE,
       departmentName: "Department of Economics & Statistics",
-      password: "@Abc5273",
+      password: "@Abc321!",
     },
     {
       username: "kt_dananjali",
@@ -2309,7 +2309,7 @@ async function main() {
       phone: "0710000023",
       sex: UserSex.FEMALE,
       departmentName: "Department of Economics & Statistics",
-      password: "@Abc5273",
+      password: "@Abc321!",
     },
 
     // Department of English Language Teaching
@@ -2322,7 +2322,7 @@ async function main() {
       phone: "0710000101",
       sex: UserSex.FEMALE,
       departmentName: "The Department of English Language Teaching",
-      password: "@Abc5273",
+      password: "@Abc321!",
     },
     {
       username: "ksn_prasangani",
@@ -2333,7 +2333,7 @@ async function main() {
       phone: "0710000102",
       sex: UserSex.FEMALE,
       departmentName: "The Department of English Language Teaching",
-      password: "@Abc5273",
+      password: "@Abc321!",
     },
     {
       username: "rwm_weerakoon",
@@ -2344,7 +2344,7 @@ async function main() {
       phone: "0710000103",
       sex: UserSex.FEMALE,
       departmentName: "The Department of English Language Teaching",
-      password: "@Abc5273",
+      password: "@Abc321!",
     },
     {
       username: "nal_dilusha_randi",
@@ -2355,7 +2355,7 @@ async function main() {
       phone: "0710000104",
       sex: UserSex.FEMALE,
       departmentName: "The Department of English Language Teaching",
-      password: "@Abc5273",
+      password: "@Abc321!",
     },
     {
       username: "ad_maxworth",
@@ -2366,7 +2366,7 @@ async function main() {
       phone: "0710000105",
       sex: UserSex.FEMALE,
       departmentName: "The Department of English Language Teaching",
-      password: "@Abc5273",
+      password: "@Abc321!",
     },
     {
       username: "ubahn_perera",
@@ -2377,7 +2377,7 @@ async function main() {
       phone: "0710000106",
       sex: UserSex.FEMALE,
       departmentName: "The Department of English Language Teaching",
-      password: "@Abc5273",
+      password: "@Abc321!",
     },
     {
       username: "jdum_jayasinghe",
@@ -2388,7 +2388,7 @@ async function main() {
       phone: "0710000107",
       sex: UserSex.FEMALE,
       departmentName: "The Department of English Language Teaching",
-      password: "@Abc5273",
+      password: "@Abc321!",
     },
     {
       username: "he_wijayawantha",
@@ -2399,7 +2399,7 @@ async function main() {
       phone: "0710000108",
       sex: UserSex.FEMALE,
       departmentName: "The Department of English Language Teaching",
-      password: "@Abc5273",
+      password: "@Abc321!",
     },
 
     // Department of Geography & Environmental Management
@@ -2412,7 +2412,7 @@ async function main() {
       phone: "0710000201",
       sex: UserSex.MALE,
       departmentName: "Department of Geography & Environmental Management",
-      password: "@Abc5273",
+      password: "@Abc321!",
     },
     {
       username: "kvd_edirisooriya",
@@ -2423,7 +2423,7 @@ async function main() {
       phone: "0710000202",
       sex: UserSex.FEMALE,
       departmentName: "Department of Geography & Environmental Management",
-      password: "@Abc5273",
+      password: "@Abc321!",
     },
     {
       username: "kpl_nishantha_patabandi",
@@ -2434,7 +2434,7 @@ async function main() {
       phone: "0710000203",
       sex: UserSex.MALE,
       departmentName: "Department of Geography & Environmental Management",
-      password: "@Abc5273",
+      password: "@Abc321!",
     },
     {
       username: "emtk_senevirathna",
@@ -2445,7 +2445,7 @@ async function main() {
       phone: "0710000204",
       sex: UserSex.FEMALE,
       departmentName: "Department of Geography & Environmental Management",
-      password: "@Abc5273",
+      password: "@Abc321!",
     },
     {
       username: "hmp_herath",
@@ -2456,7 +2456,7 @@ async function main() {
       phone: "0710000205",
       sex: UserSex.FEMALE,
       departmentName: "Department of Geography & Environmental Management",
-      password: "@Abc5273",
+      password: "@Abc321!",
     },
     {
       username: "kbpca_wijerathne",
@@ -2467,7 +2467,7 @@ async function main() {
       phone: "0710000206",
       sex: UserSex.FEMALE,
       departmentName: "Department of Geography & Environmental Management",
-      password: "@Abc5273",
+      password: "@Abc321!",
     },
 
     // Department of Information Technology
@@ -2480,7 +2480,7 @@ async function main() {
       phone: "0710000301",
       sex: UserSex.MALE,
       departmentName: "Department of Information Technology",
-      password: "@Abc5273",
+      password: "@Abc321!",
     },
 
     // Department of Languages
@@ -2493,7 +2493,7 @@ async function main() {
       phone: "0710000401",
       sex: UserSex.FEMALE,
       departmentName: "Department of Languages",
-      password: "@Abc5273",
+      password: "@Abc321!",
     },
     {
       username: "ssa_senevirathne",
@@ -2504,7 +2504,7 @@ async function main() {
       phone: "0710000402",
       sex: UserSex.MALE,
       departmentName: "Department of Languages",
-      password: "@Abc5273",
+      password: "@Abc321!",
     },
     {
       username: "wm_ariyaratne",
@@ -2515,7 +2515,7 @@ async function main() {
       phone: "0710000403",
       sex: UserSex.MALE,
       departmentName: "Department of Languages",
-      password: "@Abc5273",
+      password: "@Abc321!",
     },
     {
       username: "rgs_rathnayake",
@@ -2526,7 +2526,7 @@ async function main() {
       phone: "0710000404",
       sex: UserSex.MALE,
       departmentName: "Department of Languages",
-      password: "@Abc5273",
+      password: "@Abc321!",
     },
     {
       username: "jkc_dissanayake",
@@ -2537,7 +2537,7 @@ async function main() {
       phone: "0710000405",
       sex: UserSex.MALE,
       departmentName: "Department of Languages",
-      password: "@Abc5273",
+      password: "@Abc321!",
     },
     {
       username: "gkcs_de_silva",
@@ -2548,7 +2548,7 @@ async function main() {
       phone: "0710000410",
       sex: UserSex.FEMALE,
       departmentName: "Department of Languages",
-      password: "@Abc5273",
+      password: "@Abc321!",
     },
     {
       username: "sr_devakumare",
@@ -2559,7 +2559,7 @@ async function main() {
       phone: "0710000411",
       sex: UserSex.FEMALE,
       departmentName: "Department of Languages",
-      password: "@Abc5273",
+      password: "@Abc321!",
     },
     {
       username: "krwkh_abeywickrama",
@@ -2570,7 +2570,7 @@ async function main() {
       phone: "0710000412",
       sex: UserSex.MALE,
       departmentName: "Department of Languages",
-      password: "@Abc5273",
+      password: "@Abc321!",
     },
     {
       username: "ha_hapugoda",
@@ -2581,7 +2581,7 @@ async function main() {
       phone: "0710000413",
       sex: UserSex.MALE,
       departmentName: "Department of Languages",
-      password: "@Abc5273",
+      password: "@Abc321!",
     },
     {
       username: "bapml_pathirana",
@@ -2592,7 +2592,7 @@ async function main() {
       phone: "0710000414",
       sex: UserSex.MALE,
       departmentName: "Department of Languages",
-      password: "@Abc5273",
+      password: "@Abc321!",
     },
     {
       username: "b_nagoda_vithana",
@@ -2603,7 +2603,7 @@ async function main() {
       phone: "0710000415",
       sex: UserSex.MALE,
       departmentName: "Department of Languages",
-      password: "@Abc5273",
+      password: "@Abc321!",
     },
     {
       username: "nsd_paranavitana",
@@ -2614,7 +2614,7 @@ async function main() {
       phone: "0710000416",
       sex: UserSex.MALE,
       departmentName: "Department of Languages",
-      password: "@Abc5273",
+      password: "@Abc321!",
     },
     {
       username: "dansy_dassanayake",
@@ -2625,7 +2625,7 @@ async function main() {
       phone: "0710000417",
       sex: UserSex.MALE,
       departmentName: "Department of Languages",
-      password: "@Abc5273",
+      password: "@Abc321!",
     },
     {
       username: "mad_de_silva_weerakkody",
@@ -2636,7 +2636,7 @@ async function main() {
       phone: "0710000418",
       sex: UserSex.FEMALE,
       departmentName: "Department of Languages",
-      password: "@Abc5273",
+      password: "@Abc321!",
     },
     {
       username: "spsp_weerasinghe",
@@ -2647,7 +2647,7 @@ async function main() {
       phone: "0710000419",
       sex: UserSex.FEMALE,
       departmentName: "Department of Languages",
-      password: "@Abc5273",
+      password: "@Abc321!",
     },
     {
       username: "pdm_muthumali",
@@ -2658,7 +2658,7 @@ async function main() {
       phone: "0710000420",
       sex: UserSex.FEMALE,
       departmentName: "Department of Languages",
-      password: "@Abc5273",
+      password: "@Abc321!",
     },
     {
       username: "wm_seuwandi",
@@ -2669,7 +2669,7 @@ async function main() {
       phone: "0710000421",
       sex: UserSex.FEMALE,
       departmentName: "Department of Languages",
-      password: "@Abc5273",
+      password: "@Abc321!",
     },
     {
       username: "rarp_maduwanthi",
@@ -2680,7 +2680,7 @@ async function main() {
       phone: "0710000422",
       sex: UserSex.FEMALE,
       departmentName: "Department of Languages",
-      password: "@Abc5273",
+      password: "@Abc321!",
     },
     {
       username: "ah_lareena",
@@ -2691,7 +2691,7 @@ async function main() {
       phone: "0710000423",
       sex: UserSex.FEMALE,
       departmentName: "Department of Languages",
-      password: "@Abc5273",
+      password: "@Abc321!",
     },
     {
       username: "je_mohotti",
@@ -2702,7 +2702,7 @@ async function main() {
       phone: "0710000424",
       sex: UserSex.FEMALE,
       departmentName: "Department of Languages",
-      password: "@Abc5273",
+      password: "@Abc321!",
     },
     {
       username: "dmhc_dissanayake",
@@ -2713,7 +2713,7 @@ async function main() {
       phone: "0710000425",
       sex: UserSex.FEMALE,
       departmentName: "Department of Languages",
-      password: "@Abc5273",
+      password: "@Abc321!",
     },
     {
       username: "n_sudarshini",
@@ -2724,7 +2724,7 @@ async function main() {
       phone: "0710000426",
       sex: UserSex.FEMALE,
       departmentName: "Department of Languages",
-      password: "@Abc5273",
+      password: "@Abc321!",
     },
     {
       username: "j_harosana",
@@ -2735,7 +2735,7 @@ async function main() {
       phone: "0710000427",
       sex: UserSex.FEMALE,
       departmentName: "Department of Languages",
-      password: "@Abc5273",
+      password: "@Abc321!",
     },
     {
       username: "jam_hansani",
@@ -2746,7 +2746,7 @@ async function main() {
       phone: "0710000428",
       sex: UserSex.FEMALE,
       departmentName: "Department of Languages",
-      password: "@Abc5273",
+      password: "@Abc321!",
     },
     {
       username: "i_rathnayake",
@@ -2757,7 +2757,7 @@ async function main() {
       phone: "0710000429",
       sex: UserSex.FEMALE,
       departmentName: "Department of Languages",
-      password: "@Abc5273",
+      password: "@Abc321!",
     },
 
     // Department of Social Sciences
@@ -2770,7 +2770,7 @@ async function main() {
       phone: "0710000501",
       sex: UserSex.MALE,
       departmentName: "Department of Social Sciences",
-      password: "@Abc5273",
+      password: "@Abc321!",
     },
     {
       username: "sarath_ananda",
@@ -2781,7 +2781,7 @@ async function main() {
       phone: "0710000502",
       sex: UserSex.MALE,
       departmentName: "Department of Social Sciences",
-      password: "@Abc5273",
+      password: "@Abc321!",
     },
     {
       username: "wmj_welgama",
@@ -2792,7 +2792,7 @@ async function main() {
       phone: "0710000503",
       sex: UserSex.MALE,
       departmentName: "Department of Social Sciences",
-      password: "@Abc5273",
+      password: "@Abc321!",
     },
     {
       username: "hranjith",
@@ -2803,7 +2803,7 @@ async function main() {
       phone: "0710000504",
       sex: UserSex.MALE,
       departmentName: "Department of Social Sciences",
-      password: "@Abc5273",
+      password: "@Abc321!",
     },
     {
       username: "rp_hemalatha",
@@ -2814,7 +2814,7 @@ async function main() {
       phone: "0710000505",
       sex: UserSex.FEMALE,
       departmentName: "Department of Social Sciences",
-      password: "@Abc5273",
+      password: "@Abc321!",
     },
     {
       username: "sk_handaragama",
@@ -2825,7 +2825,7 @@ async function main() {
       phone: "0710000506",
       sex: UserSex.MALE,
       departmentName: "Department of Social Sciences",
-      password: "@Abc5273",
+      password: "@Abc321!",
     },
     {
       username: "ns_jayathunga",
@@ -2836,7 +2836,7 @@ async function main() {
       phone: "0710000507",
       sex: UserSex.FEMALE,
       departmentName: "Department of Social Sciences",
-      password: "@Abc5273",
+      password: "@Abc321!",
     },
     {
       username: "gcl_pathirana",
@@ -2847,7 +2847,7 @@ async function main() {
       phone: "0710000508",
       sex: UserSex.MALE,
       departmentName: "Department of Social Sciences",
-      password: "@Abc5273",
+      password: "@Abc321!",
     },
     {
       username: "g_de_silva",
@@ -2858,7 +2858,7 @@ async function main() {
       phone: "0710000509",
       sex: UserSex.MALE,
       departmentName: "Department of Social Sciences",
-      password: "@Abc5273",
+      password: "@Abc321!",
     },
     {
       username: "rc_palliyaguruge",
@@ -2869,7 +2869,7 @@ async function main() {
       phone: "0710000510",
       sex: UserSex.MALE,
       departmentName: "Department of Social Sciences",
-      password: "@Abc5273",
+      password: "@Abc321!",
     },
     {
       username: "p_uluwaduge",
@@ -2880,7 +2880,7 @@ async function main() {
       phone: "0710000511",
       sex: UserSex.MALE,
       departmentName: "Department of Social Sciences",
-      password: "@Abc5273",
+      password: "@Abc321!",
     },
     {
       username: "rmaw_jayathilaka",
@@ -2891,7 +2891,7 @@ async function main() {
       phone: "0710000512",
       sex: UserSex.MALE,
       departmentName: "Department of Social Sciences",
-      password: "@Abc5273",
+      password: "@Abc321!",
     },
   ];
 
