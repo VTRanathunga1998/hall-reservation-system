@@ -69,13 +69,17 @@ const LeuturersListPage = async ({
       key={item.id}
       className="border-b border-gray-200 even:bg-slate-50 text-sm hover:bg-[#F1F0FF]"
     >
-      <td className="py-4">
-        {item.title + ". " + item.name + " " + item.surname}
+      <td className="py-4 text-left align-top">
+        {item.title + ". " + item.name.toUpperCase() + " " + item.surname}
       </td>
       <td className="">{item.department.name}</td>
-      <td className="hidden md:table-cell py-4">{item.email}</td>
-      <td className="hidden md:table-cell py-4">{item.phone}</td>
-      <td className="hidden lg:table-cell py-4">
+      <td className="hidden md:table-cell py-4 text-left align-top">
+        {item.email}
+      </td>
+      <td className="hidden md:table-cell py-4 text-left align-top">
+        {item.phone}
+      </td>
+      <td className="hidden lg:table-cell py-4 text-left align-top">
         {item.subjects && item.subjects.length > 0
           ? item.subjects.length > 3
             ? `${item.subjects

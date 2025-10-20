@@ -1,6 +1,9 @@
-import { Lecturer, Prisma, Subject } from "@prisma/client";
+import { Department, Lecturer, Prisma, Subject } from "@prisma/client";
 import EmptyState from "@/components/EmptyState";
-import FormContainer from "@/components/FormContainer";
+import FormContainer, {
+  cleanSubjectCodes,
+  departmentsShortCode,
+} from "@/components/FormContainer";
 import Pagination from "@/components/Pagination";
 import Table from "@/components/Table";
 import TableSearch from "@/components/TableSearch";
@@ -9,7 +12,7 @@ import { ITEM_PER_PAGE } from "@/lib/settings";
 import { auth } from "@clerk/nextjs/server";
 import Image from "next/image";
 
-type SubjectList = Subject & { lecturers: Lecturer[] };
+type SubjectList = Subject & { lecturers: Lecturer[]; department: Department };
 
 const SubjectListPage = async ({
   searchParams,
@@ -45,6 +48,11 @@ const SubjectListPage = async ({
       accessor: "lecturers",
       className: "hidden md:table-cell",
     },
+    {
+      header: "Department",
+      accessor: "departments",
+      className: "hidden md:table-cell",
+    },
     ...(role === "admin"
       ? [
           {
@@ -60,14 +68,19 @@ const SubjectListPage = async ({
       key={item.id}
       className="border-b border-gray-200 even:bg-slate-50 text-sm hover:bg-[#F1F0FF]"
     >
-      <td className=" py-4 px-2">{item.code}</td>
-      <td className=" py-4 px-2">{item.name}</td>
-      <td className="hidden md:table-cell py-4 px-2">
-        {item.lecturers
-          .map((lecturer) => lecturer.name + " " + lecturer.surname)
-          .join(", ")}
+      <td className=" py-4 text-left align-top">{item.code}</td>
+      <td className=" py-4 text-left align-top">{item.name}</td>
+      <td className="hidden md:table-cell py-4 text-left align-top">
+        {item.lecturers.map((lecturer, index) => (
+          <span key={lecturer.id}>
+            {lecturer.name.toUpperCase()} {lecturer.surname}
+            {index < item.lecturers.length - 1 && <br />}
+          </span>
+        ))}
       </td>
-      <td className="py-4 px-2">
+
+      <td className="hidden md:table-cell py-4 text-left align-top">{item.department.name}</td>
+      <td className="py-4 text-left align-top">
         <div className="flex flex-col md:flex-row items-center gap-2">
           {role === "admin" && (
             <>
@@ -116,19 +129,23 @@ const SubjectListPage = async ({
       break;
   }
 
-  const [data, count] = await prisma.$transaction([
+  let [data, count] = await prisma.$transaction([
     prisma.subject.findMany({
       where: query,
       take: ITEM_PER_PAGE,
       skip: ITEM_PER_PAGE * (p - 1),
       include: {
         lecturers: true,
+        department: true,
       },
     }),
     prisma.subject.count({
       where: query,
     }),
   ]);
+
+  // Clean subject codes
+  data = cleanSubjectCodes(data, departmentsShortCode);
 
   return (
     <div className="bg-white p-4 rounded-md flex-1 m-2 mt-0">

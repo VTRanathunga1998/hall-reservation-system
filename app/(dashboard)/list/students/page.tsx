@@ -65,21 +65,26 @@ const StudentsListPage = async ({
       key={item.id}
       className="border-b border-gray-200 even:bg-slate-50 text-sm hover:bg-[#F1F0FF]"
     >
-      <td className="py-4">{item.username}</td>
-      <td className="hidden md:table-cell py-4">{item.email || "-"}</td>
-      <td className="hidden md:table-cell py-4">{item.phone || "-"}</td>
-      <td className="hidden lg:table-cell py-4">
-        {item.subjects && item.subjects.length > 0
-          ? item.subjects.length > 3
-            ? `${item.subjects
-                .slice(0, 3)
-                .map((s) => s.code)
-                .join(", ")}...`
-            : item.subjects.map((s) => s.code).join(", ")
-          : "-"}
+      <td className="py-4 text-left align-top">{item.username}</td>
+      <td className="hidden md:table-cell py-4 text-left align-top">
+        {item.email || "-"}
+      </td>
+      <td className="hidden md:table-cell py-4 text-left align-top">
+        {item.phone || "-"}
+      </td>
+      <td className="hidden lg:table-cell py-4 text-left align-top">
+        {item.subjects && item.subjects.length > 0 ? (
+          <>
+            {item.subjects.slice(0, 3).map((s, index) => (
+              <div key={index}>{s.code}</div>
+            ))}
+          </>
+        ) : (
+          "-"
+        )}
       </td>
 
-      <td className="py-4">
+      <td className="py-4 text-left align-top">
         <div className="flex flex-col md:flex-row items-center gap-2">
           {role === "admin" && (
             <>

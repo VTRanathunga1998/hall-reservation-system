@@ -91,31 +91,31 @@ const ReservationsListPage = async ({
       key={item.id}
       className="border-b border-gray-200 even:bg-slate-50 text-sm hover:bg-[#F1F0FF]"
     >
-      <td className="hidden md:table-cell py-4">{item.id}</td>
-      <td className="hidden md:table-cell py-4">
+      <td className="hidden md:table-cell py-4 text-left align-top">{item.id}</td>
+      <td className="hidden md:table-cell py-4 text-left align-top">
         {item.lectureRoom.hall.name}
       </td>
-      <td className="py-4">{item.lectureRoom.name}</td>
-      <td className="hidden md:table-cell py-4">{item.subject.code}</td>
+      <td className="py-4 text-left align-top">{item.lectureRoom.name}</td>
+      <td className="hidden md:table-cell py-4 text-left align-top">{item.subject.code}</td>
       {role === "admin" && (
-        <td className="hidden md:table-cell py-4">
-          {item.lecturer.name} {item.lecturer.surname}
+        <td className="hidden md:table-cell py-4 text-left align-top">
+          {item.lecturer.name.toUpperCase()} {item.lecturer.surname}
         </td>
       )}
 
-      <td className="py-4">
+      <td className="py-4 text-left align-top">
         {new Date(item.startTime).toLocaleDateString("en-LK", {
           timeZone: "Asia/Colombo",
         })}
       </td>
-      <td className="py-4">
+      <td className="py-4 text-left align-top">
         {new Date(item.startTime).toLocaleTimeString("en-LK", {
           hour: "2-digit",
           minute: "2-digit",
           timeZone: "Asia/Colombo",
         })}
       </td>
-      <td className="py-4">
+      <td className="py-4 text-left align-top">
         {new Date(item.endTime).toLocaleTimeString("en-LK", {
           hour: "2-digit",
           minute: "2-digit",
@@ -123,7 +123,7 @@ const ReservationsListPage = async ({
         })}
       </td>
 
-      <td className="py-4">
+      <td className="py-4 text-left align-top">
         <div className="flex flex-col md:flex-row items-center gap-2">
           {(role === "admin" || role === "lecturer") && (
             <>

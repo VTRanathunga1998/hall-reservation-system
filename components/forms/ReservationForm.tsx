@@ -232,7 +232,7 @@ const ReservationForm = ({
               {filteredLecturers.map(
                 (s: { id: string; name: string; surname: string }) => (
                   <option value={s.id} key={s.id}>
-                    {s.name} {s.surname}
+                    {s.name.toUpperCase()} {s.surname}
                   </option>
                 )
               )}

@@ -2,7 +2,7 @@ import { prisma } from "@/lib/prisma";
 import FormModal from "./FormModal";
 
 // Department short codes
-const departmentsShortCode = [
+export const departmentsShortCode = [
   { id: 1, short: "DES" }, // Department of Economics & Statistics
   { id: 2, short: "DELT" }, // Department of English Language Teaching
   { id: 3, short: "DGM" }, // Department of Geography & Environmental Management
@@ -12,7 +12,10 @@ const departmentsShortCode = [
 ];
 
 // Utility to clean subject codes (remove short code prefix)
-function cleanSubjectCodes(subjects: any[], departmentsShortCode: any[]) {
+export function cleanSubjectCodes(
+  subjects: any[],
+  departmentsShortCode: any[]
+) {
   return subjects.map((subject) => {
     const dept = departmentsShortCode.find(
       (d) => d.id === subject.departmentId
