@@ -826,6 +826,7 @@ export const createSubject = async (
           .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
           .join(" "),
         code: data.code,
+        credit: data.credit,
         departmentId: data.departmentId,
       },
     });

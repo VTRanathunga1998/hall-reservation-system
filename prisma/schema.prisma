@@ -81,6 +81,7 @@ model Subject{
   id Int @id @default(autoincrement())
   code String @unique
   name String 
+  credit Int
   lecturers Lecturer[]
   students Student[]
   reservations Reservation[]

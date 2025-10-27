@@ -10,7 +10,6 @@ import TableSearch from "@/components/TableSearch";
 import { prisma } from "@/lib/prisma";
 import { ITEM_PER_PAGE } from "@/lib/settings";
 import { auth } from "@clerk/nextjs/server";
-import Image from "next/image";
 
 type SubjectList = Subject & { lecturers: Lecturer[]; department: Department };
 
@@ -115,7 +114,7 @@ const SubjectListPage = async ({
       break;
     case "lecturer":
       query.lecturers = {
-        some: {
+    some: { 
           id: currentUserId!,
         },
       };

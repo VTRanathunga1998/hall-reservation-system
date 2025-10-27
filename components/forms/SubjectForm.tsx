@@ -104,6 +104,14 @@ const SubjectForm = ({
           register={register}
           error={errors?.code}
         />
+        <InputField
+          label="Credit"
+          name="credit"
+          defaultValue={data?.credit}
+          register={register}
+          registerOptions={{ valueAsNumber: true }}
+          error={errors?.credit}
+        />
         {data && (
           <input
             type="hidden"
