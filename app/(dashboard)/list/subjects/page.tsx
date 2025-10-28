@@ -1,15 +1,13 @@
 import { Department, Lecturer, Prisma, Subject } from "@prisma/client";
 import EmptyState from "@/components/EmptyState";
-import FormContainer, {
-  cleanSubjectCodes,
-  departmentsShortCode,
-} from "@/components/FormContainer";
 import Pagination from "@/components/Pagination";
 import Table from "@/components/Table";
 import TableSearch from "@/components/TableSearch";
 import { prisma } from "@/lib/prisma";
 import { ITEM_PER_PAGE } from "@/lib/settings";
 import { auth } from "@clerk/nextjs/server";
+import FormContainer from "@/components/FormContainer";
+import SubjectFormContainer from "@/components/SubjectFormContainer";
 
 type SubjectList = Subject & { lecturers: Lecturer[]; department: Department };
 
@@ -20,7 +18,6 @@ const SubjectListPage = async ({
 }) => {
   const { userId, sessionClaims } = await auth();
   const role = (sessionClaims?.metadata as { role?: string })?.role;
-  const currentUserId = userId;
 
   const resolvedSearchParams = await searchParams;
 
@@ -78,13 +75,24 @@ const SubjectListPage = async ({
         ))}
       </td>
 
-      <td className="hidden md:table-cell py-4 text-left align-top">{item.department.name}</td>
+      <td className="hidden md:table-cell py-4 text-left align-top">
+        {item.department?.name || "-"}
+      </td>
       <td className="py-4 text-left align-top">
         <div className="flex flex-col md:flex-row items-center gap-2">
           {role === "admin" && (
             <>
               <FormContainer table="subject" type="update" data={item} />
               <FormContainer table="subject" type="delete" id={item.id} />
+            </>
+          )}
+          {role === "student" && (
+            <>
+              <SubjectFormContainer
+                type="remove"
+                id={item.id}
+                userId={userId!}
+              />
             </>
           )}
         </div>
@@ -114,15 +122,15 @@ const SubjectListPage = async ({
       break;
     case "lecturer":
       query.lecturers = {
-    some: { 
-          id: currentUserId!,
+        some: {
+          id: userId!,
         },
       };
       break;
     case "student":
       query.students = {
         some: {
-          id: currentUserId!,
+          id: userId!,
         },
       };
       break;
@@ -143,8 +151,10 @@ const SubjectListPage = async ({
     }),
   ]);
 
-  // Clean subject codes
-  data = cleanSubjectCodes(data, departmentsShortCode);
+  const subData = await prisma.subject.findMany({
+    where: query,
+    select: { id: true, name: true, code: true },
+  });
 
   return (
     <div className="bg-white p-4 rounded-md flex-1 m-2 mt-0">
@@ -162,6 +172,13 @@ const SubjectListPage = async ({
             </button> */}
             {role === "admin" && (
               <FormContainer table="subject" type="create" />
+            )}
+            {role === "student" && (
+              <SubjectFormContainer
+                type="select"
+                userId={userId!}
+                data={subData}
+              />
             )}
           </div>
         </div>

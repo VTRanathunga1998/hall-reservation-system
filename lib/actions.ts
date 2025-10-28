@@ -7,6 +7,7 @@ import {
   LectureRoomSchema,
   LecturerSchema,
   ReservationSchema,
+  SelectSubjectSchema,
   StudentSchema,
   SubjectSchema,
 } from "./formValidationsSchemas";
@@ -903,6 +904,105 @@ export const deleteSubject = async (
       success: false,
       error: true,
       message: "A subject deleting failed.",
+    };
+  }
+};
+
+export const selectSubject = async (
+  currentState: CurrentState,
+  data: SelectSubjectSchema
+) => {
+  try {
+    if (!data.id) {
+      return {
+        success: false,
+        error: true,
+        message: "Student ID is required.",
+      };
+    }
+
+    if (!Array.isArray(data.subjectIds) || data.subjectIds.length === 0) {
+      return {
+        success: false,
+        error: true,
+        message: "Please select at least one subject.",
+      };
+    }
+
+    const student = await prisma.student.findUnique({
+      where: { id: data.id },
+      include: { subjects: { select: { id: true } } },
+    });
+
+    if (!student) {
+      return {
+        success: false,
+        error: true,
+        message: "Student not found.",
+      };
+    }
+
+    // Replace all existing subjects with the new selection
+    await prisma.student.update({
+      where: { id: data.id },
+      data: {
+        subjects: {
+          set: data.subjectIds.map((id) => ({ id })), // <-- replaces all subjects
+        },
+      },
+    });
+
+    return {
+      success: true,
+      error: false,
+      message: `Successfully enrolled in ${data.subjectIds.length} subject(s).`,
+    };
+  } catch (error) {
+    console.error("Error updating subjects:", error);
+    return {
+      success: false,
+      error: true,
+      message: "Failed to update subject enrollment.",
+    };
+  }
+};
+
+export const removeSubject = async (
+  currentState: CurrentState,
+  formData: FormData
+) => {
+  const subjectId = Number(formData.get("id"));
+  const userId = formData.get("userId") as string;
+
+  if (!subjectId || !userId) {
+    return {
+      success: false,
+      error: true,
+      message: "Invalid student or subject ID.",
+    };
+  }
+
+  try {
+    await prisma.student.update({
+      where: { id: userId },
+      data: {
+        subjects: {
+          disconnect: { id: subjectId },
+        },
+      },
+    });
+
+    return {
+      success: true,
+      error: false,
+      message: "Subject removed successfully.",
+    };
+  } catch (error) {
+    console.error("Error removing subject:", error);
+    return {
+      success: false,
+      error: true,
+      message: "Failed to remove subject.",
     };
   }
 };

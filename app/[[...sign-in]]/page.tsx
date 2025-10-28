@@ -17,7 +17,7 @@ const LoginPage = () => {
 
     if (role) {
       if (role === "student") {
-        router.push(`/upcoming`);
+        router.push(`/gpa`);
       } else {
         router.push(`/home`);
       }

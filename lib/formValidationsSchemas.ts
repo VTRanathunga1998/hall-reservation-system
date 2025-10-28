@@ -114,3 +114,12 @@ export const reservationSchema = z
   });
 
 export type ReservationSchema = z.infer<typeof reservationSchema>;
+
+export const selectSubjectSchema = z.object({
+  id: z.string({ message: "Student ID is required!" }),
+  subjectIds: z
+    .array(z.number({ message: "Subject ID must be a number!" }))
+    .min(1, { message: "Select at least one subject!" }),
+});
+
+export type SelectSubjectSchema = z.infer<typeof selectSubjectSchema>;
