@@ -29,13 +29,13 @@ const LoginPage = () => {
       <SignIn.Root>
         <SignIn.Step
           name="start"
-          className="bg-white p-12 rounded-md shadow-2xl flex flex-col gap-2"
+          className="bg-white p-12 rounded-md shadow-2xl flex flex-col gap-2 w-full max-w-md"
         >
           <h1 className="text-xl font-bold flex items-center justify-center gap-2 w-full ">
             <Image src="/logo.png" alt="" height={48} width={48} />
           </h1>
           <h2 className="text-gray-400">Sign into your account</h2>
-          <Clerk.GlobalError className="text-sm text-red-400" />
+          <Clerk.GlobalError className="text-sm text-red-400 bg-red-50 border border-red-200 rounded-md p-3 max-w-full break-words" />
           <Clerk.Field name="identifier" className="flex flex-col gap-2">
             <Clerk.Label className="text-sm text-gray-500">
               Username
@@ -45,7 +45,7 @@ const LoginPage = () => {
               required
               className="p-2 rounded-md ring-1 ring-gray-300"
             />
-            <Clerk.FieldError className="text-sm text-red-400" />
+            <Clerk.FieldError className="text-sm text-red-400 bg-red-50 border border-red-200 rounded-md p-2 max-w-full break-words" />
           </Clerk.Field>
           <Clerk.Field name="password" className="flex flex-col gap-2">
             <Clerk.Label className="text-sm text-gray-500">
@@ -56,7 +56,7 @@ const LoginPage = () => {
               required
               className="p-2 rounded-md ring-1 ring-gray-300"
             />
-            <Clerk.FieldError className="text-sm text-red-400" />
+            <Clerk.FieldError className="text-sm text-red-400 bg-red-50 border border-red-200 rounded-md p-2 max-w-full break-words" />
           </Clerk.Field>
           <SignIn.Action
             submit

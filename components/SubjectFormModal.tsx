@@ -51,7 +51,7 @@ const SubjectFormModal = ({
         <input type="hidden" name="id" defaultValue={id} />
         <input type="hidden" name="userId" defaultValue={userId} />
         <span className="text-center font-medium">
-          All data will be lost. Are you sure you want to remove this subject?
+          Are you sure you want to remove this subject?
         </span>
         <button
           type="submit"
