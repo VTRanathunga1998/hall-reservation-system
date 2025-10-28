@@ -77,18 +77,19 @@ model Lecturer {
   department Department @relation(fields: [departmentId], references: [id])
 }
 
-model Subject{
-  id Int @id @default(autoincrement())
-  code String @unique
-  name String 
-  credit Int
-  lecturers Lecturer[]
-  students Student[]
+model Subject {
+  id           Int          @id @default(autoincrement())
+  code         String       @unique
+  name         String
+  credit       Int
+  lecturers    Lecturer[]
+  students     Student[]
   reservations Reservation[]
 
-  departmentId Int
-  department Department @relation(fields: [departmentId], references: [id])
+  departmentId Int?         
+  department   Department?  @relation(fields: [departmentId], references: [id])
 }
+
 
 model Reservation {
   id Int @id @default(autoincrement())
