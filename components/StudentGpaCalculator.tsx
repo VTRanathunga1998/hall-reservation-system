@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useMemo, useState } from "react";
+import React, { useMemo, useState, useEffect } from "react";
 
 type Subject = {
   id: number | string;
@@ -28,10 +28,9 @@ function parseYearSemesterFromCode(code: string): {
   year: number | null;
   semester: number | null;
 } {
-  // Find numeric part anywhere in the code (e.g., "ECO 111", "STC325", "ABC 212")
   const m = code.match(/(\d+)/);
   if (!m) return { year: null, semester: null };
-  const nums = m[1]; // e.g. "111", "325", "212"
+  const nums = m[1];
   if (nums.length < 2) return { year: null, semester: null };
   const year = parseInt(nums.charAt(0), 10);
   const semester = parseInt(nums.charAt(1), 10);
@@ -45,7 +44,6 @@ export default function StudentGpaCalculator({
 }: {
   subjects: Subject[];
 }) {
-  // gradeSelections keyed by subject.id
   const [gradeSelections, setGradeSelections] = useState<
     Record<string, string>
   >({});
@@ -53,20 +51,44 @@ export default function StudentGpaCalculator({
     yearGPA: Record<number, number | null>;
     finalGPA: number | null;
   } | null>(null);
+  const [isLoaded, setIsLoaded] = useState(false);
 
-  // Group subjects by year -> semester -> [subjects]
+  // Load grades from localStorage on mount
+  useEffect(() => {
+    const savedGrades = localStorage.getItem("student_grades");
+    if (savedGrades) {
+      try {
+        const parsed = JSON.parse(savedGrades);
+        setGradeSelections(parsed);
+        // Auto-calculate if there are saved grades
+        if (Object.keys(parsed).length > 0) {
+          calculateWithGrades(parsed);
+        }
+      } catch (error) {
+        console.error("Error loading saved grades:", error);
+      }
+    }
+    setIsLoaded(true);
+  }, []);
+
+  // Save grades to localStorage whenever they change
+  useEffect(() => {
+    if (isLoaded) {
+      localStorage.setItem("student_grades", JSON.stringify(gradeSelections));
+    }
+  }, [gradeSelections, isLoaded]);
+
   const grouped = useMemo(() => {
     const map: Record<number, Record<number, Subject[]>> = {};
 
     for (const s of subjects) {
       const { year, semester } = parseYearSemesterFromCode(s.code);
-      if (!year || !semester) continue; // skip badly formatted codes
+      if (!year || !semester) continue;
       if (!map[year]) map[year] = {};
       if (!map[year][semester]) map[year][semester] = [];
       map[year][semester].push(s);
     }
 
-    // Sort subjects within each semester by code for deterministic UI
     for (const y of Object.keys(map)) {
       for (const sem of Object.keys(map[Number(y)])) {
         map[Number(y)][Number(sem)].sort((a, b) =>
@@ -86,22 +108,7 @@ export default function StudentGpaCalculator({
     [grouped]
   );
 
-  const handleSelectGrade = (
-    subjectId: number | string,
-    gradeLabel: string
-  ) => {
-    setGradeSelections((prev) => ({
-      ...prev,
-      [String(subjectId)]: gradeLabel,
-    }));
-  };
-
-  const handleReset = () => {
-    setGradeSelections({});
-    setCalculated(null);
-  };
-
-  const handleCalculate = () => {
+  const calculateWithGrades = (grades: Record<string, string>) => {
     const yearResults: Record<
       number,
       { totalPoints: number; totalCredits: number }
@@ -116,8 +123,8 @@ export default function StudentGpaCalculator({
       for (const semStr of Object.keys(sems)) {
         const sem = Number(semStr);
         for (const subj of sems[sem]) {
-          const sel = gradeSelections[String(subj.id)];
-          if (!sel) continue; // grade not selected -> skip
+          const sel = grades[String(subj.id)];
+          if (!sel) continue;
           const gp = GRADE_SCALE[sel];
           if (gp === undefined) continue;
           totalPoints += gp * subj.credit;
@@ -135,7 +142,6 @@ export default function StudentGpaCalculator({
         data.totalCredits > 0 ? data.totalPoints / data.totalCredits : null;
     }
 
-    // Final GPA: average of year GPAs that are not null
     const validYearGPAs = Object.values(yearGPA).filter(
       (g): g is number => g !== null
     );
@@ -144,16 +150,50 @@ export default function StudentGpaCalculator({
       : null;
 
     setCalculated({ yearGPA, finalGPA });
-    // you could also POST gradeSelections to server here to persist
+  };
+
+  const handleSelectGrade = (
+    subjectId: number | string,
+    gradeLabel: string
+  ) => {
+    setGradeSelections((prev) => ({
+      ...prev,
+      [String(subjectId)]: gradeLabel,
+    }));
+  };
+
+  const handleReset = () => {
+    if (confirm("Are you sure you want to clear all saved grades?")) {
+      setGradeSelections({});
+      setCalculated(null);
+      localStorage.removeItem("student_grades");
+    }
+  };
+
+  const handleCalculate = () => {
+    calculateWithGrades(gradeSelections);
   };
 
   return (
     <div className="max-w-5xl mx-auto space-y-6">
       <div className="bg-white p-6 rounded-lg shadow">
-        <h2 className="text-xl font-semibold">GPA Calculator</h2>
-        <p className="text-sm text-gray-600 mt-1">
-          Select the grade for each subject
-        </p>
+        <div className="flex justify-between items-start">
+          <div>
+            <h2 className="text-xl font-semibold">GPA Calculator</h2>
+            <p className="text-sm text-gray-600 mt-1">
+              Select the grade for each subject. Your selections are saved
+              automatically.
+            </p>
+          </div>
+          {Object.keys(gradeSelections).length > 0 && (
+            <button
+              onClick={handleReset}
+              className="px-3 py-1 text-sm text-red-600 hover:text-red-700 hover:bg-red-50 rounded transition-colors"
+            >
+              Clear All
+            </button>
+          )}
+        </div>
       </div>
 
       {yearsSorted.length === 0 ? (
@@ -222,7 +262,6 @@ export default function StudentGpaCalculator({
                         Year {year} Semester {sem} summary
                       </div>
                       <div className="text-sm text-gray-700">
-                        {/* compute semester subtotal on the fly */}
                         {(() => {
                           const semSubs = semSubjects;
                           let pts = 0;
@@ -275,7 +314,6 @@ export default function StudentGpaCalculator({
         </div>
       </div>
 
-      {/* legend */}
       <div className="bg-white p-4 rounded shadow">
         <h4 className="font-semibold mb-2">Grade Scale</h4>
         <div className="grid grid-cols-2 md:grid-cols-6 gap-2 text-sm">
@@ -286,6 +324,13 @@ export default function StudentGpaCalculator({
             </div>
           ))}
         </div>
+      </div>
+
+      <div className="p-3 bg-blue-50 rounded-lg text-xs text-blue-800">
+        <p>
+          💡 <strong>Note:</strong> Your grade selections are saved locally in
+          your browser and will persist across sessions.
+        </p>
       </div>
     </div>
   );

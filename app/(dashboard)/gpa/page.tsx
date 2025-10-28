@@ -5,8 +5,7 @@ import { auth } from "@clerk/nextjs/server";
 import StudentGpaCalculator from "@/components/StudentGpaCalculator";
 
 export default async function Page() {
-  // adapt this to your auth method — return current user id
-  const { userId } = await auth(); // <-- make sure this returns the logged in user's id
+  const { userId } = await auth();
 
   if (!userId) {
     return (
@@ -20,7 +19,7 @@ export default async function Page() {
     );
   }
 
-  // fetch subjects that the student is enrolled in (subject.credit must exist)
+  // Fetch subjects that the student is enrolled in
   const studentSubjects = await prisma.subject.findMany({
     where: {
       students: {
