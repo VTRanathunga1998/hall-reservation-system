@@ -50,28 +50,16 @@ async function main() {
     { code: "CGS 221", name: "Soft Skills", credit: 2 },
   ];
 
-  const departmentsShortCode = [
-    { id: 1, short: "DES" }, // Department of Economics & Statistics
-    { id: 2, short: "DELT" }, // Department of English Language Teaching
-    { id: 3, short: "DGM" }, // Department of Geography & Environmental Management
-    { id: 4, short: "DIT" }, // Department of Information Technology
-    { id: 5, short: "DL" }, // Department of Languages
-    { id: 6, short: "DSS" }, // Department of Social Sciences
-  ];
-
-  for (const dep of departmentsShortCode) {
-    for (const sub of compulsorySubjects) {
-      await prisma.subject.upsert({
-        where: { code: `${dep.short} ${sub.code}` },
-        update: {},
-        create: {
-          code: `${dep.short} ${sub.code}`,
-          name: `${sub.name}`,
-          credit: sub.credit,
-          departmentId: dep.id,
-        },
-      });
-    }
+  for (const sub of compulsorySubjects) {
+    await prisma.subject.upsert({
+      where: { code: sub.code },
+      update: {},
+      create: {
+        code: sub.code,
+        name: sub.name,
+        credit: sub.credit,
+      },
+    });
   }
 
   const subjectsData = [
