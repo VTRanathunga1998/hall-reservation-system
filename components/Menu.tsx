@@ -60,6 +60,12 @@ const menuItems = [
         href: "/list/reservations",
         visible: ["admin", "lecturer"],
       },
+      {
+        icon: "/gpa.png",
+        label: "GPA Calculator",
+        href: "/gpa",
+        visible: ["student"],
+      },
     ],
   },
 ];
