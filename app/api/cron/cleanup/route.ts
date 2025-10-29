@@ -15,11 +15,11 @@ export async function GET(request: Request) {
     const hasValidToken = token && token === process.env.CRON_SECRET;
 
     if (!isVercelCron && !hasValidToken) {
-      console.error("❌ Unauthorized cleanup attempt");
+      console.error("Unauthorized cleanup attempt");
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    console.log("🧹 Starting cleanup of old reservations...");
+    console.log("Starting cleanup of old reservations...");
 
     const oneWeekAgo = new Date();
     oneWeekAgo.setDate(oneWeekAgo.getDate() - 7);
@@ -30,7 +30,7 @@ export async function GET(request: Request) {
       },
     });
 
-    console.log(`✅ Deleted ${deleted.count} old reservations`);
+    console.log(`Deleted ${deleted.count} old reservations`);
 
     return NextResponse.json({
       success: true,
@@ -38,7 +38,7 @@ export async function GET(request: Request) {
       deletedCount: deleted.count,
     });
   } catch (error) {
-    console.error("❌ Cleanup error:", error);
+    console.error("Cleanup error:", error);
     return NextResponse.json(
       { error: "Internal server error" },
       { status: 500 }
