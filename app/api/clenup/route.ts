@@ -11,6 +11,8 @@ export async function GET() {
     },
   });
 
+  console.log(`Deleted ${deleted.count} old reservations`);
+
   return NextResponse.json({
     message: `Deleted ${deleted.count} old reservations`,
   });
