@@ -52,6 +52,7 @@ model Student{
   email String? @unique
   phone String? @unique
   sex UserSex
+  yearSem Int @default(11) 
   createdAt DateTime @default(now())
   subjects Subject[]
 
