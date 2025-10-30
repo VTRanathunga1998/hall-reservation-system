@@ -10,6 +10,11 @@ export default async function Upcoming() {
 
   const now = new Date();
 
+  const student = await prisma.student.findUnique({
+    where: { id: currentUserId as string },
+    select: { yearSem: true },
+  });
+
   const reservations = await prisma.reservation.findMany({
     where: {
       subject: {
@@ -18,6 +23,7 @@ export default async function Upcoming() {
             id: currentUserId as string,
           },
         },
+        yearSem: student?.yearSem, // Filter by yearSem at database level
       },
       startTime: {
         gte: now,
@@ -36,7 +42,6 @@ export default async function Upcoming() {
       startTime: "asc",
     },
   });
-
 
   return (
     <div className="flex-1 p-2 md:p-4 text-2xl w-full h-full">

@@ -1160,3 +1160,134 @@ export const deleteReservation = async (
     };
   }
 };
+
+//Temporary
+
+/**
+ * Extracts year and semester from subject code
+ * Handles codes with or without spaces: "CEL 111", "CEL111", "ECO213"
+ */
+function parseYearSemesterFromCode(code: string): number | null {
+  // Remove all spaces from the code first
+  const cleanCode = code.replace(/\s+/g, "");
+
+  // Match pattern: letters followed by digits (e.g., "CEL111", "ECO213")
+  const match = cleanCode.match(/[A-Za-z]+(\d+)/);
+
+  if (!match || !match[1]) {
+    console.warn(`Could not parse code: ${code}`);
+    return null;
+  }
+
+  const numericPart = match[1];
+
+  // Need at least 3 digits for codes like "CEL 111"
+  if (numericPart.length < 3) {
+    console.warn(`Code ${code} has insufficient digits: ${numericPart}`);
+    return null;
+  }
+
+  // For 3-digit codes like "111", first digit is year, second is semester
+  const year = parseInt(numericPart.charAt(0), 10);
+  const semester = parseInt(numericPart.charAt(1), 10);
+
+  // Validate values
+  if (Number.isNaN(year) || Number.isNaN(semester)) {
+    console.warn(`Invalid year or semester in code: ${code}`);
+    return null;
+  }
+
+  // Validate ranges (year 1-5, semester 1-2)
+  if (year < 1 || year > 5 || semester < 1 || semester > 2) {
+    console.warn(
+      `Year or semester out of range in code ${code}: year=${year}, semester=${semester}`
+    );
+    return null;
+  }
+
+  // Combine into yearSem (e.g., year=1, semester=1 -> 11)
+  const yearSem = parseInt(`${year}${semester}`);
+
+  return yearSem;
+}
+
+/**
+ * Updates all subjects with yearSem extracted from their codes
+ */
+// export async function updateAllSubjectYearSem() {
+//   try {
+//     // Fetch all subjects
+//     const subjects = await prisma.subject.findMany({
+//       select: {
+//         id: true,
+//         code: true,
+//         yearSem: true,
+//       },
+//     });
+
+//     console.log(`Found ${subjects.length} subjects to process\n`);
+
+//     let successCount = 0;
+//     let skipCount = 0;
+//     let errorCount = 0;
+//     const skippedCodes: string[] = [];
+
+//     // Update each subject
+//     for (const subject of subjects) {
+//       const yearSem = parseYearSemesterFromCode(subject.code);
+
+//       if (yearSem === null) {
+//         console.log(`⊘ Skipping subject ${subject.code} (ID: ${subject.id})`);
+//         skipCount++;
+//         skippedCodes.push(subject.code);
+//         continue;
+//       }
+
+//       try {
+//         await prisma.subject.update({
+//           where: { id: subject.id },
+//           data: { yearSem },
+//         });
+
+//         console.log(
+//           `✓ Updated ${subject.code} (ID: ${subject.id}) -> yearSem: ${yearSem}`
+//         );
+//         successCount++;
+//       } catch (error) {
+//         console.error(`✗ Error updating subject ${subject.code}:`, error);
+//         errorCount++;
+//       }
+//     }
+
+//     console.log("\n=== Update Summary ===");
+//     console.log(`Total subjects: ${subjects.length}`);
+//     console.log(`Successfully updated: ${successCount}`);
+//     console.log(`Skipped (unparseable): ${skipCount}`);
+//     console.log(`Errors: ${errorCount}`);
+
+//     if (skippedCodes.length > 0) {
+//       console.log("\nSkipped codes:");
+//       console.log(skippedCodes.join(", "));
+//     }
+
+//     return {
+//       success: true,
+//       error: false,
+//       message: `Updated ${successCount} subjects. Skipped: ${skipCount}, Errors: ${errorCount}`,
+//       data: {
+//         total: subjects.length,
+//         success: successCount,
+//         skipped: skipCount,
+//         errors: errorCount,
+//         skippedCodes,
+//       },
+//     };
+//   } catch (error) {
+//     console.error("Fatal error updating subjects:", error);
+//     return {
+//       success: false,
+//       error: true,
+//       message: "Failed to update subjects",
+//     };
+//   }
+// }

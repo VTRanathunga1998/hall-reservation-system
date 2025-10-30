@@ -83,6 +83,7 @@ model Subject {
   code         String       @unique
   name         String
   credit       Int
+  yearSem      Int? 
   lecturers    Lecturer[]
   students     Student[]
   reservations Reservation[]
