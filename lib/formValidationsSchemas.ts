@@ -116,7 +116,8 @@ export const reservationSchema = z
 export type ReservationSchema = z.infer<typeof reservationSchema>;
 
 export const selectSubjectSchema = z.object({
-  id: z.string({ message: "Student ID is required!" }),
+  id: z.string({ message: "User ID is required!" }),
+  role: z.enum(["student", "lecturer"], { message: "Valid role is required!" }),
   subjectIds: z
     .array(z.number({ message: "Subject ID must be a number!" }))
     .min(1, { message: "Select at least one subject!" }),

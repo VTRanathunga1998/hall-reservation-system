@@ -8,23 +8,19 @@ const matchers = Object.keys(routeAccessMap).map((route) => ({
 }));
 
 export default clerkMiddleware(async (auth, req) => {
-  // Debug: Log the pathname
-  console.log("🔍 Middleware hit:", req.nextUrl.pathname);
-
   // Check if it's a cron route - MUST be FIRST
   if (req.nextUrl.pathname.startsWith("/api/cron")) {
-    console.log("✅ Cron route detected, skipping auth");
+    console.log("Cron route detected, skipping auth");
     return NextResponse.next();
   }
 
-  console.log("🔐 Running auth check");
   const { sessionClaims } = await auth();
 
   const role = (sessionClaims?.metadata as { role?: string })?.role;
 
   for (const { matcher, allowedRoles } of matchers) {
     if (matcher(req) && !allowedRoles.includes(role!)) {
-      console.log("❌ Access denied, redirecting");
+      console.log("Access denied, redirecting");
       return NextResponse.redirect(new URL(`/home`, req.url));
     }
   }

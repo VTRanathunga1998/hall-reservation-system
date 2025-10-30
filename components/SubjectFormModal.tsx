@@ -17,6 +17,7 @@ const SubjectFormModal = ({
   data,
   id,
   userId,
+  role,
   relatedData,
 }: SubjectFormContainerProps & { relatedData?: any }) => {
   const [open, setOpen] = useState(false);
@@ -50,6 +51,7 @@ const SubjectFormModal = ({
       <form action={action} className="p-4 flex flex-col gap-4">
         <input type="hidden" name="id" defaultValue={id} />
         <input type="hidden" name="userId" defaultValue={userId} />
+        <input type="hidden" name="role" defaultValue={role} />
         <span className="text-center font-medium">
           Are you sure you want to remove this subject?
         </span>
@@ -71,6 +73,7 @@ const SubjectFormModal = ({
         data={data}
         id={id}
         userId={userId!}
+        role={role!}
         setOpen={setOpen}
         relatedData={relatedData}
       />

@@ -86,15 +86,15 @@ const SubjectListPage = async ({
               <FormContainer table="subject" type="delete" id={item.id} />
             </>
           )}
-          {role === "student" && (
-            <>
+          {role === "student" ||
+            (role === "lecturer" && (
               <SubjectFormContainer
                 type="remove"
                 id={item.id}
                 userId={userId!}
+                role={role}
               />
-            </>
-          )}
+            ))}
         </div>
       </td>
     </tr>
@@ -173,10 +173,11 @@ const SubjectListPage = async ({
             {role === "admin" && (
               <FormContainer table="subject" type="create" />
             )}
-            {role === "student" && (
+            {(role === "student" || role === "lecturer") && (
               <SubjectFormContainer
                 type="select"
                 userId={userId!}
+                role={role}
                 data={subData}
               />
             )}

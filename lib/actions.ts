@@ -917,7 +917,7 @@ export const selectSubject = async (
       return {
         success: false,
         error: true,
-        message: "Student ID is required.",
+        message: "User ID is required.",
       };
     }
 
@@ -929,33 +929,59 @@ export const selectSubject = async (
       };
     }
 
-    const student = await prisma.student.findUnique({
-      where: { id: data.id },
-      include: { subjects: { select: { id: true } } },
-    });
+    // Handle student
+    if (data.role === "student") {
+      const student = await prisma.student.findUnique({
+        where: { id: data.id },
+        include: { subjects: { select: { id: true } } },
+      });
 
-    if (!student) {
-      return {
-        success: false,
-        error: true,
-        message: "Student not found.",
-      };
-    }
+      if (!student) {
+        return {
+          success: false,
+          error: true,
+          message: "Student not found.",
+        };
+      }
 
-    // Replace all existing subjects with the new selection
-    await prisma.student.update({
-      where: { id: data.id },
-      data: {
-        subjects: {
-          set: data.subjectIds.map((id) => ({ id })), // <-- replaces all subjects
+      await prisma.student.update({
+        where: { id: data.id },
+        data: {
+          subjects: {
+            set: data.subjectIds.map((id) => ({ id })),
+          },
         },
-      },
-    });
+      });
+    }
+    // Handle lecturer
+    else {
+      const lecturer = await prisma.lecturer.findUnique({
+        where: { id: data.id },
+        include: { subjects: { select: { id: true } } },
+      });
+
+      if (!lecturer) {
+        return {
+          success: false,
+          error: true,
+          message: "Lecturer not found.",
+        };
+      }
+
+      await prisma.lecturer.update({
+        where: { id: data.id },
+        data: {
+          subjects: {
+            set: data.subjectIds.map((id) => ({ id })),
+          },
+        },
+      });
+    }
 
     return {
       success: true,
       error: false,
-      message: `Successfully enrolled in ${data.subjectIds.length} subject(s).`,
+      message: `Successfully added ${data.subjectIds.length} subject(s).`,
     };
   } catch (error) {
     console.error("Error updating subjects:", error);
@@ -973,24 +999,42 @@ export const removeSubject = async (
 ) => {
   const subjectId = Number(formData.get("id"));
   const userId = formData.get("userId") as string;
+  const role = formData.get("role") as string;
 
-  if (!subjectId || !userId) {
+  if (!subjectId || !userId || !role) {
     return {
       success: false,
       error: true,
-      message: "Invalid student or subject ID.",
+      message: "Invalid user, subject, or role.",
     };
   }
 
   try {
-    await prisma.student.update({
-      where: { id: userId },
-      data: {
-        subjects: {
-          disconnect: { id: subjectId },
+    if (role === "student") {
+      await prisma.student.update({
+        where: { id: userId },
+        data: {
+          subjects: {
+            disconnect: { id: subjectId },
+          },
         },
-      },
-    });
+      });
+    } else if (role === "lecturer") {
+      await prisma.lecturer.update({
+        where: { id: userId },
+        data: {
+          subjects: {
+            disconnect: { id: subjectId },
+          },
+        },
+      });
+    } else {
+      return {
+        success: false,
+        error: true,
+        message: "Invalid role.",
+      };
+    }
 
     return {
       success: true,

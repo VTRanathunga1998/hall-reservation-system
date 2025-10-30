@@ -6,6 +6,7 @@ export type SubjectFormContainerProps = {
   data?: any;
   id?: number;
   userId?: string;
+  role?: string; // Add role prop
 };
 
 const SubjectFormContainer = async ({
@@ -13,6 +14,7 @@ const SubjectFormContainer = async ({
   data,
   id,
   userId,
+  role,
 }: SubjectFormContainerProps) => {
   let relatedDate = {};
 
@@ -29,6 +31,7 @@ const SubjectFormContainer = async ({
       data={data}
       id={id}
       userId={userId}
+      role={role}
       relatedData={relatedDate}
     />
   );

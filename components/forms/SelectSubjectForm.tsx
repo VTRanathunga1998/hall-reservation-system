@@ -23,6 +23,7 @@ interface Props {
   data?: any;
   id?: number;
   userId: string;
+  role: string; // Add role prop
   setOpen: Dispatch<SetStateAction<boolean>>;
   relatedData?: {
     subjects: { id: number; code: string; name: string }[];
@@ -34,6 +35,7 @@ const SelectSubjectForm = ({
   data,
   id,
   userId,
+  role,
   setOpen,
   relatedData,
 }: Props) => {
@@ -57,6 +59,7 @@ const SelectSubjectForm = ({
     resolver: zodResolver(selectSubjectSchema),
     defaultValues: {
       id: userId,
+      role: role as "student" | "lecturer",
       subjectIds: existingEnrolledSubjects,
     },
   });
@@ -86,7 +89,7 @@ const SelectSubjectForm = ({
 
   useEffect(() => {
     if (state.success) {
-      toast.success(state.message);
+      toast(state.message);
       setOpen(false);
       router.refresh();
     } else if (state.error) {
@@ -155,7 +158,7 @@ const SelectSubjectForm = ({
         disabled={pending}
         className="bg-blue-500 text-white p-2 rounded-md cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed hover:bg-blue-600 transition-colors"
       >
-        {pending ? "Processing..." : "Update Enrollment"}
+        {pending ? "Processing..." : "Add Subjects"}
       </button>
     </form>
   );
