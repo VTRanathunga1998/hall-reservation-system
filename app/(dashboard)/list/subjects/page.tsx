@@ -49,14 +49,10 @@ const SubjectListPage = async ({
       accessor: "departments",
       className: "hidden md:table-cell",
     },
-    ...(role === "admin"
-      ? [
-          {
-            header: "Actions",
-            accessor: "action",
-          },
-        ]
-      : []),
+    {
+      header: "Actions",
+      accessor: "action",
+    },
   ];
 
   const renderRow = (item: SubjectList) => (
@@ -80,21 +76,19 @@ const SubjectListPage = async ({
       </td>
       <td className="py-4 text-left align-top">
         <div className="flex flex-col md:flex-row items-center gap-2">
-          {role === "admin" && (
+          {role === "admin" ? (
             <>
               <FormContainer table="subject" type="update" data={item} />
               <FormContainer table="subject" type="delete" id={item.id} />
             </>
+          ) : (
+            <SubjectFormContainer
+              type="remove"
+              id={item.id}
+              userId={userId!}
+              role={role}
+            />
           )}
-          {role === "student" ||
-            (role === "lecturer" && (
-              <SubjectFormContainer
-                type="remove"
-                id={item.id}
-                userId={userId!}
-                role={role}
-              />
-            ))}
         </div>
       </td>
     </tr>
