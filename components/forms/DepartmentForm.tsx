@@ -67,7 +67,9 @@ const DepartmentForm = ({
   return (
     <form className="flex flex-col gap-8" onSubmit={onSubmit}>
       <h1 className="text-xl font-semibold">
-        {type === "create" ? "Create a new department" : "Update the department"}
+        {type === "create"
+          ? "Create a new department"
+          : "Update the department"}
       </h1>
 
       <div className="flex justify-between flex-wrap gap-4">
@@ -97,9 +99,17 @@ const DepartmentForm = ({
 
       <button
         disabled={pending}
-        className="bg-blue-400 text-white p-2 rounded-md cursor-pointer"
+        className={`bg-blue-400 text-white p-2 rounded-md cursor-pointer ${
+          pending ? "bg-gray-400 cursor-not-allowed" : ""
+        }`}
       >
-        {type === "create" ? "Create" : "Update"}
+        {pending
+          ? type === "create"
+            ? "Creating..."
+            : "Updating..."
+          : type === "create"
+          ? "Create"
+          : "Update"}
       </button>
     </form>
   );

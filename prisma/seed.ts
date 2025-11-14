@@ -34,7 +34,6 @@ async function main() {
   // -----------------------------
   // 2. Subjects
   // -----------------------------
-
   const compulsorySubjects = [
     { code: "CEL 111", name: "English Language - Level 1", credit: 3 },
     { code: "CIT 111", name: "Preparatory CIT Part I", credit: 3 },

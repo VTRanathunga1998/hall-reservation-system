@@ -226,9 +226,17 @@ const LecturerForm = ({
 
       <button
         disabled={pending}
-        className="bg-blue-400 text-white p-2 rounded-md cursor-pointer"
+        className={`bg-blue-400 text-white p-2 rounded-md cursor-pointer ${
+          pending ? "bg-gray-400 cursor-not-allowed" : ""
+        }`}
       >
-        {type === "create" ? "Create" : "Update"}
+        {pending
+          ? type === "create"
+            ? "Creating..."
+            : "Updating..."
+          : type === "create"
+          ? "Create"
+          : "Update"}
       </button>
     </form>
   );

@@ -22,6 +22,7 @@ import {
 import { ReactNode } from "react";
 import { toast } from "react-toastify";
 import { FormContainerProps } from "./FormContainer";
+import Loading from "@/app/(dashboard)/list/loading";
 
 const deleteActionMap = {
   building: deleteBuilding,
@@ -33,26 +34,28 @@ const deleteActionMap = {
   department: deleteDepartment,
 };
 
+const load = <Loading />;
+
 const LecturerForm = dynamic(() => import("./forms/LecturerForm"), {
-  loading: () => <h1>Loading...</h1>,
+  loading: () => load,
 });
 const StudentForm = dynamic(() => import("./forms/StudentForm"), {
-  loading: () => <h1>Loading...</h1>,
+  loading: () => load,
 });
 const BuildingForm = dynamic(() => import("./forms/BuildingForm"), {
-  loading: () => <h1>Loading...</h1>,
+  loading: () => load,
 });
 const LectureRoomForm = dynamic(() => import("./forms/LectureRoomForm"), {
-  loading: () => <h1>Loading...</h1>,
+  loading: () => load,
 });
 const DepartmentForm = dynamic(() => import("./forms/DepartmentForm"), {
-  loading: () => <h1>Loading...</h1>,
+  loading: () => load,
 });
 const SubjectForm = dynamic(() => import("./forms/SubjectForm"), {
-  loading: () => <h1>Loading...</h1>,
+  loading: () => load,
 });
 const ReservationForm = dynamic(() => import("./forms/ReservationForm"), {
-  loading: () => <h1>Loading...</h1>,
+  loading: () => load,
 });
 
 const forms: {
@@ -199,7 +202,10 @@ const FormModal = ({
         <Image src={`/${type}.png`} alt="" height={16} width={16} />
       </button>
       {open && (
-        <div id="datepicker-portal" className="fixed inset-0 bg-black/60 z-[150] flex items-center justify-center">
+        <div
+          id="datepicker-portal"
+          className="fixed inset-0 bg-black/60 z-[150] flex items-center justify-center"
+        >
           <div className="bg-white p-4 rounded-md relative w-[90%] md:w-[70%] lg:w-[60%] xl:w-[50%] 2xl:w-[50%] max-h-[90vh] overflow-y-auto scrollbar-hidden">
             <Form />
             <div

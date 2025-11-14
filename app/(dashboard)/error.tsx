@@ -7,8 +7,6 @@ export default function ErrorPage({
   error: Error;
   reset: () => void;
 }) {
-  console.error("Caught in error.tsx:", error);
-
   return (
     <div className="flex flex-col items-center justify-center h-full w-full text-center p-8">
       <h1 className="text-2xl font-bold text-red-600 mb-2">

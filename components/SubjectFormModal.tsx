@@ -7,9 +7,10 @@ import { useActionState, useEffect, useState } from "react";
 import { toast } from "react-toastify";
 import { removeSubject } from "@/lib/actions";
 import { SubjectFormContainerProps } from "./SubjectFormContainer";
+import Loading from "@/app/(dashboard)/list/loading";
 
 const SelectSubjectForm = dynamic(() => import("./forms/SelectSubjectForm"), {
-  loading: () => <h1>Loading...</h1>,
+  loading: () => <Loading />,
 });
 
 const SubjectFormModal = ({
