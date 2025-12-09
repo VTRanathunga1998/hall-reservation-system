@@ -3,7 +3,7 @@ import type { MetadataRoute } from "next";
 
 export default function manifest(): MetadataRoute.Manifest {
   return {
-    name: "Hall GPA Calculator",
+    name: "GPA Calculator",
     short_name: "GPA Calc",
     description: "Calculate your semester & cumulative GPA instantly",
     start_url: "/gpa", // Opens here on icon tap
