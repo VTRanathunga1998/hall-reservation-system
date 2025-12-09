@@ -10,13 +10,15 @@ const menuItems = [
         icon: "/home.png",
         label: "Home",
         href: "/home",
-        visible: ["admin", "lecturer", "student"],
+        // visible: ["admin", "lecturer", "student"],
+        visible: ["admin", "lecturer"],
       },
       {
         icon: "/upcoming.png",
         label: "Upcoming",
         href: "/upcoming",
-        visible: ["student"],
+        // visible: ["student"],
+        visible: [],
       },
       {
         icon: "/building.png",
@@ -40,7 +42,8 @@ const menuItems = [
         icon: "/lecture.png",
         label: "Lecturers",
         href: "/list/lecturers",
-        visible: ["admin", "lecturer", "student"],
+        // visible: ["admin", "lecturer", "student"],
+        visible: ["admin", "lecturer"],
       },
       {
         icon: "/classmates.png",
