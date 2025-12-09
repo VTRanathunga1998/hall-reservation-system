@@ -12,45 +12,62 @@ export default function manifest(): MetadataRoute.Manifest {
     background_color: "#ffffff",
     theme_color: "#8b5cf6", // Your brand color
     orientation: "portrait-primary",
+    // app/manifest.ts   ← ONLY CHANGE THESE LINES
     icons: [
-      // Core required icons (no purpose = defaults to 'any')
-      { src: "/android-192x192.png", sizes: "192x192", type: "image/png" },
       {
-        src: "/android-chrome-192x192.png",
+        src: "/icons/android-192x192.png",
         sizes: "192x192",
         type: "image/png",
       },
       {
-        src: "/android-chrome-512x512.png",
-        sizes: "512x512",
-        type: "image/png",
-      },
-
-      // Larger fallback icons (no purpose = 'any')
-      { src: "/android-363x363.png", sizes: "363x363", type: "image/png" },
-      { src: "/android-484x484.png", sizes: "484x484", type: "image/png" },
-      { src: "/android-727x727.png", sizes: "727x727", type: "image/png" },
-      { src: "/android-969x969.png", sizes: "969x969", type: "image/png" },
-      { src: "/android-1144x1144.png", sizes: "1144x1144", type: "image/png" },
-
-      // Maskable-specific icons (for modern adaptive shapes)
-      {
-        src: "/android-chrome-maskable-192x192.png",
+        src: "/icons/android-chrome-192x192.png",
         sizes: "192x192",
         type: "image/png",
-        purpose: "maskable" as const, // ← TS-safe single value
       },
       {
-        src: "/android-chrome-maskable-512x512.png",
+        src: "/icons/android-chrome-512x512.png",
         sizes: "512x512",
         type: "image/png",
-        purpose: "maskable" as const, // ← TS-safe single value
       },
 
-      // Fallback for platforms that need non-masked (purpose: 'any' is default, so omit it)
+      // Maskable icons
       {
-        src: "/android-chrome-512x512.png", // Use your non-maskable 512x512 as fallback
+        src: "/icons/android-chrome-maskable-192x192.png",
+        sizes: "192x192",
+        type: "image/png",
+        purpose: "maskable" as const,
+      },
+      {
+        src: "/icons/android-chrome-maskable-512x512.png",
         sizes: "512x512",
+        type: "image/png",
+        purpose: "maskable" as const,
+      },
+
+      // All your other icons with /icons/ prefix
+      {
+        src: "/icons/android-363x363.png",
+        sizes: "363x363",
+        type: "image/png",
+      },
+      {
+        src: "/icons/android-484x484.png",
+        sizes: "484x484",
+        type: "image/png",
+      },
+      {
+        src: "/icons/android-727x727.png",
+        sizes: "727x727",
+        type: "image/png",
+      },
+      {
+        src: "/icons/android-969x969.png",
+        sizes: "969x969",
+        type: "image/png",
+      },
+      {
+        src: "/icons/android-1144x1144.png",
+        sizes: "1144x1144",
         type: "image/png",
       },
     ],
