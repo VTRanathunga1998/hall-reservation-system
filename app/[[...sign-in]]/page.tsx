@@ -12,17 +12,17 @@ const LoginPage = () => {
 
   const router = useRouter();
 
+  // In your login page component
   useEffect(() => {
-    const role = user?.publicMetadata.role;
-
-    if (role) {
+    if (isLoaded && isSignedIn && user?.publicMetadata?.role) {
+      const role = user.publicMetadata.role as string;
       if (role === "student") {
-        router.push(`/gpa`);
+        router.replace("/gpa"); // use replace() to avoid back-button issues
       } else {
-        router.push(`/home`);
+        router.replace("/home");
       }
     }
-  }, [user, router]);
+  }, [isLoaded, isSignedIn, user, router]);
 
   return (
     <div className="h-screen flex items-center justify-center bg-lamaSkyLight">
