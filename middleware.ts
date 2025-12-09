@@ -33,45 +33,44 @@
 //   ],
 // };
 
-// app/middleware.ts   ← Replace your entire file with this
-
+// app/middleware.ts
 import { clerkMiddleware, createRouteMatcher } from "@clerk/nextjs/server";
 import { routeAccessMap } from "./lib/settings";
 import { NextResponse } from "next/server";
 
-const isProtectedRoute = createRouteMatcher(Object.keys(routeAccessMap));
+const isProtectedRoute = createRouteMatcher([
+  "/gpa",
+  "/home",
+  "/profile",
+  "/upcoming",
+  "/list/:path*",
+  // add any other protected routes here
+]);
 
 export default clerkMiddleware(async (auth, req) => {
-  // Allow cron routes completely
+  const { userId, sessionClaims } = await auth();
+
+  // Allow cron jobs
   if (req.nextUrl.pathname.startsWith("/api/cron")) {
     return NextResponse.next();
   }
 
-  // This is the correct way in 2025: await auth()
-  const { userId, sessionClaims, redirectToSignIn } = await auth();
+  // If user is NOT signed in + trying to access a protected page → send to YOUR login page at /
+  if (!userId && isProtectedRoute(req)) {
+    return NextResponse.redirect(new URL("/", req.url));
+  }
 
-  // 1. If NO user → only redirect if trying to access a protected route
-  if (!userId) {
-    if (isProtectedRoute(req)) {
-      // This sends them to Clerk's sign-in page and returns them back after login
-      return redirectToSignIn({ returnBackUrl: req.url });
+  // user is signed in → check role-based access
+  const role = (sessionClaims?.metadata as { role?: string })?.role;
+
+  if (userId && role) {
+    for (const [route, allowedRoles] of Object.entries(routeAccessMap)) {
+      if (createRouteMatcher([route])(req) && !allowedRoles.includes(role)) {
+        return NextResponse.redirect(new URL("/home", req.url));
+      }
     }
-    return NextResponse.next();
   }
 
-  // 2. User is signed in → check role
-  const role = (sessionClaims?.metadata as { role?: string } | undefined)?.role;
-
-  // If the route is protected and the user's role is not allowed → redirect to /home
-  const matchedRoute = Object.keys(routeAccessMap).find((route) =>
-    createRouteMatcher([route])(req)
-  );
-
-  if (matchedRoute && role && !routeAccessMap[matchedRoute].includes(role)) {
-    return NextResponse.redirect(new URL("/home", req.url));
-  }
-
-  // Everything is fine → continue
   return NextResponse.next();
 });
 
