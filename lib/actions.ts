@@ -1,5 +1,7 @@
 "use server";
 
+// import { randomUUID } from "crypto";
+
 import { prisma } from "@/lib/prisma";
 import {
   BuildingSchema,
@@ -432,7 +434,7 @@ export const createStudent = async (
     await prisma.student.create({
       data: {
         id: createdUser.id,
-        username: data.username,
+        username: data.username.toUpperCase(),
         email: data.email ?? "",
         name: data.name
           .toLowerCase()
@@ -441,7 +443,7 @@ export const createStudent = async (
           .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
           .join(" "),
         surname: data.surname,
-        phone: data.phone ?? "",
+        phone: data.phone?.trim() === "" ? null : data.phone?.trim(),
         sex: data.sex,
         subjects: {
           connect: data.subjects?.map((subjectId) => ({
@@ -516,7 +518,7 @@ export const updateStudent = async (
 
     // Step 1: Update Clerk user
     await clerk.users.updateUser(data.id, {
-      username: data.username,
+      username: data.username.toUpperCase(),
       ...(data.password ? { password: data.password } : {}),
       firstName: data.name,
       lastName: data.surname,
@@ -529,7 +531,7 @@ export const updateStudent = async (
       },
       data: {
         ...(data.password !== "" && { password: data.password }),
-        username: data.username,
+        username: data.username.toLocaleUpperCase(),
         email: data.email ?? "",
         name: data.name
           .toLowerCase()
@@ -538,7 +540,7 @@ export const updateStudent = async (
           .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
           .join(" "),
         surname: data.surname,
-        phone: data.phone,
+        phone: data.phone?.trim() === "" ? null : data.phone?.trim(),
         sex: data.sex,
         ...(data.subjects !== undefined
           ? {
@@ -1291,3 +1293,114 @@ function parseYearSemesterFromCode(code: string): number | null {
 //     };
 //   }
 // }
+
+//temporary starts------------------------------
+
+// export const createStudent = async (
+//   currentState: CurrentState,
+//   data: StudentSchema
+// ) => {
+//   const userId = randomUUID();
+
+//   try {
+//     await prisma.student.create({
+//       data: {
+//         id: userId,
+//         username: data.username.toUpperCase(),
+//         email: data.email ?? "",
+//         name: data.name
+//           .toLowerCase()
+//           .split(" ")
+//           .filter(Boolean)
+//           .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+//           .join(" "),
+//         surname: data.surname,
+//         phone: data.phone?.trim() === "" ? null : data.phone?.trim(),
+//         sex: data.sex,
+//         subjects: {
+//           connect: data.subjects?.map((id) => ({ id })),
+//         },
+//         departmentId: data.departmentId,
+//         // password field removed — not in your Prisma schema
+//       },
+//     });
+
+//     return {
+//       success: true,
+//       error: false,
+//       message: "Student created successfully (local mode)",
+//     };
+//   } catch (error: any) {
+//     console.error("Error creating student:", error);
+
+//     let message = "Failed to create student.";
+
+//     if (error.code === "P2002") {
+//       const fields = (error.meta?.target as string[]) || [];
+//       if (fields.includes("username")) message = "Username already exists.";
+//       else if (fields.includes("phone"))
+//         message = "Phone number already exists.";
+//       else if (fields.includes("email")) message = "Email already exists.";
+//       else message = "Duplicate entry. Please check your data.";
+//     }
+
+//     return { success: false, error: true, message };
+//   }
+// };
+
+// export const updateStudent = async (
+//   currentState: CurrentState,
+//   data: StudentSchema & { id: string }
+// ) => {
+//   if (!data.id) {
+//     return { success: false, error: true, message: "Student ID is required." };
+//   }
+
+//   try {
+//     await prisma.student.update({
+//       where: { id: data.id },
+//       data: {
+//         username: data.username.toUpperCase(),
+//         email: data.email ?? "",
+//         name: data.name
+//           .toLowerCase()
+//           .split(" ")
+//           .filter(Boolean)
+//           .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+//           .join(" "),
+//         surname: data.surname,
+//         phone: data.phone?.trim() === "" ? null : data.phone?.trim(),
+//         sex: data.sex,
+//         ...(data.subjects !== undefined && {
+//           subjects: {
+//             set: data.subjects.map((id) => ({ id })),
+//           },
+//         }),
+//         departmentId: data.departmentId,
+//         // No password update — field doesn't exist
+//       },
+//     });
+
+//     return {
+//       success: true,
+//       error: false,
+//       message: "Student updated successfully.",
+//     };
+//   } catch (error: any) {
+//     console.error("Error updating student:", error);
+
+//     let message = "Failed to update student.";
+
+//     if (error.code === "P2002") {
+//       const fields = (error.meta?.target as string[]) || [];
+//       if (fields.includes("username")) message = "Username already exists.";
+//       else if (fields.includes("phone"))
+//         message = "Phone number already exists.";
+//       else if (fields.includes("email")) message = "Email already exists.";
+//     }
+
+//     return { success: false, error: true, message };
+//   }
+// };
+
+//temporary ends---------------------------------
