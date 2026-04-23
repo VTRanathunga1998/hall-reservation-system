@@ -43,3 +43,7 @@ next-env.d.ts
 /app/generated/prisma
 
 /temp.js
+
+.vercel
+.env*.local
+prisma/seed copy.ts
