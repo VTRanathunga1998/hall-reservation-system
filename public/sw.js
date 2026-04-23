@@ -1,10 +1,20 @@
-// public/sw.js
-// This is the smallest possible service worker that makes PWA installable
+const CACHE_NAME = "app-cache-v2"; // 🔥 change version when you update icons
 
-self.addEventListener('install', () => self.skipWaiting());
-self.addEventListener('activate', (event) => {
-  event.waitUntil(self.clients.claim());
+self.addEventListener("install", (event) => {
+  self.skipWaiting();
 });
 
-// Optional: leave fetch empty → still counts as valid SW
-// self.addEventListener('fetch', () => {});
+self.addEventListener("activate", (event) => {
+  event.waitUntil(
+    caches.keys().then((keys) =>
+      Promise.all(
+        keys.map((key) => {
+          if (key !== CACHE_NAME) {
+            return caches.delete(key); // 🔥 delete old caches
+          }
+        }),
+      ),
+    ),
+  );
+  self.clients.claim();
+});
