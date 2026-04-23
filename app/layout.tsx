@@ -3,6 +3,7 @@ import { Inter } from "next/font/google";
 import "./globals.css";
 import { ClerkProvider } from "@clerk/nextjs";
 import { ToastContainer } from "react-toastify";
+import SwRegister from "./sw-register";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -30,10 +31,13 @@ export default function RootLayout({
     <ClerkProvider>
       <html lang="en">
         <head>
-          <link rel="manifest" href="/manifest.json" />
-          <meta name="theme-color" content="#000000" />
+          <meta
+            name="apple-mobile-web-app-title"
+            content="SmartUniversitySystem"
+          />
         </head>
         <body className={inter.className}>
+          <SwRegister />
           {children} <ToastContainer position="bottom-right" theme="dark" />
         </body>
       </html>
