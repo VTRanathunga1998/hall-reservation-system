@@ -172,6 +172,9 @@ export default function ImportStudentsModal({ departments, academicYears }: Prop
                     <p className="text-xs text-slate-400 mt-0.5">
                       {EXPECTED_HEADERS.join(", ")}
                     </p>
+                    <p className="text-xs text-amber-600 mt-1">
+                      ⚠ email is required — used to create the Clerk account
+                    </p>
                   </div>
                 </div>
                 <button

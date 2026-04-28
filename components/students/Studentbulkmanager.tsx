@@ -10,7 +10,7 @@ import {
   CheckSquare,
   Square,
 } from "lucide-react";
-import {  Department, Student, Subject } from "@prisma/client";
+import { AcademicYear, Department, Student, Subject } from "@prisma/client";
 import { bulkDeleteStudents, bulkUpdateYearSem } from "@/lib/students/actions";
 
 export type StudentWithSubjects = Student & {
@@ -86,7 +86,10 @@ export default function StudentBulkManager({ data, role, actionMap }: Props) {
     startTransition(async () => {
       const res = await bulkDeleteStudents(Array.from(selected));
       if (res.success) {
-        setFeedback({ type: "success", msg: `Deleted ${res.deleted} student(s).` });
+        const warn = res.clerkFailed.length > 0
+          ? ` (${res.clerkFailed.length} Clerk account(s) could not be removed — delete manually)`
+          : "";
+        setFeedback({ type: "success", msg: `Deleted ${res.deleted} student(s).${warn}` });
         clearSelection();
         router.refresh();
       } else {

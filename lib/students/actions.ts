@@ -4,7 +4,6 @@ import prisma from "@/lib/prisma";
 import { revalidatePath } from "next/cache";
 import { Prisma, UserSex } from "@prisma/client";
 import { StudentSchema } from "../formValidationsSchemas";
-
 import { clerkClient } from "@clerk/nextjs/server";
 
 type CurrentState = {
@@ -13,18 +12,16 @@ type CurrentState = {
   message: string;
 };
 
+// ── Create ────────────────────────────────────────────────────────────────────
 export const createStudent = async (
   currentState: CurrentState,
   data: StudentSchema,
 ) => {
   let createdUser: any = null;
 
-  console.log("Received data for creating student:", data);
-
   try {
     const clerk = await clerkClient();
 
-    // Step 1: Create Clerk user
     createdUser = await clerk.users.createUser({
       username: data.username,
       password: data.password,
@@ -33,7 +30,6 @@ export const createStudent = async (
       publicMetadata: { role: "student" },
     });
 
-    // Step 2: Create Student in DB
     await prisma.student.create({
       data: {
         id: createdUser.id,
@@ -48,7 +44,7 @@ export const createStudent = async (
         surname: data.surname,
         phone: data.phone?.trim() === "" ? null : data.phone?.trim(),
         sex: data.sex,
-        yearSem: data.yearSem, // ← add this
+        yearSem: data.yearSem,
         subjects: {
           connect: data.subjects?.map((subjectId) => ({ id: subjectId })),
         },
@@ -65,49 +61,37 @@ export const createStudent = async (
   } catch (error: any) {
     console.error("Error creating student:", error);
 
-    // Step 3: Rollback Clerk user if DB fails
     if (createdUser?.id) {
       try {
         const clerk = await clerkClient();
         await clerk.users.deleteUser(createdUser.id);
       } catch (rollbackError) {
-        console.error(
-          "Rollback failed (could not delete user from Clerk):",
-          rollbackError,
-        );
+        console.error("Rollback failed:", rollbackError);
       }
     }
 
-    // Step 4: Handle specific Prisma errors
     let friendlyMessage = "Failed to create student.";
-
     if (error.code === "P2002") {
-      // Unique constraint failed
       const fields = (error.meta?.target as string[]) || [];
-      if (fields.includes("username")) {
+      if (fields.includes("username"))
         friendlyMessage = "Username already exists.";
-      } else if (fields.includes("phone")) {
+      else if (fields.includes("phone"))
         friendlyMessage = "Phone number already exists.";
-      } else if (fields.includes("email")) {
+      else if (fields.includes("email"))
         friendlyMessage = "Email address already exists.";
-      } else {
+      else
         friendlyMessage = "Duplicate data detected. Please use unique values.";
-      }
     } else if (error.errors?.[0]?.message) {
-      // Clerk or Zod error
       friendlyMessage = error.errors[0].message;
     } else if (error.message?.includes("password")) {
       friendlyMessage = "Password does not meet security requirements.";
     }
 
-    return {
-      success: false,
-      error: true,
-      message: friendlyMessage,
-    };
+    return { success: false, error: true, message: friendlyMessage };
   }
 };
 
+// ── Update ────────────────────────────────────────────────────────────────────
 export const updateStudent = async (
   currentState: CurrentState,
   data: StudentSchema,
@@ -119,7 +103,6 @@ export const updateStudent = async (
   try {
     const clerk = await clerkClient();
 
-    // Step 1: Update Clerk user
     await clerk.users.updateUser(data.id, {
       username: data.username.toUpperCase(),
       ...(data.password ? { password: data.password } : {}),
@@ -127,7 +110,6 @@ export const updateStudent = async (
       lastName: data.surname,
     });
 
-    // Step 2: Update Student in Database
     await prisma.student.update({
       where: { id: data.id },
       data: {
@@ -143,13 +125,9 @@ export const updateStudent = async (
         surname: data.surname,
         phone: data.phone?.trim() === "" ? null : data.phone?.trim(),
         sex: data.sex,
-        yearSem: data.yearSem, 
+        yearSem: data.yearSem,
         ...(data.subjects !== undefined
-          ? {
-              subjects: {
-                set: data.subjects.map((subjectId) => ({ id: subjectId })),
-              },
-            }
+          ? { subjects: { set: data.subjects.map((id) => ({ id })) } }
           : {}),
         departmentId: data.departmentId,
         academicYearId: data.academicYearId,
@@ -164,54 +142,50 @@ export const updateStudent = async (
   } catch (error: any) {
     console.error("Error updating student:", error);
 
-    // Step 3: Handle friendly Prisma messages
     let friendlyMessage = "Failed to update student.";
-
     if (error.code === "P2002") {
       const fields = (error.meta?.target as string[]) || [];
-      if (fields.includes("username")) {
+      if (fields.includes("username"))
         friendlyMessage = "Username already exists.";
-      } else if (fields.includes("phone")) {
+      else if (fields.includes("phone"))
         friendlyMessage = "Phone number already exists.";
-      } else if (fields.includes("email")) {
+      else if (fields.includes("email"))
         friendlyMessage = "Email address already exists.";
-      } else {
+      else
         friendlyMessage = "Duplicate data detected. Please use unique values.";
-      }
     } else if (error.message?.includes("password")) {
       friendlyMessage = "Password does not meet security requirements.";
     } else if (error.errors?.[0]?.message) {
       friendlyMessage = error.errors[0].message;
     }
 
-    return {
-      success: false,
-      error: true,
-      message: friendlyMessage,
-    };
+    return { success: false, error: true, message: friendlyMessage };
   }
 };
 
+// ── Delete (single) ───────────────────────────────────────────────────────────
 export const deleteStudent = async (
   currentState: CurrentState,
   data: FormData,
 ) => {
   const id = data.get("id") as string;
-
-  if (!id) {
+  if (!id)
     return { success: false, error: true, message: "Student ID is missing." };
-  }
 
   try {
     const clerk = await clerkClient();
 
-    // Step 1: Delete student record from DB
-    await prisma.student.delete({
-      where: { id },
-    });
+    await prisma.student.delete({ where: { id } });
 
-    // Step 2: Delete user from Clerk
-    await clerk.users.deleteUser(id);
+    // Delete from Clerk — wrapped separately so a missing Clerk user
+    // doesn't fail the whole operation (DB record is already gone)
+    try {
+      await clerk.users.deleteUser(id);
+    } catch (clerkError: any) {
+      if (!clerkError.message?.includes("User not found")) {
+        console.error("Clerk delete failed for student:", id, clerkError);
+      }
+    }
 
     return {
       success: true,
@@ -221,37 +195,27 @@ export const deleteStudent = async (
   } catch (error: any) {
     console.error("Error deleting student:", error);
 
-    // Step 3: Friendly error handling
     let friendlyMessage = "Failed to delete student.";
-
     if (error.code === "P2003") {
-      // Prisma Foreign key constraint error
       friendlyMessage =
-        "Cannot delete this student because it is linked to other records (e.g., reservations or subjects).";
-    } else if (error.message?.includes("User not found")) {
-      friendlyMessage =
-        "The student’s user account could not be found in Clerk.";
+        "Cannot delete this student because it is linked to other records.";
     } else if (error.code === "P2025") {
       friendlyMessage = "Student not found in the database.";
     }
 
-    return {
-      success: false,
-      error: true,
-      message: friendlyMessage,
-    };
+    return { success: false, error: true, message: friendlyMessage };
   }
 };
 
+// ── Types ─────────────────────────────────────────────────────────────────────
 export type BulkDeleteResult =
-  | { success: true; deleted: number }
+  | { success: true; deleted: number; clerkFailed: string[] }
   | { success: false; error: string };
 
 export type BulkYearSemResult =
   | { success: true; updated: number }
   | { success: false; error: string };
 
-// Filter by department and/or academic year — matches the new schema
 export type FilterParams = {
   departmentId?: number;
   academicYearId?: number;
@@ -276,21 +240,43 @@ export type ImportResult =
 
 const VALID_YEAR_SEMS = [11, 12, 21, 22, 31, 32, 41, 42];
 
-// ── Bulk Delete ───────────────────────────────────────────────────────────────
+// ── Bulk Delete (with Clerk sync) ─────────────────────────────────────────────
+// Strategy:
+//   1. Delete DB records first (fast, transactional via deleteMany)
+//   2. Delete each Clerk user individually — collect failures instead of throwing
+//      because a missing Clerk user should not block the DB deletion result.
 export async function bulkDeleteStudents(
   ids: string[],
 ): Promise<BulkDeleteResult> {
   if (!ids.length) return { success: false, error: "No students selected." };
 
+  // Step 1: Delete from DB
   const { count } = await prisma.student.deleteMany({
     where: { id: { in: ids } },
   });
 
+  // Step 2: Delete from Clerk — individual calls, collect failures
+  const clerk = await clerkClient();
+  const clerkFailed: string[] = [];
+
+  for (const id of ids) {
+    try {
+      await clerk.users.deleteUser(id);
+    } catch (err: any) {
+      // "User not found" means already gone — not a real failure
+      if (!err.message?.includes("User not found")) {
+        console.error(`Clerk delete failed for ${id}:`, err.message);
+        clerkFailed.push(id);
+      }
+    }
+  }
+
   revalidatePath("/list/students");
-  return { success: true, deleted: count };
+  return { success: true, deleted: count, clerkFailed };
 }
 
-// ── Bulk YearSem Update by ID list (per-row selection) ────────────────────────
+// ── Bulk YearSem Update by ID list ────────────────────────────────────────────
+// No Clerk interaction needed — yearSem is DB-only.
 export async function bulkUpdateYearSem(
   ids: string[],
   yearSem: number,
@@ -309,8 +295,7 @@ export async function bulkUpdateYearSem(
 }
 
 // ── Bulk YearSem Update by Filter ─────────────────────────────────────────────
-// Filters by department + academic year (new schema) — hits ALL matching rows,
-// not just the current page.
+// No Clerk interaction needed — yearSem is DB-only.
 export async function bulkUpdateYearSemByFilter(
   filter: FilterParams,
   targetYearSem: number,
@@ -319,15 +304,8 @@ export async function bulkUpdateYearSemByFilter(
     return { success: false, error: "Invalid year/semester value." };
 
   const where: Prisma.StudentWhereInput = {};
-
-  if (filter.departmentId) {
-    where.departmentId = filter.departmentId;
-  }
-
-  if (filter.academicYearId) {
-    where.academicYearId = filter.academicYearId;
-  }
-
+  if (filter.departmentId) where.departmentId = filter.departmentId;
+  if (filter.academicYearId) where.academicYearId = filter.academicYearId;
   if (filter.search) {
     where.OR = [
       { name: { contains: filter.search, mode: "insensitive" } },
@@ -344,7 +322,16 @@ export async function bulkUpdateYearSemByFilter(
   return { success: true, updated: count };
 }
 
-// ── Bulk Import ───────────────────────────────────────────────────────────────
+// ── Bulk Import (with Clerk sync) ─────────────────────────────────────────────
+// Strategy per row:
+//   1. Create Clerk user → get real ID
+//   2. Create DB record using Clerk ID
+//   3. If DB fails → rollback Clerk user
+//   4. Collect per-row errors, continue to next row (don't abort the whole batch)
+//
+// ⚠️  Clerk rate limit: free plan allows ~20 user creations/minute.
+//     For large imports, consider batching with a delay or using Clerk's
+//     bulk import API if available on your plan.
 export async function importStudents(
   rows: ImportStudentRow[],
 ): Promise<ImportResult> {
@@ -354,6 +341,7 @@ export async function importStudents(
   let imported = 0;
   let skipped = 0;
 
+  // Pre-validate reference IDs in one pass before hitting Clerk at all
   const departments = await prisma.department.findMany({
     select: { id: true },
   });
@@ -364,10 +352,13 @@ export async function importStudents(
   });
   const validAcYearIds = new Set(academicYears.map((y) => y.id));
 
+  const clerk = await clerkClient();
+
   for (let i = 0; i < rows.length; i++) {
     const row = rows[i];
     const rowLabel = `Row ${i + 2}`;
 
+    // ── Validate row ──
     if (!row.username?.trim()) {
       errors.push(`${rowLabel}: username is required`);
       skipped++;
@@ -388,6 +379,13 @@ export async function importStudents(
       skipped++;
       continue;
     }
+    if (!VALID_YEAR_SEMS.includes(row.yearSem)) {
+      errors.push(
+        `${rowLabel}: yearSem must be one of 11,12,21,22,31,32,41,42`,
+      );
+      skipped++;
+      continue;
+    }
     if (!validDeptIds.has(row.departmentId)) {
       errors.push(`${rowLabel}: department ID ${row.departmentId} not found`);
       skipped++;
@@ -400,29 +398,69 @@ export async function importStudents(
       skipped++;
       continue;
     }
+    if (!row.email?.trim()) {
+      errors.push(`${rowLabel}: email is required for Clerk account creation`);
+      skipped++;
+      continue;
+    }
 
+    let clerkUser: any = null;
+
+    // ── Step 1: Create Clerk user ──
+    try {
+      clerkUser = await clerk.users.createUser({
+        username: row.username.trim().toUpperCase(),
+        // Use email as temporary password basis — admin should reset later
+        // Or add a password column to the CSV. Currently generates one.
+        password: `Import@${Date.now()}${i}`,
+        firstName: row.name.trim(),
+        lastName: row.surname.trim(),
+        emailAddress: [row.email.trim()],
+        publicMetadata: { role: "student" },
+      });
+    } catch (clerkErr: any) {
+      const msg =
+        clerkErr.errors?.[0]?.message ??
+        clerkErr.message ??
+        "Unknown Clerk error";
+      errors.push(`${rowLabel}: Clerk error — ${msg}`);
+      skipped++;
+      continue;
+    }
+
+    // ── Step 2: Create DB record using real Clerk ID ──
     try {
       await prisma.student.create({
         data: {
-          id: `import_${Date.now()}_${i}`,
-          username: row.username.trim(),
+          id: clerkUser.id,
+          username: row.username.trim().toUpperCase(),
           name: row.name.trim(),
           surname: row.surname.trim(),
-          email: row.email?.trim() || null,
+          email: row.email.trim(),
           phone: row.phone?.trim() || null,
           sex: row.sex,
-          yearSem: row.yearSem || 11,
+          yearSem: row.yearSem,
           departmentId: row.departmentId,
           academicYearId: row.academicYearId,
         },
       });
       imported++;
-    } catch (e: unknown) {
-      const msg = e instanceof Error ? e.message : String(e);
+    } catch (dbErr: unknown) {
+      // ── Step 3: Rollback Clerk user if DB fails ──
+      try {
+        await clerk.users.deleteUser(clerkUser.id);
+      } catch (rollbackErr) {
+        console.error(
+          `${rowLabel}: Clerk rollback failed for ${clerkUser.id}`,
+          rollbackErr,
+        );
+      }
+
+      const msg = dbErr instanceof Error ? dbErr.message : String(dbErr);
       errors.push(
         msg.includes("Unique constraint")
           ? `${rowLabel}: username or email already exists`
-          : `${rowLabel}: ${msg}`,
+          : `${rowLabel}: DB error — ${msg}`,
       );
       skipped++;
     }

@@ -6,12 +6,9 @@ interface EventCardProps {
   id: number;
   title: string;
   subject: string;
-  // accept either a Date or an ISO string
   startTime: Date | string;
   endTime: Date | string;
   lecturer: string;
-  hallId: number;
-  hallName: string;
   roomId: number;
   roomName: string;
 }
@@ -21,8 +18,6 @@ const LOCALE = "en-LK";
 
 const EventCard: React.FC<EventCardProps> = ({
   id,
-  hallId,
-  hallName,
   roomId,
   roomName,
   title,
@@ -31,13 +26,19 @@ const EventCard: React.FC<EventCardProps> = ({
   endTime,
   lecturer,
 }) => {
-  // Normalize to Date objects (handles both Date and ISO string)
+  // Normalize to Date objects
   const start = startTime instanceof Date ? startTime : new Date(startTime);
   const end = endTime instanceof Date ? endTime : new Date(endTime);
 
-  // Date parts using Asia/Colombo timezone so server timezone doesn't matter
-  const month = start.toLocaleString(LOCALE, { month: "short", timeZone: TZ });
-  const day = start.toLocaleString(LOCALE, { day: "2-digit", timeZone: TZ });
+  const month = start.toLocaleString(LOCALE, {
+    month: "short",
+    timeZone: TZ,
+  });
+
+  const day = start.toLocaleString(LOCALE, {
+    day: "2-digit",
+    timeZone: TZ,
+  });
 
   const timeString = `${start.toLocaleTimeString(LOCALE, {
     hour: "2-digit",
@@ -59,7 +60,9 @@ const EventCard: React.FC<EventCardProps> = ({
         <span className="text-2xl md:text-3xl font-bold text-white leading-none">
           {day}
         </span>
+
         <span className="text-white md:hidden"> - </span>
+
         <span className="uppercase tracking-wide font-semibold md:text-sm text-md text-white">
           {month}
         </span>
@@ -74,21 +77,23 @@ const EventCard: React.FC<EventCardProps> = ({
           >
             {title}
           </h3>
+
           <p className="text-sm text-gray-600">{subject}</p>
+
           <p className="text-sm text-gray-600 mt-1">
             Time: <span className="font-medium">{timeString}</span>
           </p>
+
           <p className="text-sm text-gray-600">Lecturer: {lecturer}</p>
-          <p className="text-sm text-gray-500 mt-1">
-            Location: {hallName} — {roomName}
-          </p>
+
+          <p className="text-sm text-gray-500 mt-1">Room: {roomName}</p>
         </div>
 
         {/* Action */}
         <div className="flex items-center justify-center md:items-start md:ml-4">
           <Link
-            href={`/home/${hallId}/${roomId}`}
-            aria-label={`View room ${roomId} in hall ${hallId}`}
+            href={`/home/${roomId}`}
+            aria-label={`View room ${roomId}`}
             className="flex items-center justify-center rounded-full cursor-pointer bg-[#C3EBFA] p-2"
           >
             <Image src="/view.png" alt="View" width={16} height={16} />

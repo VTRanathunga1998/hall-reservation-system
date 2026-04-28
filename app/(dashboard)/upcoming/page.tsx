@@ -1,7 +1,6 @@
-// pages/Upcoming (or your component file)
 import EmptyState from "@/components/EmptyState";
 import EventCard from "@/components/EventCard";
-import { prisma } from "@/lib/prisma";
+import prisma from "@/lib/prisma";
 import { auth } from "@clerk/nextjs/server";
 
 export default async function Upcoming() {
@@ -19,28 +18,18 @@ export default async function Upcoming() {
     where: {
       subject: {
         students: {
-          some: {
-            id: currentUserId as string,
-          },
+          some: { id: currentUserId as string },
         },
-        yearSem: student?.yearSem, // Filter by yearSem at database level
+        yearSem: student?.yearSem,
       },
-      startTime: {
-        gte: now,
-      },
+      startTime: { gte: now },
     },
     include: {
       subject: true,
       lecturer: true,
-      lectureRoom: {
-        include: {
-          hall: true,
-        },
-      },
+      lectureRoom: true,
     },
-    orderBy: {
-      startTime: "asc",
-    },
+    orderBy: { startTime: "asc" },
   });
 
   return (
@@ -57,14 +46,10 @@ export default async function Upcoming() {
             <EventCard
               key={res.id}
               id={res.id}
-              // Pass lectureRoom.hallId and lectureRoom.id as the canonical fields
-              hallId={res.lectureRoom.hallId}
-              hallName={res.lectureRoom.hall.name}
               roomId={res.lectureRoom.id}
               roomName={res.lectureRoom.name}
               title={res.subject.name}
               subject={res.subject.code}
-              // pass the raw Date object (Prisma returns Date on the server)
               startTime={res.startTime}
               endTime={res.endTime}
               lecturer={`${res.lecturer.name} ${res.lecturer.surname}`}
