@@ -1,7 +1,6 @@
 "use client";
 
 import { useAuth } from "@clerk/nextjs";
-
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Controller, useWatch, useForm } from "react-hook-form";
 import {
@@ -19,9 +18,7 @@ import {
 } from "react";
 import { toast } from "react-toastify";
 import { useRouter } from "next/navigation";
-
 import DatePicker from "react-datepicker";
-
 import { setHours, setMinutes, isSameDay } from "date-fns";
 
 const ReservationForm = ({
@@ -36,11 +33,11 @@ const ReservationForm = ({
   relatedData?: any;
 }) => {
   const { userId, sessionClaims } = useAuth();
-
   const role = (sessionClaims?.metadata as { role?: string })?.role;
   const currentUserId = userId;
 
-  const { subjects, lecRooms, lecHalls, lectures, departments } = relatedData;
+  // Hall is removed — lecHalls no longer exists in relatedData
+  const { subjects, lecRooms, lectures, departments } = relatedData;
 
   const defaultStartTime = data?.startTime
     ? new Date(data.startTime)
@@ -52,7 +49,6 @@ const ReservationForm = ({
     handleSubmit,
     formState: { errors },
     control,
-    watch,
     setValue,
   } = useForm<ReservationSchema>({
     resolver: zodResolver(reservationSchema),
@@ -64,17 +60,11 @@ const ReservationForm = ({
 
   const [state, action, pending] = useActionState(
     type === "create" ? createReservation : updateReservation,
-    {
-      success: false,
-      error: false,
-      message: "",
-    }
+    { success: false, error: false, message: "" },
   );
 
-  const onSubmit = handleSubmit((data) => {
-    startTransition(() => {
-      action(data);
-    });
+  const onSubmit = handleSubmit((formData) => {
+    startTransition(() => action(formData));
   });
 
   const router = useRouter();
@@ -89,55 +79,40 @@ const ReservationForm = ({
     }
   }, [state, router, setOpen]);
 
-  // Hall State
-  const [hallId, setHallId] = useState<number>(
-    data?.lectureRoom.hall.id || lecHalls?.[0]?.id || 0
-  );
-
   // Department State
   const [depId, setDepId] = useState<number>(
     role === "lecturer"
-      ? lectures.find(
-          (lec: { id: string; name: string; departmentId: number }) =>
-            lec.id === currentUserId
-        )?.departmentId
-      : data?.subject.departmentId || departments?.[0]?.id || 0
+      ? (lectures.find(
+          (lec: { id: string; departmentId: number }) =>
+            lec.id === currentUserId,
+        )?.departmentId ??
+          departments?.[0]?.id ??
+          0)
+      : data?.subject?.departmentId || departments?.[0]?.id || 0,
   );
 
   // Lecturer State
   const [lecId, setLecId] = useState<string>(() => {
-    if (role === "lecturer") {
-      // If current user is a lecturer
-      return currentUserId || "";
-    }
-
-    if (data?.lecturerId) {
-      // When editing existing data
-      return data.lecturerId;
-    }
-
-    // Otherwise, get first lecturer in the same department
-    const firstLecturer = lectures.find(
-      (lec: any) => lec.departmentId === depId
-    );
-    return firstLecturer ? firstLecturer.id : "";
+    if (role === "lecturer") return currentUserId || "";
+    if (data?.lecturerId) return data.lecturerId;
+    const first = lectures.find((lec: any) => lec.departmentId === depId);
+    return first ? first.id : "";
   });
 
-  // Filtered subjects
-  const filteredSubjects = subjects.filter((subject: any) =>
-    subject.lecturers.some((lec: any) => lec.id === lecId)
-  );
-
-  // Filtered lecturers
+  // Filtered lecturers by department
   const filteredLecturers = lectures.filter(
-    (s: { id: string; code: string; departmentId: number }) =>
-      s.departmentId === depId
+    (l: { id: string; departmentId: number }) => l.departmentId === depId,
   );
 
-  // Filtered lecture rooms
-  const filteredLectureRooms = lecRooms.filter(
-    (s: { id: number; name: string; hallId: number }) => s.hallId === hallId
+  // Filtered subjects by selected lecturer
+  const filteredSubjects = subjects.filter((s: any) =>
+    s.lecturers.some((lec: any) => lec.id === lecId),
   );
+
+  // All lecture rooms — no hall filter needed anymore
+  // lecRooms is the full list from relatedData
+  const allLectureRooms = lecRooms;
+
   useEffect(() => {
     if (filteredSubjects.length > 0) {
       setValue("subjectId", filteredSubjects[0].id);
@@ -153,34 +128,19 @@ const ReservationForm = ({
       </h1>
 
       <div className="flex justify-between flex-wrap gap-4">
-        <div className="flex flex-col gap-2 w-full md:w-1/4">
-          <label className="text-xs text-gray-500">Building</label>
-          <select
-            className="ring-[1.5px] ring-gray-300 p-2 rounded-md text-sm w-full"
-            value={hallId}
-            onChange={(e) => setHallId(Number(e.target.value))}
-          >
-            {lecHalls.map((d: { id: number; name: string }) => (
-              <option value={d.id} key={d.id}>
-                {d.name}
-              </option>
-            ))}
-          </select>
-        </div>
+        {/* Lecture Room — all rooms, no hall grouping */}
         <div className="flex flex-col gap-2 w-full md:w-1/4">
           <label className="text-xs text-gray-500">Lecture Room</label>
           <select
             className="ring-[1.5px] ring-gray-300 p-2 rounded-md text-sm w-full"
             {...register("lecRoomId", { valueAsNumber: true })}
-            defaultValue={data?.hallId}
+            defaultValue={data?.lecRoomId}
           >
-            {filteredLectureRooms.map(
-              (lecRoom: { id: number; name: string }) => (
-                <option value={lecRoom.id} key={lecRoom.id}>
-                  {lecRoom.name}
-                </option>
-              )
-            )}
+            {allLectureRooms.map((room: { id: number; name: string }) => (
+              <option value={room.id} key={room.id}>
+                {room.name}
+              </option>
+            ))}
           </select>
           {errors.lecRoomId?.message && (
             <p className="text-xs text-red-400">
@@ -189,6 +149,7 @@ const ReservationForm = ({
           )}
         </div>
 
+        {/* Department (hidden for lecturer role) */}
         {role !== "lecturer" && (
           <div className="flex flex-col gap-2 w-full md:w-1/4">
             <label className="text-xs text-gray-500">Department</label>
@@ -198,12 +159,10 @@ const ReservationForm = ({
               onChange={(e) => {
                 const newDepId = Number(e.target.value);
                 setDepId(newDepId);
-
-                // Automatically select the first lecturer from the new department
-                const firstLecturer = lectures.find(
-                  (lec: any) => lec.departmentId === newDepId
+                const first = lectures.find(
+                  (lec: any) => lec.departmentId === newDepId,
                 );
-                setLecId(firstLecturer ? firstLecturer.id : "");
+                setLecId(first ? first.id : "");
               }}
             >
               {departments.map((d: { id: number; name: string }) => (
@@ -215,11 +174,9 @@ const ReservationForm = ({
           </div>
         )}
 
+        {/* Lecturer */}
         {role === "lecturer" ? (
-          <>
-            {/* Hidden input ensures value is submitted */}
-            <input type="hidden" value={lecId} {...register("lecturerId")} />
-          </>
+          <input type="hidden" value={lecId} {...register("lecturerId")} />
         ) : (
           <div className="flex flex-col gap-2 w-full md:w-1/4">
             <label className="text-xs text-gray-500">Lecturer</label>
@@ -230,11 +187,11 @@ const ReservationForm = ({
               onChange={(e) => setLecId(e.target.value)}
             >
               {filteredLecturers.map(
-                (s: { id: string; name: string; surname: string }) => (
-                  <option value={s.id} key={s.id}>
-                    {s.name.toUpperCase()} {s.surname}
+                (l: { id: string; name: string; surname: string }) => (
+                  <option value={l.id} key={l.id}>
+                    {l.name.toUpperCase()} {l.surname}
                   </option>
-                )
+                ),
               )}
             </select>
             {errors.lecturerId?.message && (
@@ -245,6 +202,7 @@ const ReservationForm = ({
           </div>
         )}
 
+        {/* Subject (filtered by lecturer) */}
         <div className="flex flex-col gap-2 w-full md:w-1/4">
           <label className="text-xs text-gray-500">Subject</label>
           <select
@@ -252,11 +210,17 @@ const ReservationForm = ({
             {...register("subjectId", { valueAsNumber: true })}
             defaultValue={data?.subjectId}
           >
-            {filteredSubjects.map((s: { id: number; code: string }) => (
-              <option value={s.id} key={s.id}>
-                {s.code}
+            {filteredSubjects.length > 0 ? (
+              filteredSubjects.map((s: { id: number; code: string }) => (
+                <option value={s.id} key={s.id}>
+                  {s.code}
+                </option>
+              ))
+            ) : (
+              <option disabled value="">
+                No subjects for this lecturer
               </option>
-            ))}
+            )}
           </select>
           {errors.subjectId?.message && (
             <p className="text-xs text-red-400">
@@ -265,8 +229,8 @@ const ReservationForm = ({
           )}
         </div>
 
+        {/* Start / End Time */}
         <div className="flex flex-wrap gap-4 w-full">
-          {/* Start Time */}
           <div className="flex flex-col gap-2 w-full md:w-1/3">
             <label className="text-xs text-gray-500">Start Time</label>
             <Controller
@@ -285,7 +249,7 @@ const ReservationForm = ({
                   minDate={new Date()}
                   filterDate={(date) => {
                     const day = date.getDay();
-                    return day !== 0 && day !== 6; // disable weekends
+                    return day !== 0 && day !== 6;
                   }}
                   minTime={setHours(setMinutes(new Date(), 0), 8)}
                   maxTime={setHours(setMinutes(new Date(), 0), 20)}
@@ -299,7 +263,6 @@ const ReservationForm = ({
             )}
           </div>
 
-          {/* End Time */}
           <div className="flex flex-col gap-2 w-full md:w-1/3">
             <label className="text-xs text-gray-500">End Time</label>
             <Controller
@@ -307,7 +270,6 @@ const ReservationForm = ({
               name="endTime"
               render={({ field }) => {
                 const startTime = useWatch({ control, name: "startTime" });
-
                 return (
                   <DatePicker
                     selected={field.value}
@@ -321,7 +283,7 @@ const ReservationForm = ({
                     minDate={startTime || new Date()}
                     filterDate={(date) => {
                       const day = date.getDay();
-                      return day !== 0 && day !== 6; // disable weekends
+                      return day !== 0 && day !== 6;
                     }}
                     minTime={
                       startTime &&
@@ -350,13 +312,20 @@ const ReservationForm = ({
           />
         )}
       </div>
+
       {state.error && <span className="text-red-400">{state.message}</span>}
 
       <button
         disabled={pending}
-        className="bg-blue-400 text-white p-2 rounded-md cursor-pointer"
+        className="bg-blue-400 text-white p-2 rounded-md cursor-pointer disabled:opacity-60"
       >
-        {type === "create" ? "Create" : "Update"}
+        {pending
+          ? type === "create"
+            ? "Creating…"
+            : "Updating…"
+          : type === "create"
+            ? "Create"
+            : "Update"}
       </button>
     </form>
   );

@@ -109,7 +109,7 @@ const FormContainer = async ({ table, type, data, id }: FormContainerProps) => {
 
         relatedData = {
           subjects: reservationSubjects,
-          lecRooms,
+          lecRooms, // no lecHalls — Hall model removed
           lectures,
           departments: reservationDepartments,
         };
