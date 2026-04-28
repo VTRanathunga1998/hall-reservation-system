@@ -6,10 +6,9 @@ import { auth } from "@clerk/nextjs/server";
 const LectureCalendar = async ({
   params,
 }: {
-  params: Promise<{ buildingId: string; roomId: string }>;
+  params: Promise<{ roomId: string }>;
 }) => {
-  // ✅ Await params (required in Next.js 15+)
-  const { buildingId, roomId } = await params;
+  const { roomId } = await params;
 
   const { userId, sessionClaims } = await auth();
   const role = (sessionClaims?.metadata as { role?: string })?.role;
@@ -17,7 +16,6 @@ const LectureCalendar = async ({
 
   const query: Prisma.ReservationWhereInput = {};
 
-  // ROLE CONDITIONS
   switch (role) {
     case "admin":
       break;
@@ -38,35 +36,22 @@ const LectureCalendar = async ({
       break;
   }
 
-  if (buildingId && roomId) {
+  if (roomId) {
     query.lectureRoom = {
-      id: parseInt(roomId), // filter by room
-      hallId: parseInt(buildingId), // filter by hall
+      id: parseInt(roomId),
     };
   }
 
-  const [resData, hall, room] = await prisma.$transaction([
-    prisma.reservation.findMany({
-      where: query,
-      include: {
-        subject: { select: { code: true } },
-        lectureRoom: {
-          select: { name: true, hall: { select: { name: true } } },
-        },
-        lecturer: { select: { name: true, surname: true } },
+  const resData = await prisma.reservation.findMany({
+    where: query,
+    include: {
+      subject: { select: { code: true } },
+      lectureRoom: {
+        select: { name: true },
       },
-    }),
-
-    prisma.hall.findUnique({
-      where: { id: parseInt(buildingId) },
-      select: { name: true },
-    }),
-
-    prisma.lectureRoom.findUnique({
-      where: { id: parseInt(roomId) },
-      select: { name: true },
-    }),
-  ]);
+      lecturer: { select: { name: true, surname: true } },
+    },
+  });
 
   const data = resData.map((reservation) => ({
     title:
@@ -74,20 +59,19 @@ const LectureCalendar = async ({
       (reservation.lecturer
         ? ` - ${reservation.lecturer.name} ${reservation.lecturer.surname}`
         : ""),
+
     allDay: false,
     start: new Date(reservation.startTime),
     end: new Date(reservation.endTime),
+
     resource: {
-      hall: reservation.lectureRoom.hall.name,
       room: reservation.lectureRoom?.name ?? "No Room",
     },
   }));
 
   return (
-    <div className="flex-1 mb-10 ml-1 mr-1  bg-white rounded-sm p-2">
-      <h1 className="w-full p-1 font-bold">
-        {hall?.name} - {room?.name}
-      </h1>
+    <div className="flex-1 mb-10 ml-1 mr-1 bg-white rounded-sm p-2">
+      <h1 className="w-full p-1 font-bold">Lecture Schedule</h1>
       <BigCalendar data={data} />
     </div>
   );

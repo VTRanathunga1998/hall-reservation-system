@@ -2,19 +2,13 @@ import Link from "next/link";
 import Image from "next/image";
 import { LectureRoom } from "@prisma/client";
 
-export default function RoomCard({
-  room,
-  buildingId,
-}: {
-  room: LectureRoom;
-  buildingId: number;
-}) {
+export default function RoomCard({ room }: { room: LectureRoom }) {
   return (
     <Link
-      href={`/home/${buildingId}/${room.id}`}
+      href={`/home/${room.id}`}
       className="w-full md:w-1/4 flex items-center gap-4 rounded-2xl bg-white border border-gray-200 p-6 shadow-md hover:shadow-xl transition-all duration-300 hover:-translate-y-1 md:min-w-sm"
     >
-      {/* Department Image */}
+      {/* Room Icon */}
       <div className="flex-shrink-0 w-16 h-16 relative">
         <Image
           src="/corporation.png"

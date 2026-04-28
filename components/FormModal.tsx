@@ -1,14 +1,13 @@
 "use client";
 
 import {
-  deleteBuilding,
-  deleteDepartment,
   deleteLecturer,
-  deleteLectureRoom,
   deleteReservation,
-  deleteStudent,
   deleteSubject,
 } from "@/lib/actions";
+import { deleteLectureRoom } from "@/lib/lecture_rooms/actions";
+import { deleteStudent } from "@/lib/students/actions";
+import { deleteDepartment } from "@/lib/departments/actions";
 import dynamic from "next/dynamic";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
@@ -24,7 +23,6 @@ import { toast } from "react-toastify";
 import { FormContainerProps } from "./FormContainer";
 
 const deleteActionMap = {
-  building: deleteBuilding,
   subject: deleteSubject,
   lecturer: deleteLecturer,
   reservation: deleteReservation,
@@ -39,9 +37,7 @@ const LecturerForm = dynamic(() => import("./forms/LecturerForm"), {
 const StudentForm = dynamic(() => import("./forms/StudentForm"), {
   loading: () => <h1>Loading...</h1>,
 });
-const BuildingForm = dynamic(() => import("./forms/BuildingForm"), {
-  loading: () => <h1>Loading...</h1>,
-});
+
 const LectureRoomForm = dynamic(() => import("./forms/LectureRoomForm"), {
   loading: () => <h1>Loading...</h1>,
 });
@@ -60,17 +56,9 @@ const forms: {
     setOpen: Dispatch<SetStateAction<boolean>>,
     type: "create" | "update",
     data?: any,
-    relatedData?: any
+    relatedData?: any,
   ) => ReactNode;
 } = {
-  building: (setOpen, type, data, relatedData) => (
-    <BuildingForm
-      type={type}
-      data={data}
-      setOpen={setOpen}
-      relatedData={relatedData}
-    />
-  ),
   lecturer: (setOpen, type, data, relatedData) => (
     <LecturerForm
       type={type}
@@ -133,8 +121,8 @@ const FormModal = ({
     type === "create"
       ? "bg-[#FAE27C]"
       : type === "update"
-      ? "bg-[#C3EBFA]"
-      : "bg-[#CFCEFF]";
+        ? "bg-[#C3EBFA]"
+        : "bg-[#CFCEFF]";
 
   const [open, setOpen] = useState(false);
 
@@ -199,7 +187,10 @@ const FormModal = ({
         <Image src={`/${type}.png`} alt="" height={16} width={16} />
       </button>
       {open && (
-        <div id="datepicker-portal" className="fixed inset-0 bg-black/60 z-[150] flex items-center justify-center">
+        <div
+          id="datepicker-portal"
+          className="fixed inset-0 bg-black/60 z-[150] flex items-center justify-center"
+        >
           <div className="bg-white p-4 rounded-md relative w-[90%] md:w-[70%] lg:w-[60%] xl:w-[50%] 2xl:w-[50%] max-h-[90vh] overflow-y-auto scrollbar-hidden">
             <Form />
             <div

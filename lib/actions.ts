@@ -1,12 +1,11 @@
 "use server";
 
-// import { randomUUID } from "crypto";
+import { revalidatePath } from "next/cache";
+import { UserSex } from "@prisma/client";
 
 import { prisma } from "@/lib/prisma";
 import {
-  BuildingSchema,
   DepartmentSchema,
-  LectureRoomSchema,
   LecturerSchema,
   ReservationSchema,
   SelectSubjectSchema,
@@ -21,114 +20,10 @@ type CurrentState = {
   message: string;
 };
 
-//Building
-export const createBuilding = async (
-  currentState: CurrentState,
-  data: BuildingSchema
-) => {
-  try {
-    await prisma.hall.create({
-      data: {
-        name: data.name
-          .toLowerCase()
-          .split(" ")
-          .filter(Boolean)
-          .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
-          .join(" "),
-      },
-    });
-
-    return {
-      success: true,
-      error: false,
-      message: "Building has been created.",
-    };
-  } catch (dbError: any) {
-    // Prisma unique constraint errors
-    let friendlyMessage = "A database error occurred.";
-
-    if (dbError.code === "P2002") {
-      const field = dbError.meta?.target?.[0];
-      switch (field) {
-        case "name":
-          friendlyMessage = "That building name is already taken.";
-          break;
-        default:
-          friendlyMessage = "A record with the same value already exists.";
-      }
-    }
-    return {
-      success: false,
-      error: true,
-      message: friendlyMessage,
-    };
-  }
-};
-
-export const updateBuilding = async (
-  currentState: CurrentState,
-  data: BuildingSchema
-) => {
-  try {
-    await prisma.hall.update({
-      where: {
-        id: Number(data.id),
-      },
-      data: {
-        name: data.name
-          .toLowerCase()
-          .split(" ")
-          .filter(Boolean)
-          .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
-          .join(" "),
-      },
-    });
-
-    return {
-      success: true,
-      error: false,
-      message: "Building has been updated.",
-    };
-  } catch (error) {
-    return {
-      success: false,
-      error: true,
-      message: "A bulding updating failed.",
-    };
-  }
-};
-
-export const deleteBuilding = async (
-  currentState: CurrentState,
-  data: FormData
-) => {
-  const id = data.get("id") as string;
-
-  try {
-    await prisma.hall.delete({
-      where: {
-        id: parseInt(id),
-      },
-    });
-
-    return {
-      success: true,
-      error: false,
-      message: "Building has been deleted.",
-    };
-  } catch (error) {
-    return {
-      success: false,
-      error: true,
-      message: "A bulding deleting failed.",
-    };
-  }
-};
-
 //Lecturer
 export const createLecturer = async (
   currentState: CurrentState,
-  data: LecturerSchema
+  data: LecturerSchema,
 ) => {
   const clerk = await clerkClient();
 
@@ -221,7 +116,7 @@ export const createLecturer = async (
 
 export const updateLecturer = async (
   currentState: CurrentState,
-  data: LecturerSchema
+  data: LecturerSchema,
 ) => {
   if (!data.id) {
     return {
@@ -334,7 +229,7 @@ export const updateLecturer = async (
 
 export const deleteLecturer = async (
   currentState: CurrentState,
-  data: FormData
+  data: FormData,
 ) => {
   const id = data.get("id") as string;
 
@@ -410,414 +305,12 @@ export const deleteLecturer = async (
   }
 };
 
-//Student
 
-export const createStudent = async (
-  currentState: CurrentState,
-  data: StudentSchema
-) => {
-  let createdUser: any = null;
-
-  try {
-    const clerk = await clerkClient();
-
-    // Step 1: Create Clerk user
-    createdUser = await clerk.users.createUser({
-      username: data.username,
-      password: data.password,
-      firstName: data.name,
-      lastName: data.surname,
-      publicMetadata: { role: "student" },
-    });
-
-    // Step 2: Create Student in DB
-    await prisma.student.create({
-      data: {
-        id: createdUser.id,
-        username: data.username.toUpperCase(),
-        email: data.email ?? "",
-        name: data.name
-          .toLowerCase()
-          .split(" ")
-          .filter(Boolean)
-          .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
-          .join(" "),
-        surname: data.surname,
-        phone: data.phone?.trim() === "" ? null : data.phone?.trim(),
-        sex: data.sex,
-        subjects: {
-          connect: data.subjects?.map((subjectId) => ({
-            id: subjectId,
-          })),
-        },
-        departmentId: data.departmentId,
-      },
-    });
-
-    return {
-      success: true,
-      error: false,
-      message: "Student has been created successfully.",
-    };
-  } catch (error: any) {
-    console.error("Error creating student:", error);
-
-    // Step 3: Rollback Clerk user if DB fails
-    if (createdUser?.id) {
-      try {
-        const clerk = await clerkClient();
-        await clerk.users.deleteUser(createdUser.id);
-      } catch (rollbackError) {
-        console.error(
-          "Rollback failed (could not delete user from Clerk):",
-          rollbackError
-        );
-      }
-    }
-
-    // Step 4: Handle specific Prisma errors
-    let friendlyMessage = "Failed to create student.";
-
-    if (error.code === "P2002") {
-      // Unique constraint failed
-      const fields = (error.meta?.target as string[]) || [];
-      if (fields.includes("username")) {
-        friendlyMessage = "Username already exists.";
-      } else if (fields.includes("phone")) {
-        friendlyMessage = "Phone number already exists.";
-      } else if (fields.includes("email")) {
-        friendlyMessage = "Email address already exists.";
-      } else {
-        friendlyMessage = "Duplicate data detected. Please use unique values.";
-      }
-    } else if (error.errors?.[0]?.message) {
-      // Clerk or Zod error
-      friendlyMessage = error.errors[0].message;
-    } else if (error.message?.includes("password")) {
-      friendlyMessage = "Password does not meet security requirements.";
-    }
-
-    return {
-      success: false,
-      error: true,
-      message: friendlyMessage,
-    };
-  }
-};
-
-export const updateStudent = async (
-  currentState: CurrentState,
-  data: StudentSchema
-) => {
-  if (!data.id) {
-    return { success: false, error: true, message: "Student ID is not found!" };
-  }
-
-  try {
-    const clerk = await clerkClient();
-
-    // Step 1: Update Clerk user
-    await clerk.users.updateUser(data.id, {
-      username: data.username.toUpperCase(),
-      ...(data.password ? { password: data.password } : {}),
-      firstName: data.name,
-      lastName: data.surname,
-    });
-
-    // Step 2: Update Student in Database
-    await prisma.student.update({
-      where: {
-        id: data.id,
-      },
-      data: {
-        ...(data.password !== "" && { password: data.password }),
-        username: data.username.toLocaleUpperCase(),
-        email: data.email ?? "",
-        name: data.name
-          .toLowerCase()
-          .split(" ")
-          .filter(Boolean)
-          .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
-          .join(" "),
-        surname: data.surname,
-        phone: data.phone?.trim() === "" ? null : data.phone?.trim(),
-        sex: data.sex,
-        ...(data.subjects !== undefined
-          ? {
-              subjects: {
-                set: data.subjects.map((subjectId) => ({ id: subjectId })),
-              },
-            }
-          : {}),
-        departmentId: data.departmentId,
-      },
-    });
-
-    return {
-      success: true,
-      error: false,
-      message: "Student has been updated successfully.",
-    };
-  } catch (error: any) {
-    console.error("Error updating student:", error);
-
-    // Step 3: Handle friendly Prisma messages
-    let friendlyMessage = "Failed to update student.";
-
-    if (error.code === "P2002") {
-      const fields = (error.meta?.target as string[]) || [];
-      if (fields.includes("username")) {
-        friendlyMessage = "Username already exists.";
-      } else if (fields.includes("phone")) {
-        friendlyMessage = "Phone number already exists.";
-      } else if (fields.includes("email")) {
-        friendlyMessage = "Email address already exists.";
-      } else {
-        friendlyMessage = "Duplicate data detected. Please use unique values.";
-      }
-    } else if (error.message?.includes("password")) {
-      friendlyMessage = "Password does not meet security requirements.";
-    } else if (error.errors?.[0]?.message) {
-      friendlyMessage = error.errors[0].message;
-    }
-
-    return {
-      success: false,
-      error: true,
-      message: friendlyMessage,
-    };
-  }
-};
-
-export const deleteStudent = async (
-  currentState: CurrentState,
-  data: FormData
-) => {
-  const id = data.get("id") as string;
-
-  if (!id) {
-    return { success: false, error: true, message: "Student ID is missing." };
-  }
-
-  try {
-    const clerk = await clerkClient();
-
-    // Step 1: Delete student record from DB
-    await prisma.student.delete({
-      where: { id },
-    });
-
-    // Step 2: Delete user from Clerk
-    await clerk.users.deleteUser(id);
-
-    return {
-      success: true,
-      error: false,
-      message: "Student has been deleted successfully.",
-    };
-  } catch (error: any) {
-    console.error("Error deleting student:", error);
-
-    // Step 3: Friendly error handling
-    let friendlyMessage = "Failed to delete student.";
-
-    if (error.code === "P2003") {
-      // Prisma Foreign key constraint error
-      friendlyMessage =
-        "Cannot delete this student because it is linked to other records (e.g., reservations or subjects).";
-    } else if (error.message?.includes("User not found")) {
-      friendlyMessage =
-        "The student’s user account could not be found in Clerk.";
-    } else if (error.code === "P2025") {
-      friendlyMessage = "Student not found in the database.";
-    }
-
-    return {
-      success: false,
-      error: true,
-      message: friendlyMessage,
-    };
-  }
-};
-
-//Lecture Romm
-export const createLectureRoom = async (
-  currentState: CurrentState,
-  data: LectureRoomSchema
-) => {
-  try {
-    await prisma.lectureRoom.create({
-      data: {
-        name: data.name,
-        maxCapacity: data.maxCapacity,
-        hallId: data.hallId,
-      },
-    });
-
-    return {
-      success: true,
-      error: false,
-      message: "Building has been created.",
-    };
-  } catch (error) {
-    return {
-      success: false,
-      error: true,
-      message: "A bulding added failed.",
-    };
-  }
-};
-
-export const updateLectureRoom = async (
-  currentState: CurrentState,
-  data: LectureRoomSchema
-) => {
-  try {
-    await prisma.lectureRoom.update({
-      where: {
-        id: Number(data.id),
-      },
-      data: {
-        name: data.name,
-      },
-    });
-
-    return {
-      success: true,
-      error: false,
-      message: "Building has been updated.",
-    };
-  } catch (error) {
-    return {
-      success: false,
-      error: true,
-      message: "A bulding updating failed.",
-    };
-  }
-};
-
-export const deleteLectureRoom = async (
-  currentState: CurrentState,
-  data: FormData
-) => {
-  const id = data.get("id") as string;
-
-  try {
-    await prisma.lectureRoom.delete({
-      where: {
-        id: parseInt(id),
-      },
-    });
-
-    return {
-      success: true,
-      error: false,
-      message: "Building has been deleted.",
-    };
-  } catch (error) {
-    return {
-      success: false,
-      error: true,
-      message: "A bulding deleting failed.",
-    };
-  }
-};
-
-//Department
-export const createDepartment = async (
-  currentState: CurrentState,
-  data: DepartmentSchema
-) => {
-  try {
-    await prisma.department.create({
-      data: {
-        name: data.name
-          .toLowerCase()
-          .split(" ")
-          .filter(Boolean)
-          .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
-          .join(" "),
-      },
-    });
-
-    return {
-      success: true,
-      error: false,
-      message: "Department has been created.",
-    };
-  } catch (error) {
-    return {
-      success: false,
-      error: true,
-      message: "A department added failed.",
-    };
-  }
-};
-
-export const updateDepartment = async (
-  currentState: CurrentState,
-  data: DepartmentSchema
-) => {
-  try {
-    await prisma.department.update({
-      where: {
-        id: Number(data.id),
-      },
-      data: {
-        name: data.name
-          .toLowerCase()
-          .split(" ")
-          .filter(Boolean)
-          .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
-          .join(" "),
-      },
-    });
-
-    return {
-      success: true,
-      error: false,
-      message: "Department has been updated.",
-    };
-  } catch (error) {
-    return {
-      success: false,
-      error: true,
-      message: "A department updating failed.",
-    };
-  }
-};
-
-export const deleteDepartment = async (
-  currentState: CurrentState,
-  data: FormData
-) => {
-  const id = data.get("id") as string;
-
-  try {
-    await prisma.department.delete({
-      where: {
-        id: parseInt(id),
-      },
-    });
-
-    return {
-      success: true,
-      error: false,
-      message: "Department has been deleted.",
-    };
-  } catch (error) {
-    return {
-      success: false,
-      error: true,
-      message: "A department deleting failed.",
-    };
-  }
-};
 
 //Subject
 export const createSubject = async (
   currentState: CurrentState,
-  data: SubjectSchema
+  data: SubjectSchema,
 ) => {
   try {
     await prisma.subject.create({
@@ -850,7 +343,7 @@ export const createSubject = async (
 
 export const updateSubject = async (
   currentState: CurrentState,
-  data: SubjectSchema
+  data: SubjectSchema,
 ) => {
   try {
     await prisma.subject.update({
@@ -885,7 +378,7 @@ export const updateSubject = async (
 
 export const deleteSubject = async (
   currentState: CurrentState,
-  data: FormData
+  data: FormData,
 ) => {
   const id = data.get("id") as string;
 
@@ -912,7 +405,7 @@ export const deleteSubject = async (
 
 export const selectSubject = async (
   currentState: CurrentState,
-  data: SelectSubjectSchema
+  data: SelectSubjectSchema,
 ) => {
   try {
     if (!data.id) {
@@ -997,7 +490,7 @@ export const selectSubject = async (
 
 export const removeSubject = async (
   currentState: CurrentState,
-  formData: FormData
+  formData: FormData,
 ) => {
   const subjectId = Number(formData.get("id"));
   const userId = formData.get("userId") as string;
@@ -1056,7 +549,7 @@ export const removeSubject = async (
 //Reservation
 export const createReservation = async (
   currentState: CurrentState,
-  data: ReservationSchema
+  data: ReservationSchema,
 ) => {
   try {
     // Check for overlapping reservations in the same room
@@ -1106,7 +599,7 @@ export const createReservation = async (
 
 export const updateReservation = async (
   currentState: CurrentState,
-  data: ReservationSchema
+  data: ReservationSchema,
 ) => {
   try {
     await prisma.reservation.update({
@@ -1138,7 +631,7 @@ export const updateReservation = async (
 
 export const deleteReservation = async (
   currentState: CurrentState,
-  data: FormData
+  data: FormData,
 ) => {
   const id = data.get("id") as string;
 
@@ -1163,244 +656,5 @@ export const deleteReservation = async (
   }
 };
 
-//Temporary
 
-/**
- * Extracts year and semester from subject code
- * Handles codes with or without spaces: "CEL 111", "CEL111", "ECO213"
- */
-function parseYearSemesterFromCode(code: string): number | null {
-  // Remove all spaces from the code first
-  const cleanCode = code.replace(/\s+/g, "");
 
-  // Match pattern: letters followed by digits (e.g., "CEL111", "ECO213")
-  const match = cleanCode.match(/[A-Za-z]+(\d+)/);
-
-  if (!match || !match[1]) {
-    console.warn(`Could not parse code: ${code}`);
-    return null;
-  }
-
-  const numericPart = match[1];
-
-  // Need at least 3 digits for codes like "CEL 111"
-  if (numericPart.length < 3) {
-    console.warn(`Code ${code} has insufficient digits: ${numericPart}`);
-    return null;
-  }
-
-  // For 3-digit codes like "111", first digit is year, second is semester
-  const year = parseInt(numericPart.charAt(0), 10);
-  const semester = parseInt(numericPart.charAt(1), 10);
-
-  // Validate values
-  if (Number.isNaN(year) || Number.isNaN(semester)) {
-    console.warn(`Invalid year or semester in code: ${code}`);
-    return null;
-  }
-
-  // Validate ranges (year 1-5, semester 1-2)
-  if (year < 1 || year > 5 || semester < 1 || semester > 2) {
-    console.warn(
-      `Year or semester out of range in code ${code}: year=${year}, semester=${semester}`
-    );
-    return null;
-  }
-
-  // Combine into yearSem (e.g., year=1, semester=1 -> 11)
-  const yearSem = parseInt(`${year}${semester}`);
-
-  return yearSem;
-}
-
-/**
- * Updates all subjects with yearSem extracted from their codes
- */
-// export async function updateAllSubjectYearSem() {
-//   try {
-//     // Fetch all subjects
-//     const subjects = await prisma.subject.findMany({
-//       select: {
-//         id: true,
-//         code: true,
-//         yearSem: true,
-//       },
-//     });
-
-//     console.log(`Found ${subjects.length} subjects to process\n`);
-
-//     let successCount = 0;
-//     let skipCount = 0;
-//     let errorCount = 0;
-//     const skippedCodes: string[] = [];
-
-//     // Update each subject
-//     for (const subject of subjects) {
-//       const yearSem = parseYearSemesterFromCode(subject.code);
-
-//       if (yearSem === null) {
-//         console.log(`⊘ Skipping subject ${subject.code} (ID: ${subject.id})`);
-//         skipCount++;
-//         skippedCodes.push(subject.code);
-//         continue;
-//       }
-
-//       try {
-//         await prisma.subject.update({
-//           where: { id: subject.id },
-//           data: { yearSem },
-//         });
-
-//         console.log(
-//           `✓ Updated ${subject.code} (ID: ${subject.id}) -> yearSem: ${yearSem}`
-//         );
-//         successCount++;
-//       } catch (error) {
-//         console.error(`✗ Error updating subject ${subject.code}:`, error);
-//         errorCount++;
-//       }
-//     }
-
-//     console.log("\n=== Update Summary ===");
-//     console.log(`Total subjects: ${subjects.length}`);
-//     console.log(`Successfully updated: ${successCount}`);
-//     console.log(`Skipped (unparseable): ${skipCount}`);
-//     console.log(`Errors: ${errorCount}`);
-
-//     if (skippedCodes.length > 0) {
-//       console.log("\nSkipped codes:");
-//       console.log(skippedCodes.join(", "));
-//     }
-
-//     return {
-//       success: true,
-//       error: false,
-//       message: `Updated ${successCount} subjects. Skipped: ${skipCount}, Errors: ${errorCount}`,
-//       data: {
-//         total: subjects.length,
-//         success: successCount,
-//         skipped: skipCount,
-//         errors: errorCount,
-//         skippedCodes,
-//       },
-//     };
-//   } catch (error) {
-//     console.error("Fatal error updating subjects:", error);
-//     return {
-//       success: false,
-//       error: true,
-//       message: "Failed to update subjects",
-//     };
-//   }
-// }
-
-//temporary starts------------------------------
-
-// export const createStudent = async (
-//   currentState: CurrentState,
-//   data: StudentSchema
-// ) => {
-//   const userId = randomUUID();
-
-//   try {
-//     await prisma.student.create({
-//       data: {
-//         id: userId,
-//         username: data.username.toUpperCase(),
-//         email: data.email ?? "",
-//         name: data.name
-//           .toLowerCase()
-//           .split(" ")
-//           .filter(Boolean)
-//           .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
-//           .join(" "),
-//         surname: data.surname,
-//         phone: data.phone?.trim() === "" ? null : data.phone?.trim(),
-//         sex: data.sex,
-//         subjects: {
-//           connect: data.subjects?.map((id) => ({ id })),
-//         },
-//         departmentId: data.departmentId,
-//         // password field removed — not in your Prisma schema
-//       },
-//     });
-
-//     return {
-//       success: true,
-//       error: false,
-//       message: "Student created successfully (local mode)",
-//     };
-//   } catch (error: any) {
-//     console.error("Error creating student:", error);
-
-//     let message = "Failed to create student.";
-
-//     if (error.code === "P2002") {
-//       const fields = (error.meta?.target as string[]) || [];
-//       if (fields.includes("username")) message = "Username already exists.";
-//       else if (fields.includes("phone"))
-//         message = "Phone number already exists.";
-//       else if (fields.includes("email")) message = "Email already exists.";
-//       else message = "Duplicate entry. Please check your data.";
-//     }
-
-//     return { success: false, error: true, message };
-//   }
-// };
-
-// export const updateStudent = async (
-//   currentState: CurrentState,
-//   data: StudentSchema & { id: string }
-// ) => {
-//   if (!data.id) {
-//     return { success: false, error: true, message: "Student ID is required." };
-//   }
-
-//   try {
-//     await prisma.student.update({
-//       where: { id: data.id },
-//       data: {
-//         username: data.username.toUpperCase(),
-//         email: data.email ?? "",
-//         name: data.name
-//           .toLowerCase()
-//           .split(" ")
-//           .filter(Boolean)
-//           .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
-//           .join(" "),
-//         surname: data.surname,
-//         phone: data.phone?.trim() === "" ? null : data.phone?.trim(),
-//         sex: data.sex,
-//         ...(data.subjects !== undefined && {
-//           subjects: {
-//             set: data.subjects.map((id) => ({ id })),
-//           },
-//         }),
-//         departmentId: data.departmentId,
-//         // No password update — field doesn't exist
-//       },
-//     });
-
-//     return {
-//       success: true,
-//       error: false,
-//       message: "Student updated successfully.",
-//     };
-//   } catch (error: any) {
-//     console.error("Error updating student:", error);
-
-//     let message = "Failed to update student.";
-
-//     if (error.code === "P2002") {
-//       const fields = (error.meta?.target as string[]) || [];
-//       if (fields.includes("username")) message = "Username already exists.";
-//       else if (fields.includes("phone"))
-//         message = "Phone number already exists.";
-//       else if (fields.includes("email")) message = "Email already exists.";
-//     }
-
-//     return { success: false, error: true, message };
-//   }
-// };
-
-//temporary ends---------------------------------

@@ -47,3 +47,11 @@ next-env.d.ts
 .vercel
 .env*.local
 prisma/seed copy.ts
+scripts/exportStudents.ts
+scripts/deleteClerkUsers.ts
+scripts/deleteClerkUsers.ts
+students.json
+app/(dashboard)/list/students/page copy.tsx
+backup-full.json
+scripts/importFull.ts
+scripts/exportFull.ts

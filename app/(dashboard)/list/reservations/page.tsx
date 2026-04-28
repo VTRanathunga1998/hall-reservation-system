@@ -1,5 +1,4 @@
 import {
-  Hall,
   Lecturer,
   LectureRoom,
   Prisma,
@@ -16,7 +15,7 @@ import { ITEM_PER_PAGE } from "@/lib/settings";
 import { auth } from "@clerk/nextjs/server";
 
 type ReservationList = Reservation & {
-  lectureRoom: LectureRoom & { hall: Hall };
+  lectureRoom: LectureRoom;
   lecturer: Lecturer;
   subject: Subject;
 };
@@ -47,7 +46,6 @@ const ReservationsListPage = async ({
       accessor: "reservationId",
       className: "hidden md:table-cell",
     },
-    { header: "Hall", accessor: "hall", className: "hidden md:table-cell" },
     { header: "Room", accessor: "room" },
     {
       header: "Subject",
@@ -63,26 +61,11 @@ const ReservationsListPage = async ({
           },
         ]
       : []),
-
-    {
-      header: "Date",
-      accessor: "date",
-    },
-    {
-      header: "Start Time",
-      accessor: "startTime",
-    },
-    {
-      header: "End Time",
-      accessor: "endTime",
-    },
+    { header: "Date", accessor: "date" },
+    { header: "Start Time", accessor: "startTime" },
+    { header: "End Time", accessor: "endTime" },
     ...(role === "admin" || role === "lecturer"
-      ? [
-          {
-            header: "Actions",
-            accessor: "action",
-          },
-        ]
+      ? [{ header: "Actions", accessor: "action" }]
       : []),
   ];
 
@@ -91,31 +74,33 @@ const ReservationsListPage = async ({
       key={item.id}
       className="border-b border-gray-200 even:bg-slate-50 text-sm hover:bg-[#F1F0FF]"
     >
-      <td className="hidden md:table-cell py-4 text-left align-top">{item.id}</td>
-      <td className="hidden md:table-cell py-4 text-left align-top">
-        {item.lectureRoom.hall.name}
-      </td>
-      <td className="py-4 text-left align-top">{item.lectureRoom.name}</td>
-      <td className="hidden md:table-cell py-4 text-left align-top">{item.subject.code}</td>
+      <td className="hidden md:table-cell py-4">{item.id}</td>
+
+      <td className="py-4">{item.lectureRoom.name}</td>
+
+      <td className="hidden md:table-cell py-4">{item.subject.code}</td>
+
       {role === "admin" && (
-        <td className="hidden md:table-cell py-4 text-left align-top">
+        <td className="hidden md:table-cell py-4">
           {item.lecturer.name.toUpperCase()} {item.lecturer.surname}
         </td>
       )}
 
-      <td className="py-4 text-left align-top">
+      <td className="py-4">
         {new Date(item.startTime).toLocaleDateString("en-LK", {
           timeZone: "Asia/Colombo",
         })}
       </td>
-      <td className="py-4 text-left align-top">
+
+      <td className="py-4">
         {new Date(item.startTime).toLocaleTimeString("en-LK", {
           hour: "2-digit",
           minute: "2-digit",
           timeZone: "Asia/Colombo",
         })}
       </td>
-      <td className="py-4 text-left align-top">
+
+      <td className="py-4">
         {new Date(item.endTime).toLocaleTimeString("en-LK", {
           hour: "2-digit",
           minute: "2-digit",
@@ -123,15 +108,13 @@ const ReservationsListPage = async ({
         })}
       </td>
 
-      <td className="py-4 text-left align-top">
-        <div className="flex flex-col md:flex-row items-center gap-2">
-          {(role === "admin" || role === "lecturer") && (
-            <>
-              <FormContainer table="reservation" type="update" data={item} />
-              <FormContainer table="reservation" type="delete" id={item.id} />
-            </>
-          )}
-        </div>
+      <td className="py-4">
+        {(role === "admin" || role === "lecturer") && (
+          <div className="flex gap-2">
+            <FormContainer table="reservation" type="update" data={item} />
+            <FormContainer table="reservation" type="delete" id={item.id} />
+          </div>
+        )}
       </td>
     </tr>
   );
@@ -145,7 +128,6 @@ const ReservationsListPage = async ({
         switch (key) {
           case "search":
             query.OR = [
-              // Search lecturer
               {
                 lecturer: {
                   OR: [
@@ -154,24 +136,14 @@ const ReservationsListPage = async ({
                   ],
                 },
               },
-              // Search subject
               {
                 subject: {
                   name: { contains: value, mode: "insensitive" },
                 },
               },
-              // Search lecture room
               {
                 lectureRoom: {
                   name: { contains: value, mode: "insensitive" },
-                },
-              },
-              // Search hall name
-              {
-                lectureRoom: {
-                  hall: {
-                    name: { contains: value, mode: "insensitive" },
-                  },
                 },
               },
             ];
@@ -199,11 +171,7 @@ const ReservationsListPage = async ({
       take: ITEM_PER_PAGE,
       skip: ITEM_PER_PAGE * (p - 1),
       include: {
-        lectureRoom: {
-          include: {
-            hall: true,
-          },
-        },
+        lectureRoom: true,
         lecturer: true,
         subject: { select: { name: true, code: true, departmentId: true } },
       },

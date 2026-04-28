@@ -3,7 +3,6 @@ import FormModal from "./FormModal";
 
 export type FormContainerProps = {
   table:
-    | "building"
     | "student"
     | "lecture_room"
     | "department"
@@ -16,16 +15,12 @@ export type FormContainerProps = {
 };
 
 const FormContainer = async ({ table, type, data, id }: FormContainerProps) => {
-  let relatedDate = {};
+  let relatedData = {};
 
   if (type !== "delete") {
     switch (table) {
-      // Lecture Room
       case "lecture_room": {
-        const halls = await prisma.hall.findMany({
-          select: { id: true, name: true },
-        });
-        relatedDate = { buildings: halls };
+        relatedData = {};
         break;
       }
 
@@ -39,7 +34,7 @@ const FormContainer = async ({ table, type, data, id }: FormContainerProps) => {
           select: { id: true, name: true },
         });
 
-        relatedDate = {
+        relatedData = {
           subjects: lecturerSubjects,
           departments,
         };
@@ -56,9 +51,14 @@ const FormContainer = async ({ table, type, data, id }: FormContainerProps) => {
           select: { id: true, name: true },
         });
 
-        relatedDate = {
+        const academicYears = await prisma.academicYear.findMany({
+          select: { id: true, name: true },
+        });
+
+        relatedData = {
           subjects: studentSubjects,
           departments: studentDepartments,
+          academicYears,
         };
         break;
       }
@@ -68,11 +68,12 @@ const FormContainer = async ({ table, type, data, id }: FormContainerProps) => {
         const subjectDepartments = await prisma.department.findMany({
           select: { id: true, name: true },
         });
-        relatedDate = { departments: subjectDepartments };
+
+        relatedData = { departments: subjectDepartments };
         break;
       }
 
-      // Reservation
+      //Reservation
       case "reservation": {
         const reservationSubjects = await prisma.subject.findMany({
           select: {
@@ -90,7 +91,7 @@ const FormContainer = async ({ table, type, data, id }: FormContainerProps) => {
         });
 
         const lecRooms = await prisma.lectureRoom.findMany({
-          select: { id: true, name: true, hallId: true },
+          select: { id: true, name: true },
         });
 
         const lectures = await prisma.lecturer.findMany({
@@ -106,13 +107,8 @@ const FormContainer = async ({ table, type, data, id }: FormContainerProps) => {
           select: { id: true, name: true },
         });
 
-        const lecHalls = await prisma.hall.findMany({
-          select: { id: true, name: true },
-        });
-
-        relatedDate = {
+        relatedData = {
           subjects: reservationSubjects,
-          lecHalls,
           lecRooms,
           lectures,
           departments: reservationDepartments,
@@ -128,7 +124,7 @@ const FormContainer = async ({ table, type, data, id }: FormContainerProps) => {
       type={type}
       data={data}
       id={id}
-      relatedData={relatedDate}
+      relatedData={relatedData}
     />
   );
 };

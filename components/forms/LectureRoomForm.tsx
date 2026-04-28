@@ -4,7 +4,10 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import InputField from "../InputField";
 
-import { createLectureRoom, updateLectureRoom } from "@/lib/actions";
+import {
+  createLectureRoom,
+  updateLectureRoom,
+} from "@/lib/lecture_rooms/actions";
 import {
   Dispatch,
   SetStateAction,
@@ -44,10 +47,11 @@ const LectureRoomForm = ({
       success: false,
       error: false,
       message: "",
-    }
+    },
   );
 
   const onSubmit = handleSubmit((data) => {
+    console.log("Form data:", data);
     startTransition(() => {
       action(data);
     });
@@ -64,8 +68,6 @@ const LectureRoomForm = ({
       toast.error(state.message);
     }
   }, [state, router, setOpen]);
-
-  const { buildings } = relatedData;
 
   return (
     <form className="flex flex-col gap-8" onSubmit={onSubmit}>
@@ -91,25 +93,7 @@ const LectureRoomForm = ({
           registerOptions={{ valueAsNumber: true }}
           error={errors?.maxCapacity}
         />
-        <div className="flex flex-col gap-2 w-full md:w-1/4">
-          <label className="text-xs text-gray-500">Hall</label>
-          <select
-            className="ring-[1.5px] ring-gray-300 p-2 rounded-md text-sm w-full"
-            {...register("hallId", { valueAsNumber: true })}
-            defaultValue={data?.hallId}
-          >
-            {buildings.map((building: { id: number; name: string }) => (
-              <option value={building.id} key={building.id}>
-                {building.name}
-              </option>
-            ))}
-          </select>
-          {errors.hallId?.message && (
-            <p className="text-xs text-red-400">
-              {errors.hallId.message.toString()}
-            </p>
-          )}
-        </div>
+
         {data && (
           <input
             type="hidden"

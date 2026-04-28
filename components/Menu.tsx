@@ -14,18 +14,20 @@ const menuItems = [
         visible: ["admin", "lecturer"],
       },
       {
+        icon: "/dashboard.png",
+        label: "Dashboard",
+        href: "/dashboard",
+        // visible: ["admin", "lecturer", "student"],
+        visible: ["admin"],
+      },
+      {
         icon: "/upcoming.png",
         label: "Upcoming",
         href: "/upcoming",
         // visible: ["student"],
         visible: [],
       },
-      {
-        icon: "/building.png",
-        label: "Buildings",
-        href: "/list/buildings",
-        visible: ["admin"],
-      },
+
       {
         icon: "/classroom.png",
         label: "Lecture Rooms",
@@ -62,6 +64,12 @@ const menuItems = [
         label: "Reservations",
         href: "/list/reservations",
         visible: ["admin", "lecturer"],
+      },
+      {
+        icon: "/email.png",
+        label: "Email",
+        href: "/email",
+        visible: ["admin"],
       },
       {
         icon: "/gpa.png",

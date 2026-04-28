@@ -3,11 +3,6 @@ generator client {
   provider = "prisma-client-js"
 }
 
-// generator client {
-//   provider = "prisma-client-js"
-//   output   = "../app/generated/prisma"
-// }
-
 datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
@@ -26,25 +21,22 @@ model Department {
    subjects Subject[]
 }
 
-model Hall{
-  id Int @id @default(autoincrement())
-  name String @unique
-  lectureRooms LectureRoom[]
-
-}
 
 model LectureRoom {
   id Int @id @default(autoincrement())
   name String
   maxCapacity Int
 
-  hallId Int
-  hall Hall @relation(fields: [hallId], references: [id])
-
   reservations Reservation[]
 }
 
-model Student{
+model AcademicYear {
+  id Int @id @default(autoincrement())
+  name String @unique
+  students Student[]
+}
+
+model Student {
   id String @id
   username String @unique
   name String
@@ -54,11 +46,17 @@ model Student{
   sex UserSex
   yearSem Int @default(11) 
   createdAt DateTime @default(now())
+
+  academicYearId Int
+  academicYear AcademicYear @relation(fields: [academicYearId], references: [id])
+
   subjects Subject[]
 
   departmentId Int
   department Department @relation(fields: [departmentId], references: [id])
 }
+
+
 
 model Lecturer {
   id String @id

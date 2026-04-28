@@ -21,8 +21,10 @@ export const studentSchema = z.object({
   surname: z.string().min(1, { message: "Last name is required!" }),
   phone: z.string().min(1).optional().or(z.literal("")),
   sex: z.enum(["MALE", "FEMALE"], { message: "Sex is required!" }),
+  yearSem: z.number().min(11, { message: "Year/Semester is required!" }),
   subjects: z.array(z.number()).optional(),
   departmentId: z.number().min(1, { message: "Department is required!" }),
+  academicYearId: z.number().min(1, { message: "Academic year is required!" }),
 });
 
 export type StudentSchema = z.infer<typeof studentSchema>;
@@ -69,7 +71,6 @@ export type LecturerSchema = z.infer<typeof lecturerSchema>;
 export const lectureRoomSchema = z.object({
   id: z.number().optional(),
   name: z.string().min(1, { message: "Name is required!" }),
-  hallId: z.number().min(1, { message: "Hall is required!" }),
   maxCapacity: z.number().min(1, { message: "Max capacity is required!" }),
 });
 

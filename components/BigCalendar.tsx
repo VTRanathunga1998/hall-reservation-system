@@ -21,7 +21,7 @@ const BigCalendar = ({
     allDay: boolean;
     start: Date;
     end: Date;
-    resource: { hall: string; room: string };
+    resource: { room: string };
   }[];
 }) => {
   const [view, setView] = useState<View>(Views.WORK_WEEK);
@@ -34,7 +34,7 @@ const BigCalendar = ({
   const handleNavigate = (
     newDate: Date,
     newView: View,
-    action: NavigateAction
+    action: NavigateAction,
   ) => {
     setDate(newDate); // update controlled date
     if (newView !== view) {

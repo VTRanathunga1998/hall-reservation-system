@@ -2,12 +2,11 @@
 
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
-import InputField from "../InputField";
 import {
   departmentSchema,
   DepartmentSchema,
 } from "@/lib/formValidationsSchemas";
-import { createDepartment, updateDepartment } from "@/lib/actions";
+import { createDepartment, updateDepartment } from "@/lib/departments/actions";
 import {
   Dispatch,
   SetStateAction,
@@ -43,7 +42,7 @@ const DepartmentForm = ({
       success: false,
       error: false,
       message: "",
-    }
+    },
   );
 
   const onSubmit = handleSubmit((data) => {
@@ -67,7 +66,9 @@ const DepartmentForm = ({
   return (
     <form className="flex flex-col gap-8" onSubmit={onSubmit}>
       <h1 className="text-xl font-semibold">
-        {type === "create" ? "Create a new department" : "Update the department"}
+        {type === "create"
+          ? "Create a new department"
+          : "Update the department"}
       </h1>
 
       <div className="flex justify-between flex-wrap gap-4">
