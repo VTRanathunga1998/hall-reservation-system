@@ -107,22 +107,19 @@ export async function sendEmails(
   }
 
   // ── Send via Nodemailer ──────────────────────────────────────────────
-  // Install: npm i nodemailer @types/nodemailer
-  // Add to .env: SMTP_HOST, SMTP_PORT, SMTP_USER, SMTP_PASS, SMTP_FROM
-  //
-  // const nodemailer = await import("nodemailer");
-  // const transporter = nodemailer.createTransport({
-  //   host: process.env.SMTP_HOST,
-  //   port: Number(process.env.SMTP_PORT ?? 587),
-  //   auth: { user: process.env.SMTP_USER, pass: process.env.SMTP_PASS },
-  // });
-  // await transporter.sendMail({
-  //   from: process.env.SMTP_FROM,
-  //   bcc: emails,        // BCC keeps addresses private
-  //   subject,
-  //   text: body,
-  // });
-  // ────────────────────────────────────────────────────────────────────
+
+  const nodemailer = await import("nodemailer");
+  const transporter = nodemailer.createTransport({
+    host: process.env.SMTP_HOST,
+    port: Number(process.env.SMTP_PORT ?? 587),
+    auth: { user: process.env.SMTP_USER, pass: process.env.SMTP_PASS },
+  });
+  await transporter.sendMail({
+    from: process.env.SMTP_FROM,
+    bcc: emails,
+    subject,
+    text: body,
+  });
 
   console.log(`[EMAIL] Sending to ${emails.length} recipients:`, emails);
   console.log(`[EMAIL] Subject: ${subject}`);
