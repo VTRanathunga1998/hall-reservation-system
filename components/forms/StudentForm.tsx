@@ -15,6 +15,7 @@ import { useRouter } from "next/navigation";
 import { toast } from "react-toastify";
 import { studentSchema, StudentSchema } from "@/lib/formValidationsSchemas";
 import { createStudent, updateStudent } from "@/lib/students/actions";
+import CustomSelect from "../CustomSelect";
 
 const YEAR_SEM_OPTIONS = [
   { value: 11, label: "Year 1 — Sem 1" },
@@ -84,11 +85,28 @@ const StudentForm = ({
       s.departmentId === depId,
   );
 
+  const [sex, setSex] = useState<"MALE" | "FEMALE">(data?.sex || "MALE");
+  const [yearSem, setYearSem] = useState<number>(data?.yearSem || 11);
+  const [academicYearId, setAcademicYearId] = useState<number>(
+    data?.academicYearId || academicYears?.[0]?.id || 0,
+  );
+
+  useEffect(() => {
+    setValue("departmentId", depId);
+    setValue("sex", sex);
+    setValue("yearSem", yearSem);
+    setValue("academicYearId", academicYearId);
+  }, []);
+
   return (
     <form className="flex flex-col gap-8" onSubmit={onSubmit}>
-      <h1 className="text-xl font-semibold">
-        {type === "create" ? "Create a new student" : "Update the student"}
-      </h1>
+      {/* Header */}
+      <div className="flex items-center gap-3">
+        <div className="w-1.5 h-6 rounded-full bg-emerald-400" />
+        <h1 className="text-lg font-medium text-gray-800">
+          {type === "create" ? "Create a new student" : "Update the student"}
+        </h1>
+      </div>
 
       {/* ── Authentication ── */}
       <span className="text-xs text-gray-400 font-medium">
@@ -148,92 +166,78 @@ const StudentForm = ({
 
         {/* Sex */}
         <div className="flex flex-col gap-2 w-full md:w-1/4">
-          <label className="text-xs text-gray-500">Sex</label>
-          <select
-            className="ring-[1.5px] ring-gray-300 p-2 rounded-md text-sm w-full"
-            {...register("sex")}
-            defaultValue={data?.sex}
-          >
-            <option value="MALE">Male</option>
-            <option value="FEMALE">Female</option>
-          </select>
-          {errors.sex?.message && (
-            <p className="text-xs text-red-400">
-              {errors.sex.message.toString()}
-            </p>
-          )}
-        </div>
-
-        {/* Department */}
-        <div className="flex flex-col gap-2 w-full md:w-1/4">
-          <label className="text-xs text-gray-500">Department</label>
-          <select
-            className="ring-[1.5px] ring-gray-300 p-2 rounded-md text-sm w-full"
-            {...register("departmentId", { valueAsNumber: true })}
-            value={depId}
-            onChange={(e) => {
-              const val = Number(e.target.value);
-              setDepId(val);
-              setValue("departmentId", val, { shouldValidate: true });
+          <CustomSelect
+            label="Sex"
+            options={[
+              { value: "MALE", label: "Male" },
+              { value: "FEMALE", label: "Female" },
+            ]}
+            value={sex}
+            onChange={(val) => {
+              setSex(val as "MALE" | "FEMALE"); // ← cast here
+              setValue("sex", val as "MALE" | "FEMALE", {
+                shouldValidate: true,
+              });
             }}
-          >
-            {departments.map((d: { id: number; name: string }) => (
-              <option value={d.id} key={d.id}>
-                {d.name}
-              </option>
-            ))}
-          </select>
-          {errors.departmentId?.message && (
-            <p className="text-xs text-red-400">
-              {errors.departmentId.message.toString()}
-            </p>
-          )}
+            error={errors.sex?.message?.toString()}
+          />
         </div>
 
         {/* Academic Year */}
         <div className="flex flex-col gap-2 w-full md:w-1/4">
-          <label className="text-xs text-gray-500">Academic Year</label>
-          <select
-            className="ring-[1.5px] ring-gray-300 p-2 rounded-md text-sm w-full"
-            {...register("academicYearId", { valueAsNumber: true })}
-            defaultValue={data?.academicYearId || academicYears?.[0]?.id}
-          >
-            {academicYears.map((y: { id: number; name: string }) => (
-              <option value={y.id} key={y.id}>
-                {y.name}
-              </option>
-            ))}
-          </select>
-          {errors.academicYearId?.message && (
-            <p className="text-xs text-red-400">
-              {errors.academicYearId.message.toString()}
-            </p>
-          )}
+          <CustomSelect
+            label="Academic Year"
+            options={academicYears.map((y: { id: number; name: string }) => ({
+              value: y.id,
+              label: y.name,
+            }))}
+            value={academicYearId}
+            onChange={(val) => {
+              setAcademicYearId(val as number);
+              setValue("academicYearId", val as number, {
+                shouldValidate: true,
+              });
+            }}
+            error={errors.academicYearId?.message?.toString()}
+          />
         </div>
 
         {/* Year / Semester */}
         <div className="flex flex-col gap-2 w-full md:w-1/4">
-          <label className="text-xs text-gray-500">Year / Semester</label>
-          <select
-            className="ring-[1.5px] ring-gray-300 p-2 rounded-md text-sm w-full"
-            {...register("yearSem", { valueAsNumber: true })}
-            defaultValue={data?.yearSem || 11}
-          >
-            {YEAR_SEM_OPTIONS.map((o) => (
-              <option value={o.value} key={o.value}>
-                {o.label}
-              </option>
-            ))}
-          </select>
-          {errors.yearSem?.message && (
-            <p className="text-xs text-red-400">
-              {errors.yearSem.message.toString()}
-            </p>
-          )}
+          <CustomSelect
+            label="Year / Semester"
+            options={YEAR_SEM_OPTIONS.map((o) => ({
+              value: o.value,
+              label: o.label,
+            }))}
+            value={yearSem}
+            onChange={(val) => {
+              setYearSem(val as number);
+              setValue("yearSem", val as number, { shouldValidate: true });
+            }}
+            error={errors.yearSem?.message?.toString()}
+          />
+        </div>
+
+        {/* Department */}
+        <div className="flex flex-col gap-2 w-full md:w-full">
+          <CustomSelect
+            label="Department"
+            options={departments.map((d: { id: number; name: string }) => ({
+              value: d.id,
+              label: d.name,
+            }))}
+            value={depId}
+            onChange={(val) => {
+              setDepId(val as number);
+              setValue("departmentId", val as number, { shouldValidate: true });
+            }}
+            error={errors.departmentId?.message?.toString()}
+          />
         </div>
 
         {/* Subjects (filtered by selected department) */}
-        <div className="flex flex-col gap-2 w-full md:w-1/4">
+        <div className="flex flex-col gap-2 w-full md:w-full">
           <label className="text-xs text-gray-500">Subjects</label>
           <select
             multiple
@@ -251,11 +255,13 @@ const StudentForm = ({
             )}
           >
             {filteredSubjects.length > 0 ? (
-              filteredSubjects.map((s: { id: number; code: string }) => (
-                <option value={s.id} key={s.id}>
-                  {s.code}
-                </option>
-              ))
+              filteredSubjects.map(
+                (s: { id: number; name: string; code: string }) => (
+                  <option value={s.id} key={s.id}>
+                    {s.code} - {s.name}
+                  </option>
+                ),
+              )
             ) : (
               <option disabled value="">
                 No subjects for this department
@@ -275,7 +281,7 @@ const StudentForm = ({
 
       <button
         disabled={pending}
-        className="bg-blue-400 text-white p-2 rounded-md disabled:opacity-60"
+        className="w-full bg-emerald-400 hover:bg-emerald-500 disabled:opacity-50 text-white py-2.5 rounded-lg text-sm font-medium transition cursor-pointer"
       >
         {pending
           ? type === "create"

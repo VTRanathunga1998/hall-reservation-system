@@ -20,6 +20,10 @@ import { toast } from "react-toastify";
 import { useRouter } from "next/navigation";
 import DatePicker from "react-datepicker";
 import { setHours, setMinutes, isSameDay } from "date-fns";
+import CustomSelect from "../CustomSelect";
+
+const fieldClass =
+  "w-full min-w-0 ring-[1.5px] ring-gray-200 focus:ring-blue-300 p-2.5 rounded-lg text-sm outline-none transition bg-white";
 
 const ReservationForm = ({
   type,
@@ -36,7 +40,6 @@ const ReservationForm = ({
   const role = (sessionClaims?.metadata as { role?: string })?.role;
   const currentUserId = userId;
 
-  // Hall is removed — lecHalls no longer exists in relatedData
   const { subjects, lecRooms, lectures, departments } = relatedData;
 
   const defaultStartTime = data?.startTime
@@ -79,7 +82,11 @@ const ReservationForm = ({
     }
   }, [state, router, setOpen]);
 
-  // Department State
+  // ── Controlled states for CustomSelect ──
+  const [lecRoomId, setLecRoomId] = useState<number>(
+    data?.lecRoomId || lecRooms?.[0]?.id || 0,
+  );
+
   const [depId, setDepId] = useState<number>(
     role === "lecturer"
       ? (lectures.find(
@@ -91,7 +98,6 @@ const ReservationForm = ({
       : data?.subject?.departmentId || departments?.[0]?.id || 0,
   );
 
-  // Lecturer State
   const [lecId, setLecId] = useState<string>(() => {
     if (role === "lecturer") return currentUserId || "";
     if (data?.lecturerId) return data.lecturerId;
@@ -99,139 +105,74 @@ const ReservationForm = ({
     return first ? first.id : "";
   });
 
-  // Filtered lecturers by department
   const filteredLecturers = lectures.filter(
     (l: { id: string; departmentId: number }) => l.departmentId === depId,
   );
 
-  // Filtered subjects by selected lecturer
   const filteredSubjects = subjects.filter((s: any) =>
     s.lecturers.some((lec: any) => lec.id === lecId),
   );
 
-  // All lecture rooms — no hall filter needed anymore
-  // lecRooms is the full list from relatedData
-  const allLectureRooms = lecRooms;
+  const [subjectId, setSubjectId] = useState<number>(
+    data?.subjectId || filteredSubjects?.[0]?.id || 0,
+  );
 
+  // Keep subjectId in sync when lecturer changes
   useEffect(() => {
     if (filteredSubjects.length > 0) {
-      setValue("subjectId", filteredSubjects[0].id);
+      const firstId = filteredSubjects[0].id;
+      setSubjectId(firstId);
+      setValue("subjectId", firstId);
     }
   }, [lecId, filteredSubjects, setValue]);
 
+  // Keep lecId in sync when department changes
+  const handleDepartmentChange = (val: string | number) => {
+    const newDepId = val as number;
+    setDepId(newDepId);
+    setValue("departmentId" as any, newDepId);
+    const first = lectures.find((lec: any) => lec.departmentId === newDepId);
+    const newLecId = first ? first.id : "";
+    setLecId(newLecId);
+    setValue("lecturerId", newLecId);
+  };
+
   return (
-    <form className="flex flex-col gap-8" onSubmit={onSubmit}>
-      <h1 className="text-xl font-semibold">
-        {type === "create"
-          ? "Create a new reservation"
-          : "Update the reservation"}
-      </h1>
+    <form className="flex flex-col gap-5" onSubmit={onSubmit}>
+      {/* Header */}
+      <div className="flex items-center gap-3">
+        <div className="w-1.5 h-6 rounded-full bg-blue-400" />
+        <h1 className="text-lg font-medium text-gray-800">
+          {type === "create"
+            ? "Create a new reservation"
+            : "Update reservation"}
+        </h1>
+      </div>
 
-      <div className="flex justify-between flex-wrap gap-4">
-        {/* Lecture Room — all rooms, no hall grouping */}
-        <div className="flex flex-col gap-2 w-full md:w-1/4">
-          <label className="text-xs text-gray-500">Lecture Room</label>
-          <select
-            className="ring-[1.5px] ring-gray-300 p-2 rounded-md text-sm w-full"
-            {...register("lecRoomId", { valueAsNumber: true })}
-            defaultValue={data?.lecRoomId}
-          >
-            {allLectureRooms.map((room: { id: number; name: string }) => (
-              <option value={room.id} key={room.id}>
-                {room.name}
-              </option>
-            ))}
-          </select>
-          {errors.lecRoomId?.message && (
-            <p className="text-xs text-red-400">
-              {errors.lecRoomId.message.toString()}
-            </p>
-          )}
-        </div>
+      {/* ── Room & Schedule ── */}
+      <section className="flex flex-col gap-3">
+        <p className="text-[11px] font-semibold uppercase tracking-widest text-gray-400">
+          Room & Schedule
+        </p>
 
-        {/* Department (hidden for lecturer role) */}
-        {role !== "lecturer" && (
-          <div className="flex flex-col gap-2 w-full md:w-1/4">
-            <label className="text-xs text-gray-500">Department</label>
-            <select
-              className="ring-[1.5px] ring-gray-300 p-2 rounded-md text-sm w-full"
-              value={depId}
-              onChange={(e) => {
-                const newDepId = Number(e.target.value);
-                setDepId(newDepId);
-                const first = lectures.find(
-                  (lec: any) => lec.departmentId === newDepId,
-                );
-                setLecId(first ? first.id : "");
-              }}
-            >
-              {departments.map((d: { id: number; name: string }) => (
-                <option value={d.id} key={d.id}>
-                  {d.name}
-                </option>
-              ))}
-            </select>
-          </div>
-        )}
+        {/* Lecture Room */}
+        <CustomSelect
+          label="Lecture Room"
+          options={lecRooms.map((room: { id: number; name: string }) => ({
+            value: room.id,
+            label: room.name,
+          }))}
+          value={lecRoomId}
+          onChange={(val) => {
+            setLecRoomId(val as number);
+            setValue("lecRoomId", val as number, { shouldValidate: true });
+          }}
+          error={errors.lecRoomId?.message?.toString()}
+        />
 
-        {/* Lecturer */}
-        {role === "lecturer" ? (
-          <input type="hidden" value={lecId} {...register("lecturerId")} />
-        ) : (
-          <div className="flex flex-col gap-2 w-full md:w-1/4">
-            <label className="text-xs text-gray-500">Lecturer</label>
-            <select
-              className="ring-[1.5px] ring-gray-300 p-2 rounded-md text-sm w-full"
-              {...register("lecturerId")}
-              value={lecId}
-              onChange={(e) => setLecId(e.target.value)}
-            >
-              {filteredLecturers.map(
-                (l: { id: string; name: string; surname: string }) => (
-                  <option value={l.id} key={l.id}>
-                    {l.name.toUpperCase()} {l.surname}
-                  </option>
-                ),
-              )}
-            </select>
-            {errors.lecturerId?.message && (
-              <p className="text-xs text-red-400">
-                {errors.lecturerId.message.toString()}
-              </p>
-            )}
-          </div>
-        )}
-
-        {/* Subject (filtered by lecturer) */}
-        <div className="flex flex-col gap-2 w-full md:w-1/4">
-          <label className="text-xs text-gray-500">Subject</label>
-          <select
-            className="ring-[1.5px] ring-gray-300 p-2 rounded-md text-sm w-full"
-            {...register("subjectId", { valueAsNumber: true })}
-            defaultValue={data?.subjectId}
-          >
-            {filteredSubjects.length > 0 ? (
-              filteredSubjects.map((s: { id: number; code: string }) => (
-                <option value={s.id} key={s.id}>
-                  {s.code}
-                </option>
-              ))
-            ) : (
-              <option disabled value="">
-                No subjects for this lecturer
-              </option>
-            )}
-          </select>
-          {errors.subjectId?.message && (
-            <p className="text-xs text-red-400">
-              {errors.subjectId.message.toString()}
-            </p>
-          )}
-        </div>
-
-        {/* Start / End Time */}
-        <div className="flex flex-wrap gap-4 w-full">
-          <div className="flex flex-col gap-2 w-full md:w-1/3">
+        {/* Start & End Time side-by-side */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div className="flex flex-col gap-1.5 w-full min-w-0">
             <label className="text-xs text-gray-500">Start Time</label>
             <Controller
               control={control}
@@ -244,7 +185,7 @@ const ReservationForm = ({
                   timeIntervals={15}
                   dateFormat="Pp"
                   placeholderText="Select start time"
-                  className="ring-[1.5px] ring-gray-300 p-2 rounded-md text-sm w-full"
+                  className={fieldClass}
                   portalId="datepicker-portal"
                   minDate={new Date()}
                   filterDate={(date) => {
@@ -263,7 +204,7 @@ const ReservationForm = ({
             )}
           </div>
 
-          <div className="flex flex-col gap-2 w-full md:w-1/3">
+          <div className="flex flex-col gap-1.5 w-full min-w-0">
             <label className="text-xs text-gray-500">End Time</label>
             <Controller
               control={control}
@@ -278,7 +219,7 @@ const ReservationForm = ({
                     timeIntervals={15}
                     dateFormat="Pp"
                     placeholderText="Select end time"
-                    className="ring-[1.5px] ring-gray-300 p-2 rounded-md text-sm w-full"
+                    className={fieldClass}
                     portalId="datepicker-portal"
                     minDate={startTime || new Date()}
                     filterDate={(date) => {
@@ -303,29 +244,96 @@ const ReservationForm = ({
             )}
           </div>
         </div>
+      </section>
 
-        {data && (
-          <input
-            type="hidden"
-            value={data.id}
-            {...register("id", { valueAsNumber: true })}
+      <div className="border-t border-gray-100" />
+
+      {/* ── Lecturer & Subject ── */}
+      <section className="flex flex-col gap-3">
+        <p className="text-[11px] font-semibold uppercase tracking-widest text-gray-400">
+          Lecturer & Subject
+        </p>
+
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+          {/* Department — hidden for lecturer role */}
+          {role !== "lecturer" && (
+            <CustomSelect
+              label="Department"
+              options={departments.map((d: { id: number; name: string }) => ({
+                value: d.id,
+                label: d.name,
+              }))}
+              value={depId}
+              onChange={handleDepartmentChange}
+            />
+          )}
+
+          {/* Lecturer — hidden input for lecturer role */}
+          {role === "lecturer" ? (
+            <input type="hidden" value={lecId} {...register("lecturerId")} />
+          ) : (
+            <CustomSelect
+              label="Lecturer"
+              options={filteredLecturers.map(
+                (l: { id: string; name: string; surname: string }) => ({
+                  value: l.id,
+                  label: `${l.name.toUpperCase()} ${l.surname}`,
+                }),
+              )}
+              value={lecId}
+              onChange={(val) => {
+                setLecId(val as string);
+                setValue("lecturerId", val as string, { shouldValidate: true });
+              }}
+              error={errors.lecturerId?.message?.toString()}
+            />
+          )}
+
+          {/* Subject */}
+          <CustomSelect
+            label="Subject"
+            options={
+              filteredSubjects.length > 0
+                ? filteredSubjects.map((s: { id: number; code: string }) => ({
+                    value: s.id,
+                    label: s.code,
+                  }))
+                : [{ value: "", label: "No subjects for this lecturer" }]
+            }
+            value={subjectId}
+            onChange={(val) => {
+              if (!val) return;
+              setSubjectId(val as number);
+              setValue("subjectId", val as number, { shouldValidate: true });
+            }}
+            error={errors.subjectId?.message?.toString()}
           />
-        )}
-      </div>
+        </div>
+      </section>
 
-      {state.error && <span className="text-red-400">{state.message}</span>}
+      {data && (
+        <input
+          type="hidden"
+          value={data.id}
+          {...register("id", { valueAsNumber: true })}
+        />
+      )}
+
+      {state.error && (
+        <span className="text-xs text-red-400">{state.message}</span>
+      )}
 
       <button
         disabled={pending}
-        className="bg-blue-400 text-white p-2 rounded-md cursor-pointer disabled:opacity-60"
+        className="w-full bg-blue-400 hover:bg-blue-500 disabled:opacity-50 text-white py-2.5 rounded-lg text-sm font-medium transition cursor-pointer"
       >
         {pending
           ? type === "create"
             ? "Creating…"
             : "Updating…"
           : type === "create"
-            ? "Create"
-            : "Update"}
+            ? "Create Reservation"
+            : "Update Reservation"}
       </button>
     </form>
   );

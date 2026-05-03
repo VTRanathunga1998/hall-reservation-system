@@ -11,9 +11,11 @@ import {
   startTransition,
   useActionState,
   useEffect,
+  useState,
 } from "react";
 import { toast } from "react-toastify";
 import { useRouter } from "next/navigation";
+import CustomSelect from "../CustomSelect";
 
 const SubjectForm = ({
   type,
@@ -29,6 +31,7 @@ const SubjectForm = ({
   const {
     register,
     handleSubmit,
+    setValue,
     formState: { errors },
   } = useForm<SubjectSchema>({
     resolver: zodResolver(subjectSchema),
@@ -40,7 +43,7 @@ const SubjectForm = ({
       success: false,
       error: false,
       message: "",
-    }
+    },
   );
 
   const onSubmit = handleSubmit((data) => {
@@ -63,11 +66,27 @@ const SubjectForm = ({
 
   const { departments } = relatedData;
 
+  const [departmentId, setDepartmentId] = useState<number>(
+    data?.departmentId || departments?.[0]?.id || 0,
+  );
+
+  useEffect(() => {
+    setValue("departmentId", data?.departmentId || departments?.[0]?.id || 0, {
+      shouldValidate: true,
+    });
+  }, []);
+
   return (
     <form className="flex flex-col gap-8" onSubmit={onSubmit}>
-      <h1 className="text-xl font-semibold">
-        {type === "create" ? "Create a new subject" : "Update the subject"}
-      </h1>
+      {/* Header */}
+      <div className="flex items-center gap-3">
+        <div className="w-1.5 h-6 rounded-full bg-emerald-400" />
+        <h1 className="text-lg font-medium text-gray-800">
+          {type === "create" ? "Create a new subject" : "Update subject"}
+        </h1>
+      </div>
+
+      <div className="border-t border-gray-100" />
 
       <div className="flex justify-between flex-wrap gap-4">
         <InputField
@@ -77,26 +96,19 @@ const SubjectForm = ({
           register={register}
           error={errors?.name}
         />
-        <div className="flex flex-col gap-2 w-full md:w-1/4">
-          <label className="text-xs text-gray-500">Department</label>
-          <select
-            className="ring-[1.5px] ring-gray-300 p-2 rounded-md text-sm w-full"
-            {...register("departmentId", { valueAsNumber: true })}
-            defaultValue={data?.departmentId}
-          >
-            {departments.map((d: { id: number; name: string }) => (
-              <option value={d.id} key={d.id}>
-                {d.name}
-              </option>
-            ))}
-          </select>
-
-          {errors.departmentId?.message && (
-            <p className="text-xs text-red-400">
-              {errors.departmentId.message.toString()}
-            </p>
-          )}
-        </div>
+        <CustomSelect
+          label="Department"
+          options={departments.map((d: { id: number; name: string }) => ({
+            value: d.id,
+            label: d.name,
+          }))}
+          value={departmentId}
+          onChange={(val) => {
+            setDepartmentId(val as number);
+            setValue("departmentId", val as number, { shouldValidate: true });
+          }}
+          error={errors.departmentId?.message?.toString()}
+        />
         <InputField
           label="Subject Code"
           name="code"
@@ -120,13 +132,19 @@ const SubjectForm = ({
           />
         )}
       </div>
-      {state.error && <span className="text-red-400">{state.message}</span>}
+      {state.error && (
+        <span className="text-xs text-red-400">{state.message}</span>
+      )}
 
       <button
         disabled={pending}
-        className="bg-blue-400 text-white p-2 rounded-md cursor-pointer"
+        className="w-full bg-emerald-400 hover:bg-emerald-500 disabled:opacity-50 text-white py-2.5 rounded-lg text-sm font-medium transition cursor-pointer"
       >
-        {type === "create" ? "Create" : "Update"}
+        {pending
+          ? "Saving…"
+          : type === "create"
+            ? "Create Subject"
+            : "Update Subject"}
       </button>
     </form>
   );

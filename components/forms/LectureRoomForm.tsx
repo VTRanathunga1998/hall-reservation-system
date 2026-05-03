@@ -70,16 +70,19 @@ const LectureRoomForm = ({
   }, [state, router, setOpen]);
 
   return (
-    <form className="flex flex-col gap-8" onSubmit={onSubmit}>
-      <h1 className="text-xl font-semibold">
-        {type === "create"
-          ? "Create a new lecture room"
-          : "Update the lecture room"}
-      </h1>
+    <form className="flex flex-col gap-6" onSubmit={onSubmit}>
+      <div className="flex items-center gap-3">
+        <div className="w-1.5 h-6 rounded-full bg-teal-500" />
+        <h1 className="text-lg font-medium text-gray-800">
+          {type === "create"
+            ? "Create a new lecture room"
+            : "Update lecture room"}
+        </h1>
+      </div>
 
-      <div className="flex justify-between flex-wrap gap-4">
+      <div className="flex flex-wrap gap-4">
         <InputField
-          label="Lecture Room Name"
+          label="Room Name"
           name="name"
           defaultValue={data?.name}
           register={register}
@@ -93,7 +96,6 @@ const LectureRoomForm = ({
           registerOptions={{ valueAsNumber: true }}
           error={errors?.maxCapacity}
         />
-
         {data && (
           <input
             type="hidden"
@@ -102,13 +104,20 @@ const LectureRoomForm = ({
           />
         )}
       </div>
-      {state.error && <span className="text-red-400">{state.message}</span>}
+
+      {state.error && (
+        <span className="text-xs text-red-400">{state.message}</span>
+      )}
 
       <button
         disabled={pending}
-        className="bg-blue-400 text-white p-2 rounded-md cursor-pointer"
+        className="w-full bg-teal-500 hover:bg-teal-600 disabled:opacity-50 text-white py-2.5 rounded-lg text-sm font-medium transition cursor-pointer"
       >
-        {type === "create" ? "Create" : "Update"}
+        {pending
+          ? "Saving..."
+          : type === "create"
+            ? "Create Room"
+            : "Update Room"}
       </button>
     </form>
   );

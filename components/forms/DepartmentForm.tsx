@@ -64,43 +64,51 @@ const DepartmentForm = ({
   }, [state, router, setOpen]);
 
   return (
-    <form className="flex flex-col gap-8" onSubmit={onSubmit}>
-      <h1 className="text-xl font-semibold">
-        {type === "create"
-          ? "Create a new department"
-          : "Update the department"}
-      </h1>
+    <form className="flex flex-col gap-6" onSubmit={onSubmit}>
+      <div className="flex items-center gap-3">
+        <div className="w-1.5 h-6 rounded-full bg-blue-400" />
+        <h1 className="text-lg font-medium text-gray-800">
+          {type === "create" ? "Create a new department" : "Update department"}
+        </h1>
+      </div>
 
-      <div className="flex justify-between flex-wrap gap-4">
-        <div className="flex flex-col gap-2 w-full">
-          <label className="text-xs text-gray-500">Department Name</label>
-          <input
-            type="text"
-            className="ring-[1.5px] ring-gray-300 p-2 rounded-md text-sm w-full"
-            defaultValue={data?.name}
-            {...register("name")}
-          />
-          {errors.name?.message && (
-            <p className="text-xs text-red-400">
-              {errors.name.message.toString()}
-            </p>
-          )}
-        </div>
-        {data && (
-          <input
-            type="hidden"
-            value={data.id}
-            {...register("id", { valueAsNumber: true })}
-          />
+      <div className="flex flex-col gap-1.5">
+        <label className="text-xs font-medium uppercase tracking-wide text-gray-400">
+          Department Name
+        </label>
+        <input
+          type="text"
+          className="ring-[1.5px] ring-gray-200 focus:ring-blue-300 p-2.5 rounded-lg text-sm w-full outline-none transition"
+          defaultValue={data?.name}
+          {...register("name")}
+        />
+        {errors.name?.message && (
+          <p className="text-xs text-red-400">
+            {errors.name.message.toString()}
+          </p>
         )}
       </div>
-      {state.error && <span className="text-red-400">{state.message}</span>}
+
+      {data && (
+        <input
+          type="hidden"
+          value={data.id}
+          {...register("id", { valueAsNumber: true })}
+        />
+      )}
+      {state.error && (
+        <span className="text-xs text-red-400">{state.message}</span>
+      )}
 
       <button
         disabled={pending}
-        className="bg-blue-400 text-white p-2 rounded-md cursor-pointer"
+        className="w-full bg-blue-400 hover:bg-blue-500 disabled:opacity-50 text-white py-2.5 rounded-lg text-sm font-medium transition cursor-pointer"
       >
-        {type === "create" ? "Create" : "Update"}
+        {pending
+          ? "Saving..."
+          : type === "create"
+            ? "Create Department"
+            : "Update Department"}
       </button>
     </form>
   );
