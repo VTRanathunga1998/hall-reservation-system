@@ -1,8 +1,6 @@
 "use server";
 
 import prisma from "@/lib/prisma";
-import { revalidatePath } from "next/cache";
-import { Prisma } from "@prisma/client";
 
 export type Recipient = {
   id: string;
