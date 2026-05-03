@@ -121,7 +121,7 @@ export async function importLecturers(
     try {
       clerkUser = await clerk.users.createUser({
         username: row.username.trim().toUpperCase(),
-        password: `Import@${Date.now()}${i}`,
+        password: row.username,
         firstName: row.name.trim(),
         lastName: row.surname.trim(),
         emailAddress: [row.email.trim()],
