@@ -3,7 +3,7 @@ import { Inter } from "next/font/google";
 import "./globals.css";
 import { ClerkProvider } from "@clerk/nextjs";
 import { ToastContainer } from "react-toastify";
-import SwRegister from "./sw-register";
+import SWRegister from "./sw-register";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -35,9 +35,15 @@ export default function RootLayout({
             name="apple-mobile-web-app-title"
             content="SmartUniversitySystem"
           />
+          <meta name="mobile-web-app-capable" content="yes" />
+          <meta name="apple-mobile-web-app-capable" content="yes" />
+          <meta
+            name="apple-mobile-web-app-status-bar-style"
+            content="default"
+          />
         </head>
         <body className={inter.className}>
-          <SwRegister />
+          <SWRegister />
           {children} <ToastContainer position="bottom-right" theme="dark" />
         </body>
       </html>

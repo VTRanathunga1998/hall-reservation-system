@@ -1,31 +1,31 @@
-// app/manifest.ts
 import type { MetadataRoute } from "next";
 
 export default function manifest(): MetadataRoute.Manifest {
   return {
-    name: "GPA Calculator",
-    short_name: "GPA Calc",
-    description: "Calculate your semester & cumulative GPA instantly",
-    start_url: "/gpa", // Opens here on icon tap
-    scope: "/", // Keeps login redirects inside PWA
+    name: "Hall Reservation System",
+    short_name: "HRS",
+    description: "University hall reservation system",
+
+    start_url: "/",
+    scope: "/",
+
     display: "standalone",
     background_color: "#ffffff",
+    theme_color: "#00a159",
     orientation: "portrait-primary",
-    // app/manifest.ts   ← ONLY CHANGE THESE LINES
+
     icons: [
       {
-        src: "/web-app-manifest-192x192_v2.png",
+        src: "icon-192x192.png",
         sizes: "192x192",
         type: "image/png",
-        purpose: "maskable",
       },
       {
-        src: "/web-app-manifest-512x512_v2.png",
+        src: "icon-512x512.png",
         sizes: "512x512",
         type: "image/png",
         purpose: "maskable",
       },
     ],
-    theme_color: "#ffffff",
   };
 }
