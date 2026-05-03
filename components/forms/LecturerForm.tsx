@@ -16,7 +16,91 @@ import { createLecturer, updateLecturer } from "@/lib/actions";
 import { useRouter } from "next/navigation";
 import { toast } from "react-toastify";
 import CustomSelect from "../CustomSelect";
+import { X } from "lucide-react";
 
+// ── SubjectPicker ─────────────────────────────────────────────────────────────
+type SubjectOption = { id: number; code: string; name: string };
+
+function SubjectPicker({
+  subjects,
+  selected,
+  onChange,
+  error,
+}: {
+  subjects: SubjectOption[];
+  selected: number[];
+  onChange: (next: number[]) => void;
+  error?: string;
+}) {
+  function toggle(id: number) {
+    onChange(
+      selected.includes(id)
+        ? selected.filter((s) => s !== id)
+        : [...selected, id]
+    );
+  }
+
+  function clearAll() {
+    onChange([]);
+  }
+
+  return (
+    <div className="flex flex-col gap-1.5">
+      <div className="flex items-center justify-between">
+        <label className="text-xs text-gray-500">Subjects</label>
+        <div className="flex items-center gap-2">
+          {selected.length > 0 && (
+            <button
+              type="button"
+              onClick={clearAll}
+              className="flex items-center gap-1 text-[11px] font-medium text-rose-400 hover:text-rose-600 transition-colors"
+            >
+              <X className="h-3 w-3" /> Clear
+            </button>
+          )}
+          <span className="text-[11px] font-medium text-violet-500 bg-violet-50 px-2 py-0.5 rounded-full">
+            {selected.length} selected
+          </span>
+        </div>
+      </div>
+
+      {subjects.length === 0 ? (
+        <div className="flex items-center gap-2 rounded-lg ring-[1.5px] ring-gray-200 px-4 py-3 text-xs text-gray-400">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
+            <path strokeLinecap="round" strokeLinejoin="round" d="M12 6.042A8.967 8.967 0 0 0 6 3.75c-1.052 0-2.062.18-3 .512v14.25A8.987 8.987 0 0 1 6 18c2.305 0 4.408.867 6 2.292m0-14.25a8.966 8.966 0 0 1 6-2.292c1.052 0 2.062.18 3 .512v14.25A8.987 8.987 0 0 0 18 18a8.967 8.967 0 0 0-6 2.292m0-14.25v14.25" />
+          </svg>
+          No subjects for this department
+        </div>
+      ) : (
+        <div className="flex flex-wrap gap-2 rounded-lg ring-[1.5px] ring-gray-200 p-3">
+          {subjects.map((s) => {
+            const isSelected = selected.includes(s.id);
+            return (
+              <button
+                key={s.id}
+                type="button"
+                onClick={() => toggle(s.id)}
+                title={s.name}
+                className={`inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-xs font-semibold transition-colors cursor-pointer ${
+                  isSelected
+                    ? "bg-violet-400 text-white"
+                    : "bg-gray-100 text-gray-600 hover:bg-gray-200"
+                }`}
+              >
+                {isSelected && <X className="h-3 w-3 opacity-70" />}
+                {s.code}
+              </button>
+            );
+          })}
+        </div>
+      )}
+
+      {error && <p className="text-xs text-red-400">{error}</p>}
+    </div>
+  );
+}
+
+// ── LecturerForm ──────────────────────────────────────────────────────────────
 const LecturerForm = ({
   type,
   data,
@@ -39,17 +123,11 @@ const LecturerForm = ({
 
   const [state, action, pending] = useActionState(
     type === "create" ? createLecturer : updateLecturer,
-    {
-      success: false,
-      error: false,
-      message: "",
-    },
+    { success: false, error: false, message: "" },
   );
 
   const onSubmit = handleSubmit((data) => {
-    startTransition(() => {
-      action(data);
-    });
+    startTransition(() => action(data));
   });
 
   const router = useRouter();
@@ -66,14 +144,12 @@ const LecturerForm = ({
 
   const { subjects, departments } = relatedData;
 
-  // Department State
   const [depId, setDepId] = useState<number>(
     data?.departmentId || departments?.[0]?.id || 0,
   );
 
-  // Filtered subjects
-  const filteredSubjects = subjects.filter(
-    (s: { id: number; code: string; departmentId: number }) =>
+  const filteredSubjects: SubjectOption[] = subjects.filter(
+    (s: { id: number; code: string; name: string; departmentId: number }) =>
       s.departmentId === depId,
   );
 
@@ -84,7 +160,7 @@ const LecturerForm = ({
 
   useEffect(() => {
     setValue("departmentId", depId);
-    setValue("sex", sex as "MALE" | "FEMALE");
+    setValue("sex", sex);
   }, []);
 
   return (
@@ -97,44 +173,24 @@ const LecturerForm = ({
         </h1>
       </div>
 
+      {/* Auth */}
       <div className="flex items-center gap-3 border-t border-gray-100 pt-4">
         <span className="text-xs font-medium uppercase tracking-wide text-gray-400">
           Authentication Information
         </span>
       </div>
-
       <div className="flex justify-between flex-wrap gap-4">
-        <InputField
-          label="Username"
-          name="username"
-          defaultValue={data?.username}
-          register={register}
-          error={errors?.username}
-        />
-        <InputField
-          label="Email"
-          name="email"
-          defaultValue={data?.email}
-          register={register}
-          error={errors?.email}
-        />
-        <InputField
-          label="Password"
-          name="password"
-          type="password"
-          defaultValue={data?.password}
-          register={register}
-          error={errors?.password}
-        />
+        <InputField label="Username" name="username" defaultValue={data?.username} register={register} error={errors?.username} />
+        <InputField label="Email" name="email" defaultValue={data?.email} register={register} error={errors?.email} />
+        <InputField label="Password" name="password" type="password" defaultValue={data?.password} register={register} error={errors?.password} />
       </div>
 
-      {/* Section divider */}
+      {/* Personal */}
       <div className="flex items-center gap-3 border-t border-gray-100 pt-4">
         <span className="text-xs font-medium uppercase tracking-wide text-gray-400">
           Personal Information
         </span>
       </div>
-
       <div className="flex justify-between flex-wrap gap-4">
         <div className="flex flex-col gap-2 w-full md:w-1/4">
           <label className="text-xs text-gray-500">Title</label>
@@ -150,32 +206,12 @@ const LecturerForm = ({
             <option value="Ms">Ms</option>
           </select>
           {errors.title?.message && (
-            <p className="text-xs text-red-400">
-              {errors.title.message.toString()}
-            </p>
+            <p className="text-xs text-red-400">{errors.title.message.toString()}</p>
           )}
         </div>
-        <InputField
-          label="First Name"
-          name="name"
-          defaultValue={data?.name}
-          register={register}
-          error={errors.name}
-        />
-        <InputField
-          label="Last Name"
-          name="surname"
-          defaultValue={data?.surname}
-          register={register}
-          error={errors.surname}
-        />
-        <InputField
-          label="Phone"
-          name="phone"
-          defaultValue={data?.phone}
-          register={register}
-          error={errors.phone}
-        />
+        <InputField label="First Name" name="name" defaultValue={data?.name} register={register} error={errors.name} />
+        <InputField label="Last Name" name="surname" defaultValue={data?.surname} register={register} error={errors.surname} />
+        <InputField label="Phone" name="phone" defaultValue={data?.phone} register={register} error={errors.phone} />
 
         <div className="flex flex-col gap-2 w-full md:w-1/4">
           <CustomSelect
@@ -186,14 +222,13 @@ const LecturerForm = ({
             ]}
             value={sex}
             onChange={(val) => {
-              setSex(val as "MALE" | "FEMALE"); // ← cast here
-              setValue("sex", val as "MALE" | "FEMALE", {
-                shouldValidate: true,
-              });
+              setSex(val as "MALE" | "FEMALE");
+              setValue("sex", val as "MALE" | "FEMALE", { shouldValidate: true });
             }}
             error={errors.sex?.message?.toString()}
           />
         </div>
+
         <div className="flex flex-col gap-1.5 w-full min-w-0">
           <CustomSelect
             label="Department"
@@ -213,119 +248,16 @@ const LecturerForm = ({
         </div>
       </div>
 
-      {/* ── Subjects ── */}
-      <div >
-        <div className="flex flex-col gap-1.5 w-full min-w-0">
-          <div className="flex items-center justify-between">
-            <label className="text-xs text-gray-500">Subjects</label>
-
-            <span className="text-[11px] font-medium text-violet-500 bg-violet-50 px-2 py-0.5 rounded-full">
-              {selectedSubjects.length} selected
-            </span>
-          </div>
-
-          <div className="rounded-lg ring-[1.5px] ring-gray-200 divide-y divide-gray-100 h-48 overflow-y-auto overflow-x-hidden">
-            {filteredSubjects.length === 0 ? (
-              <div className="flex flex-col items-center justify-center py-6 text-gray-400 gap-1.5">
-                <svg
-                  width="28"
-                  height="28"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="1.5"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    d="M12 6.042A8.967 8.967 0 0 0 6 3.75c-1.052 0-2.062.18-3 .512v14.25A8.987 8.987 0 0 1 6 18c2.305 0 4.408.867 6 2.292m0-14.25a8.966 8.966 0 0 1 6-2.292c1.052 0 2.062.18 3 .512v14.25A8.987 8.987 0 0 0 18 18a8.967 8.967 0 0 0-6 2.292m0-14.25v14.25"
-                  />
-                </svg>
-
-                <p className="text-xs">No subjects for this department</p>
-              </div>
-            ) : (
-              filteredSubjects.map(
-                (s: { id: number; code: string; name: string }) => {
-                  const isChecked = selectedSubjects.includes(s.id);
-
-                  return (
-                    <label
-                      key={s.id}
-                      className={`flex items-center gap-3 px-4 py-2.5 cursor-pointer transition-colors ${
-                        isChecked ? "bg-violet-50" : "bg-white hover:bg-gray-50"
-                      }`}
-                    >
-                      {/* Custom Checkbox */}
-                      <div
-                        className={`shrink-0 w-4 h-4 rounded flex items-center justify-center border transition-colors ${
-                          isChecked
-                            ? "bg-violet-400 border-violet-400"
-                            : "border-gray-300 bg-white"
-                        }`}
-                      >
-                        {isChecked && (
-                          <svg
-                            width="10"
-                            height="10"
-                            viewBox="0 0 12 12"
-                            fill="none"
-                          >
-                            <path
-                              d="M2 6l3 3 5-5"
-                              stroke="white"
-                              strokeWidth="1.8"
-                              strokeLinecap="round"
-                              strokeLinejoin="round"
-                            />
-                          </svg>
-                        )}
-                      </div>
-
-                      <input
-                        type="checkbox"
-                        className="sr-only"
-                        checked={isChecked}
-                        onChange={() => {
-                          const next = isChecked
-                            ? selectedSubjects.filter((id) => id !== s.id)
-                            : [...selectedSubjects, s.id];
-
-                          setSelectedSubjects(next);
-
-                          setValue(
-                            "subjects",
-                            next.length > 0 ? next : undefined,
-                            {
-                              shouldValidate: true,
-                            },
-                          );
-                        }}
-                      />
-
-                      <div className="flex-1 min-w-0">
-                        <span className="text-sm font-semibold text-gray-800">
-                          {s.code}
-                        </span>
-
-                        <span className="text-xs text-gray-500 ml-2 truncate">
-                          {s.name}
-                        </span>
-                      </div>
-                    </label>
-                  );
-                },
-              )
-            )}
-          </div>
-
-          {errors.subjects?.message && (
-            <p className="text-xs text-red-400">
-              {errors.subjects.message.toString()}
-            </p>
-          )}
-        </div>
-      </div>
+      {/* Subjects — tag pill picker, no fixed height */}
+      <SubjectPicker
+        subjects={filteredSubjects}
+        selected={selectedSubjects}
+        onChange={(next) => {
+          setSelectedSubjects(next);
+          setValue("subjects", next.length > 0 ? next : undefined, { shouldValidate: true });
+        }}
+        error={errors.subjects?.message?.toString()}
+      />
 
       {data && <input type="hidden" value={data.id} {...register("id")} />}
       {state.error && <span className="text-red-400">{state.message}</span>}
@@ -334,11 +266,7 @@ const LecturerForm = ({
         disabled={pending}
         className="w-full bg-violet-400 hover:bg-violet-500 disabled:opacity-50 text-white py-2.5 rounded-lg text-sm font-medium transition cursor-pointer"
       >
-        {pending
-          ? "Saving..."
-          : type === "create"
-            ? "Create Lecturer"
-            : "Update Lecturer"}
+        {pending ? "Saving..." : type === "create" ? "Create Lecturer" : "Update Lecturer"}
       </button>
     </form>
   );

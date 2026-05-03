@@ -16,6 +16,7 @@ import { toast } from "react-toastify";
 import { studentSchema, StudentSchema } from "@/lib/formValidationsSchemas";
 import { createStudent, updateStudent } from "@/lib/students/actions";
 import CustomSelect from "../CustomSelect";
+import { X } from "lucide-react";
 
 const YEAR_SEM_OPTIONS = [
   { value: 11, label: "Year 1 — Sem 1" },
@@ -27,6 +28,99 @@ const YEAR_SEM_OPTIONS = [
   { value: 41, label: "Year 4 — Sem 1" },
   { value: 42, label: "Year 4 — Sem 2" },
 ];
+
+// ── SubjectPicker ─────────────────────────────────────────────────────────────
+type SubjectOption = { id: number; code: string; name: string };
+
+function SubjectPicker({
+  subjects,
+  selected,
+  onChange,
+  error,
+}: {
+  subjects: SubjectOption[];
+  selected: number[];
+  onChange: (next: number[]) => void;
+  error?: string;
+}) {
+  function toggle(id: number) {
+    onChange(
+      selected.includes(id)
+        ? selected.filter((s) => s !== id)
+        : [...selected, id],
+    );
+  }
+
+  function clearAll() {
+    onChange([]);
+  }
+
+  return (
+    <div className="flex flex-col gap-1.5">
+      <div className="flex items-center justify-between">
+        <label className="text-xs text-gray-500">Subjects</label>
+        <div className="flex items-center gap-2">
+          {selected.length > 0 && (
+            <button
+              type="button"
+              onClick={clearAll}
+              className="flex items-center gap-1 text-[11px] font-medium text-rose-400 hover:text-rose-600 transition-colors"
+            >
+              <X className="h-3 w-3" /> Clear
+            </button>
+          )}
+          <span className="text-[11px] font-medium text-violet-500 bg-violet-50 px-2 py-0.5 rounded-full">
+            {selected.length} selected
+          </span>
+        </div>
+      </div>
+
+      {subjects.length === 0 ? (
+        <div className="flex items-center gap-2 rounded-lg ring-[1.5px] ring-gray-200 px-4 py-3 text-xs text-gray-400">
+          <svg
+            width="16"
+            height="16"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="1.5"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              d="M12 6.042A8.967 8.967 0 0 0 6 3.75c-1.052 0-2.062.18-3 .512v14.25A8.987 8.987 0 0 1 6 18c2.305 0 4.408.867 6 2.292m0-14.25a8.966 8.966 0 0 1 6-2.292c1.052 0 2.062.18 3 .512v14.25A8.987 8.987 0 0 0 18 18a8.967 8.967 0 0 0-6 2.292m0-14.25v14.25"
+            />
+          </svg>
+          No subjects for this department
+        </div>
+      ) : (
+        <div className="flex flex-wrap gap-2 rounded-lg ring-[1.5px] ring-gray-200 p-3">
+          {subjects.map((s) => {
+            const isSelected = selected.includes(s.id);
+            return (
+              <button
+                key={s.id}
+                type="button"
+                onClick={() => toggle(s.id)}
+                title={s.name}
+                className={`inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-xs font-semibold transition-colors cursor-pointer ${
+                  isSelected
+                    ? "bg-violet-400 text-white"
+                    : "bg-gray-100 text-gray-600 hover:bg-gray-200"
+                }`}
+              >
+                {isSelected && <X className="h-3 w-3 opacity-70" />}
+                {s.code}
+              </button>
+            );
+          })}
+        </div>
+      )}
+
+      {error && <p className="text-xs text-red-400">{error}</p>}
+    </div>
+  );
+}
 
 const StudentForm = ({
   type,
@@ -89,6 +183,9 @@ const StudentForm = ({
   const [yearSem, setYearSem] = useState<number>(data?.yearSem || 11);
   const [academicYearId, setAcademicYearId] = useState<number>(
     data?.academicYearId || academicYears?.[0]?.id || 0,
+  );
+  const [selectedSubjects, setSelectedSubjects] = useState<number[]>(
+    data?.subjects?.map((s: { id: number }) => s.id) || [],
   );
 
   useEffect(() => {
@@ -229,51 +326,39 @@ const StudentForm = ({
             }))}
             value={depId}
             onChange={(val) => {
-              setDepId(val as number);
-              setValue("departmentId", val as number, { shouldValidate: true });
+              const departmentId = val as number;
+
+              // Update department
+              setDepId(departmentId);
+
+              setValue("departmentId", departmentId, {
+                shouldValidate: true,
+              });
+
+              // ✅ Clear selected subjects
+              setSelectedSubjects([]);
+
+              // ✅ Clear form subjects field
+              setValue("subjects", undefined, {
+                shouldValidate: true,
+              });
             }}
             error={errors.departmentId?.message?.toString()}
           />
         </div>
 
         {/* Subjects (filtered by selected department) */}
-        <div className="flex flex-col gap-2 w-full md:w-full">
-          <label className="text-xs text-gray-500">Subjects</label>
-          <select
-            multiple
-            className="ring-[1.5px] ring-gray-300 p-2 rounded-md text-sm w-full"
-            onChange={(e) => {
-              const selected = Array.from(e.target.selectedOptions, (option) =>
-                Number(option.value),
-              );
-              setValue("subjects", selected.length > 0 ? selected : undefined, {
-                shouldValidate: true,
-              });
-            }}
-            defaultValue={data?.subjects?.map((s: { id: number }) =>
-              s.id.toString(),
-            )}
-          >
-            {filteredSubjects.length > 0 ? (
-              filteredSubjects.map(
-                (s: { id: number; name: string; code: string }) => (
-                  <option value={s.id} key={s.id}>
-                    {s.code} - {s.name}
-                  </option>
-                ),
-              )
-            ) : (
-              <option disabled value="">
-                No subjects for this department
-              </option>
-            )}
-          </select>
-          {errors.subjects?.message && (
-            <p className="text-xs text-red-400">
-              {errors.subjects.message.toString()}
-            </p>
-          )}
-        </div>
+        <SubjectPicker
+          subjects={filteredSubjects}
+          selected={selectedSubjects}
+          onChange={(next) => {
+            setSelectedSubjects(next);
+            setValue("subjects", next.length > 0 ? next : undefined, {
+              shouldValidate: true,
+            });
+          }}
+          error={errors.subjects?.message?.toString()}
+        />
       </div>
 
       {data && <input type="hidden" value={data.id} {...register("id")} />}
