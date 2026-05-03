@@ -101,7 +101,7 @@ model Reservation {
   lectureRoom LectureRoom @relation(fields: [lecRoomId], references: [id])
 
   lecturerId String
-  lecturer Lecturer @relation(fields: [lecturerId], references: [id])
+  lecturer Lecturer @relation(fields: [lecturerId], references: [id], onDelete: Cascade)
 
   subjectId Int
   subject Subject @relation(fields: [subjectId], references: [id])

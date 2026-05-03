@@ -242,70 +242,56 @@ export const deleteLecturer = async (
   }
 
   try {
-    // Step 1: Delete from Clerk first
-    const clerk = await clerkClient();
+    // STEP 1: Check reservations first
+    const reservationCount = await prisma.reservation.count({
+      where: {
+        lecturerId: id,
+      },
+    });
+
+    if (reservationCount > 0) {
+      return {
+        success: false,
+        error: true,
+        message:
+          "Cannot delete this lecturer because they are linked to existing reservations.",
+      };
+    }
+
+    // STEP 2: Delete from DB first
+    await prisma.lecturer.delete({
+      where: { id },
+    });
+
+    console.log(`Lecturer ${id} deleted from database.`);
+
+    // STEP 3: Delete from Clerk
     try {
+      const clerk = await clerkClient();
       await clerk.users.deleteUser(id);
-    } catch (clerkError: any) {
+
+      console.log(`Clerk user ${id} deleted.`);
+    } catch (clerkError) {
       console.error("Clerk deletion failed:", clerkError);
 
-      const clerkMsg =
-        clerkError?.errors?.[0]?.message ||
-        clerkError?.message ||
-        "Failed to delete lecturer from authentication service.";
-
-      return {
-        success: false,
-        error: true,
-        message: clerkMsg,
-      };
+      // DB already deleted — optional rollback could happen here
     }
 
-    // Step 2: Delete from your local DB
-    try {
-      await prisma.lecturer.delete({
-        where: { id },
-      });
-
-      return {
-        success: true,
-        error: false,
-        message: "Lecturer has been deleted successfully.",
-      };
-    } catch (dbError: any) {
-      console.error("Database deletion failed:", dbError);
-
-      let friendlyMessage = "Failed to delete lecturer from database.";
-
-      // Prisma foreign key constraint (lecturer has reservations, etc.)
-      if (dbError.code === "P2003") {
-        const field = dbError.meta?.field_name;
-        if (field?.includes("lecturerId")) {
-          friendlyMessage =
-            "Cannot delete this lecturer because they are linked to existing reservations.";
-        } else {
-          friendlyMessage =
-            "This lecturer is linked to other records and cannot be deleted.";
-        }
-      }
-
-      return {
-        success: false,
-        error: true,
-        message: friendlyMessage,
-      };
-    }
+    return {
+      success: true,
+      error: false,
+      message: "Lecturer has been deleted successfully.",
+    };
   } catch (error: any) {
-    console.error("Unexpected error during lecturer deletion:", error);
+    console.error("Delete lecturer error:", error);
+
     return {
       success: false,
       error: true,
-      message: "An unexpected error occurred while deleting the lecturer.",
+      message: "Failed to delete lecturer.",
     };
   }
 };
-
-
 
 //Subject
 export const createSubject = async (
@@ -655,6 +641,3 @@ export const deleteReservation = async (
     };
   }
 };
-
-
-
