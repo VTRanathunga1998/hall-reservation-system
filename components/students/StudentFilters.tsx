@@ -134,7 +134,7 @@ export default function StudentFilters({
           <select
             value={active.departmentId}
             onChange={(e) => updateParam("departmentId", e.target.value)}
-            className="appearance-none rounded-xl border border-slate-200 bg-white py-2 pl-3 pr-7 text-xs font-medium text-slate-700 outline-none focus:border-violet-400 focus:ring-2 focus:ring-violet-100 cursor-pointer transition-colors"
+            className="appearance-none rounded-xl border border-slate-200 bg-white py-2 pl-3 pr-7 text-xs font-medium text-slate-700 outline-none focus:border-violet-400 focus:ring-2 focus:ring-violet-100 cursor-pointer transition-colors max-w-xs"
           >
             <option value="all">All Departments</option>
             {departments.map((d) => (

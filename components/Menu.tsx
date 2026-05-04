@@ -52,13 +52,13 @@ const menuItems = [
         icon: Users,
         label: "Lecturers",
         href: "/list/lecturers",
-        visible: ["admin", "lecturer"],
+        visible: ["admin"],
       },
       {
         icon: GraduationCap,
         label: "Students",
         href: "/list/students",
-        visible: ["admin", "lecturer"],
+        visible: ["admin"],
       },
       {
         icon: BookOpen,
@@ -96,7 +96,7 @@ const Menu = async () => {
     <nav className="flex flex-col gap-1 px-2 py-4">
       {menuItems.map((section) => {
         const visibleItems = section.items.filter((item) =>
-          item.visible.includes(role)
+          item.visible.includes(role),
         );
 
         if (visibleItems.length === 0) return null;
