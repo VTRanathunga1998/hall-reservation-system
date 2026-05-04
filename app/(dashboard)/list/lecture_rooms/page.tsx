@@ -90,12 +90,15 @@ const LectureRoomsListPage = async ({
   ]);
 
   return (
-    <div className="flex-1 bg-white rounded-md p-4 m-2 mt-0">
+    <div className="flex-1 bg-white rounded-md md:p-4 mt-0">
       {/* TOP */}
       <div className="flex items-center justify-between">
-        <h1 className="hidden md:block text-lg font-semibold">
-          All Lecture Rooms
-        </h1>
+        {/* Header */}
+        <div>
+          <h1 className="text-2xl font-black tracking-tight text-slate-800">
+            All Lecture Rooms
+          </h1>
+        </div>
 
         <div className="flex flex-col md:flex-row items-center gap-4 w-full md:w-auto">
           <TableSearch />

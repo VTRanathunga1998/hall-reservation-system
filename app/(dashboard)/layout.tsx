@@ -9,23 +9,37 @@ export default function DashboardLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <div className="flex w-full scrollbar-hidden">
-      {/*LEFT*/}
-      <div className="w-[14%] md:w-[8%] lg:w-[16%] xl:w-[14%] p-4 h-screen overflow-y-scroll scrollbar-hidden">
+    <div className="flex h-screen overflow-hidden">
+      {/* ── Sidebar — sticks to viewport, never scrolls with content ── */}
+      <div className="w-[14%] md:w-[8%] lg:w-[16%] xl:w-[14%] flex flex-col h-screen sticky top-0 bg-white border-r border-slate-100 overflow-y-auto scrollbar-hidden flex-shrink-0">
+        {/* Logo */}
         <Link
           href="/"
-          className="flex items-center gap-2 no-underline text-inherit"
+          className="flex items-center justify-center lg:justify-start gap-2.5 px-4 py-4 border-b border-slate-100 flex-shrink-0"
         >
-          <Image src="/logo.png" alt="logo" width={32} height={32} />
-          <span className="hidden lg:block">SUSL</span>
+          <Image src="/logo.png" alt="SUSL logo" width={32} height={32} />
+          <span className="hidden lg:block text-sm font-bold text-slate-800 tracking-tight">
+            SUSL
+          </span>
         </Link>
 
-        <Menu />
+        {/* Menu — fills remaining height */}
+        <div className="flex-1 overflow-y-auto scrollbar-hidden">
+          <Menu />
+        </div>
       </div>
-      {/*RIGHT*/}
-      <div className="w-[86%] md:w-[92%] lg:w-[84%] xl:w-[86%] bg-[#F7F8FA] overflow-y-scroll scrollbar-hidden flex flex-col">
-        <NavBar />
-        {children}
+
+      {/* ── Main — scrolls independently ── */}
+      <div className="flex-1 flex flex-col h-screen overflow-hidden bg-[#F7F8FA]">
+        {/* Sticky navbar */}
+        <div className="flex-shrink-0 sticky top-0 z-10 bg-white border-b border-slate-100 shadow-sm">
+          <NavBar />
+        </div>
+
+        {/* Page content */}
+        <div className="flex-1 overflow-y-auto scrollbar-hidden">
+          {children}
+        </div>
       </div>
     </div>
   );

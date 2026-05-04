@@ -21,7 +21,9 @@ const LecturersListPage = async ({
   const currentUserId = userId;
 
   const resolvedSearchParams = await searchParams;
-  const page = resolvedSearchParams.page ? parseInt(resolvedSearchParams.page) : 1;
+  const page = resolvedSearchParams.page
+    ? parseInt(resolvedSearchParams.page)
+    : 1;
   const p = page > 0 ? page : 1;
 
   const search = resolvedSearchParams.search;
@@ -77,11 +79,15 @@ const LecturersListPage = async ({
   }
 
   return (
-    <div className="flex-1 bg-white rounded-2xl border border-slate-200 p-6 m-2 mt-0 space-y-4">
-
+    <div className="flex-1 bg-white p-6 mt-0 space-y-4 md:p-4">
       {/* ── Top bar ── */}
       <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-        <h1 className="text-lg font-bold text-slate-800">All Lecturers</h1>
+        {/* Header */}
+        <div>
+          <h1 className="text-2xl font-black tracking-tight text-slate-800">
+            All Lecturers
+          </h1>
+        </div>
         <div className="flex flex-wrap items-center gap-2">
           <TableSearch />
           {role === "admin" && (

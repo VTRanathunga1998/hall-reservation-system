@@ -70,7 +70,7 @@ const LectureCalendar = async ({
   }));
 
   return (
-    <div className="flex-1 mb-10 ml-1 mr-1 bg-white rounded-sm p-2">
+    <div className="flex-1 mb-10 bg-white rounded-sm p-2 md:p-4">
       <h1 className="w-full p-1 font-bold">Lecture Schedule</h1>
       <BigCalendar data={data} />
     </div>

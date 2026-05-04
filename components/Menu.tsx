@@ -1,78 +1,85 @@
 import { currentUser } from "@clerk/nextjs/server";
-import Image from "next/image";
 import Link from "next/link";
+import {
+  Home,
+  LayoutDashboard,
+  CalendarClock,
+  DoorOpen,
+  Building2,
+  Users,
+  GraduationCap,
+  BookOpen,
+  CalendarDays,
+  Mail,
+  Calculator,
+} from "lucide-react";
 
 const menuItems = [
   {
     title: "MENU",
     items: [
       {
-        icon: "/home.png",
+        icon: Home,
         label: "Home",
         href: "/home",
-        // visible: ["admin", "lecturer", "student"],
         visible: ["admin", "lecturer"],
       },
       {
-        icon: "/dashboard.png",
+        icon: LayoutDashboard,
         label: "Dashboard",
         href: "/dashboard",
-        // visible: ["admin", "lecturer", "student"],
         visible: ["admin"],
       },
       {
-        icon: "/upcoming.png",
+        icon: CalendarClock,
         label: "Upcoming",
         href: "/upcoming",
-        // visible: ["student"],
-        visible: [],
+        visible: ["student"],
       },
-
       {
-        icon: "/classroom.png",
+        icon: DoorOpen,
         label: "Lecture Rooms",
         href: "/list/lecture_rooms",
         visible: ["admin"],
       },
       {
-        icon: "/department.png",
+        icon: Building2,
         label: "Departments",
         href: "/list/departments",
         visible: ["admin"],
       },
       {
-        icon: "/lecture.png",
+        icon: Users,
         label: "Lecturers",
         href: "/list/lecturers",
-        // visible: ["admin", "lecturer", "student"],
         visible: ["admin", "lecturer"],
       },
       {
-        icon: "/classmates.png",
+        icon: GraduationCap,
         label: "Students",
         href: "/list/students",
         visible: ["admin", "lecturer"],
       },
       {
-        icon: "/book.png",
+        icon: BookOpen,
         label: "Subjects",
         href: "/list/subjects",
         visible: ["admin", "lecturer", "student"],
       },
       {
-        icon: "/calendar.png",
+        icon: CalendarDays,
         label: "Reservations",
         href: "/list/reservations",
         visible: ["admin", "lecturer"],
       },
       {
-        icon: "/email.png",
+        icon: Mail,
         label: "Email",
         href: "/email",
         visible: ["admin"],
       },
       {
-        icon: "/gpa.png",
+        icon: Calculator,
         label: "GPA Calculator",
         href: "/gpa",
         visible: ["student"],
@@ -84,30 +91,48 @@ const menuItems = [
 const Menu = async () => {
   const user = await currentUser();
   const role = user?.publicMetadata.role as string;
+
   return (
-    <div className="mt-4 text-sm">
-      {menuItems.map((i) => (
-        <div className="flex flex-col gap-2" key={i.title}>
-          <span className="hidden lg:block text-gray-400 font-light my-4">
-            {i.title}
-          </span>
-          {i.items.map((item) => {
-            if (item.visible.includes(role)) {
+    <nav className="flex flex-col gap-1 px-2 py-4">
+      {menuItems.map((section) => {
+        const visibleItems = section.items.filter((item) =>
+          item.visible.includes(role)
+        );
+
+        if (visibleItems.length === 0) return null;
+
+        return (
+          <div key={section.title} className="flex flex-col gap-0.5">
+            {/* Section label */}
+            <span className="hidden lg:block text-[10px] font-bold uppercase tracking-widest text-slate-400 px-3 pt-4 pb-2 select-none">
+              {section.title}
+            </span>
+
+            {/* Items */}
+            {visibleItems.map((item) => {
+              const Icon = item.icon;
               return (
                 <Link
                   href={item.href}
                   key={item.label}
-                  className="flex items-center justify-center lg:justify-start gap-4 text-gray-500 py-2 md:px-2 rounded-md hover:bg-lamaSkyLight"
+                  className="group flex items-center justify-center lg:justify-start gap-3 px-3 py-2.5 rounded-xl text-slate-500 hover:bg-blue-50 hover:text-blue-700 transition-all duration-150"
                 >
-                  <Image src={item.icon} alt="" width={20} height={20} />
-                  <span className="hidden lg:block">{item.label}</span>
+                  {/* Icon container */}
+                  <span className="flex-shrink-0 flex items-center justify-center w-8 h-8 rounded-lg bg-slate-100 group-hover:bg-blue-100 group-hover:text-blue-600 transition-all duration-150">
+                    <Icon className="w-4 h-4" strokeWidth={1.8} />
+                  </span>
+
+                  {/* Label — hidden on collapsed sidebar */}
+                  <span className="hidden lg:block text-sm font-medium leading-none">
+                    {item.label}
+                  </span>
                 </Link>
               );
-            }
-          })}
-        </div>
-      ))}
-    </div>
+            })}
+          </div>
+        );
+      })}
+    </nav>
   );
 };
 

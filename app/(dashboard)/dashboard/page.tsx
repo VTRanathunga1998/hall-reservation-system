@@ -129,23 +129,13 @@ export default async function Page() {
     },
   ];
 
-  const yearSemLabels: Record<number, string> = {
-    11: "Year 1 — Sem 1",
-    12: "Year 1 — Sem 2",
-    21: "Year 2 — Sem 1",
-    22: "Year 2 — Sem 2",
-    31: "Year 3 — Sem 1",
-    32: "Year 3 — Sem 2",
-    41: "Year 4 — Sem 1",
-    42: "Year 4 — Sem 2",
-  };
 
   return (
-    <div className="min-h-screen bg-white rounded-md p-4 m-2 md:p-8">
-      <div className="p-4 md:p-8 max-w-7xl mx-auto space-y-8">
+    <div className="min-h-screen bg-white md:p-4">
+      <div className="md:p-4 max-w-7xl mx-auto space-y-8">
         {/* Header */}
         <div>
-          <h1 className="text-2xl font-black tracking-tight text-slate-800 md:text-3xl">
+          <h1 className="text-2xl font-black tracking-tight text-slate-800 ">
             Dashboard Overview
           </h1>
           <p className="text-sm text-slate-500">
