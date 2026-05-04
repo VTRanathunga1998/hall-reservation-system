@@ -119,6 +119,7 @@ const StudentsListPage = async ({
         academicYears={academicYears}
         active={activeFilters}
         totalCount={count}
+        role={role}
       />
 
       {/* ── Content ── */}

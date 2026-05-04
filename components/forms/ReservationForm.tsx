@@ -82,10 +82,10 @@ const ReservationForm = ({
     }
   }, [state, router, setOpen]);
 
-  // ── Controlled states for CustomSelect ──
-  const [lecRoomId, setLecRoomId] = useState<number>(
-    data?.lecRoomId || lecRooms?.[0]?.id || 0,
-  );
+  // ── Controlled states ──
+  const initialLecRoomId = data?.lecRoomId || lecRooms?.[0]?.id || 0;
+
+  const [lecRoomId, setLecRoomId] = useState<number>(initialLecRoomId);
 
   const [depId, setDepId] = useState<number>(
     role === "lecturer"
@@ -117,6 +117,17 @@ const ReservationForm = ({
     data?.subjectId || filteredSubjects?.[0]?.id || 0,
   );
 
+  // ── Sync ALL initial state values into RHF on mount ──
+  // Without this, RHF fields are undefined even though the UI shows a value,
+  // causing validation errors like "Lecture room is required!" on first submit.
+  useEffect(() => {
+    if (initialLecRoomId)
+      setValue("lecRoomId", initialLecRoomId, { shouldValidate: false });
+    if (lecId) setValue("lecturerId", lecId, { shouldValidate: false });
+    if (subjectId) setValue("subjectId", subjectId, { shouldValidate: false });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
   // Keep subjectId in sync when lecturer changes
   useEffect(() => {
     if (filteredSubjects.length > 0) {
@@ -130,7 +141,6 @@ const ReservationForm = ({
   const handleDepartmentChange = (val: string | number) => {
     const newDepId = val as number;
     setDepId(newDepId);
-    setValue("departmentId" as any, newDepId);
     const first = lectures.find((lec: any) => lec.departmentId === newDepId);
     const newLecId = first ? first.id : "";
     setLecId(newLecId);
@@ -155,7 +165,6 @@ const ReservationForm = ({
           Room & Schedule
         </p>
 
-        {/* Lecture Room */}
         <CustomSelect
           label="Lecture Room"
           options={lecRooms.map((room: { id: number; name: string }) => ({
@@ -170,8 +179,8 @@ const ReservationForm = ({
           error={errors.lecRoomId?.message?.toString()}
         />
 
-        {/* Start & End Time side-by-side */}
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          {/* Start Time */}
           <div className="flex flex-col gap-1.5 w-full min-w-0">
             <label className="text-xs text-gray-500">Start Time</label>
             <Controller
@@ -204,6 +213,7 @@ const ReservationForm = ({
             )}
           </div>
 
+          {/* End Time */}
           <div className="flex flex-col gap-1.5 w-full min-w-0">
             <label className="text-xs text-gray-500">End Time</label>
             <Controller
@@ -255,7 +265,6 @@ const ReservationForm = ({
         </p>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-          {/* Department — hidden for lecturer role */}
           {role !== "lecturer" && (
             <CustomSelect
               label="Department"
@@ -268,7 +277,6 @@ const ReservationForm = ({
             />
           )}
 
-          {/* Lecturer — hidden input for lecturer role */}
           {role === "lecturer" ? (
             <input type="hidden" value={lecId} {...register("lecturerId")} />
           ) : (
@@ -289,7 +297,6 @@ const ReservationForm = ({
             />
           )}
 
-          {/* Subject */}
           <CustomSelect
             label="Subject"
             options={

@@ -2,7 +2,13 @@
 
 import { useState, useTransition } from "react";
 import { useRouter, usePathname, useSearchParams } from "next/navigation";
-import { ChevronDown, SlidersHorizontal, X, RefreshCw, ArrowRight } from "lucide-react";
+import {
+  ChevronDown,
+  SlidersHorizontal,
+  X,
+  RefreshCw,
+  ArrowRight,
+} from "lucide-react";
 import { bulkUpdateYearSemByFilter } from "@/lib/students/actions";
 
 const YEAR_SEM_OPTIONS = [
@@ -31,6 +37,7 @@ type Props = {
     search?: string;
   };
   totalCount: number;
+  role?: string;
 };
 
 export default function StudentFilters({
@@ -38,6 +45,7 @@ export default function StudentFilters({
   academicYears,
   active,
   totalCount,
+  role,
 }: Props) {
   const router = useRouter();
   const pathname = usePathname();
@@ -84,7 +92,7 @@ export default function StudentFilters({
               : undefined,
           search: active.search || undefined,
         },
-        parseInt(targetYearSem)
+        parseInt(targetYearSem),
       );
 
       if (res.success) {
@@ -193,69 +201,73 @@ export default function StudentFilters({
       </div>
 
       {/* ── Promote Year/Sem panel ── */}
-      <div className="flex flex-wrap items-center gap-3 rounded-2xl border border-amber-200 bg-amber-50 px-4 py-3">
-        <div className="flex items-center gap-2">
-          <RefreshCw className="h-4 w-4 text-amber-500 flex-shrink-0" />
-          <span className="text-xs font-semibold text-amber-800">
-            Promote year / sem
-          </span>
-        </div>
+      {role === "admin" && (
+        <div className="flex flex-wrap items-center gap-3 rounded-2xl border border-amber-200 bg-amber-50 px-4 py-3">
+          <div className="flex items-center gap-2">
+            <RefreshCw className="h-4 w-4 text-amber-500 flex-shrink-0" />
+            <span className="text-xs font-semibold text-amber-800">
+              Promote year / sem
+            </span>
+          </div>
 
-        {/* Context — shows what the update will apply to */}
-        <div className="flex items-center gap-1.5 text-xs text-amber-700">
-          <span>
-            {hasFilter ? (
-              <>
-                {activeDeptName && <strong>{activeDeptName}</strong>}
-                {activeDeptName && activeAcYearName && " · "}
-                {activeAcYearName && <strong>{activeAcYearName}</strong>}
-                {" — "}
-              </>
-            ) : null}
-            {totalCount} student{totalCount !== 1 ? "s" : ""}
-          </span>
-        </div>
+          {/* Context — shows what the update will apply to */}
+          <div className="flex items-center gap-1.5 text-xs text-amber-700">
+            <span>
+              {hasFilter ? (
+                <>
+                  {activeDeptName && <strong>{activeDeptName}</strong>}
+                  {activeDeptName && activeAcYearName && " · "}
+                  {activeAcYearName && <strong>{activeAcYearName}</strong>}
+                  {" — "}
+                </>
+              ) : null}
+              {totalCount} student{totalCount !== 1 ? "s" : ""}
+            </span>
+          </div>
 
-        <ArrowRight className="h-3.5 w-3.5 text-amber-400" />
+          <ArrowRight className="h-3.5 w-3.5 text-amber-400" />
 
-        {/* Target Year/Sem */}
-        <div className="relative">
-          <select
-            value={targetYearSem}
-            onChange={(e) => setTargetYearSem(e.target.value)}
-            className="appearance-none rounded-xl border border-amber-300 bg-white py-1.5 pl-3 pr-7 text-xs font-semibold text-amber-800 outline-none focus:border-amber-400 focus:ring-2 focus:ring-amber-100 cursor-pointer"
+          {/* Target Year/Sem */}
+          <div className="relative">
+            <select
+              value={targetYearSem}
+              onChange={(e) => setTargetYearSem(e.target.value)}
+              className="appearance-none rounded-xl border border-amber-300 bg-white py-1.5 pl-3 pr-7 text-xs font-semibold text-amber-800 outline-none focus:border-amber-400 focus:ring-2 focus:ring-amber-100 cursor-pointer"
+            >
+              {YEAR_SEM_OPTIONS.map((o) => (
+                <option key={o.value} value={o.value}>
+                  {o.label}
+                </option>
+              ))}
+            </select>
+            <ChevronDown className="pointer-events-none absolute right-2 top-1/2 -translate-y-1/2 h-3 w-3 text-amber-400" />
+          </div>
+
+          <button
+            onClick={handleBulkUpdate}
+            disabled={isPending || totalCount === 0}
+            className="rounded-xl bg-amber-500 px-4 py-1.5 text-xs font-semibold text-white hover:bg-amber-600 disabled:opacity-40 transition-colors"
           >
-            {YEAR_SEM_OPTIONS.map((o) => (
-              <option key={o.value} value={o.value}>
-                {o.label}
-              </option>
-            ))}
-          </select>
-          <ChevronDown className="pointer-events-none absolute right-2 top-1/2 -translate-y-1/2 h-3 w-3 text-amber-400" />
+            {isPending ? "Updating…" : `Apply to ${totalCount}`}
+          </button>
+
+          {/* Feedback */}
+          {feedback && (
+            <span
+              className={`flex items-center gap-1.5 text-xs font-medium ${
+                feedback.type === "success"
+                  ? "text-emerald-700"
+                  : "text-rose-700"
+              }`}
+            >
+              {feedback.type === "success" ? "✓" : "✗"} {feedback.msg}
+              <button onClick={() => setFeedback(null)}>
+                <X className="h-3 w-3 opacity-60 hover:opacity-100" />
+              </button>
+            </span>
+          )}
         </div>
-
-        <button
-          onClick={handleBulkUpdate}
-          disabled={isPending || totalCount === 0}
-          className="rounded-xl bg-amber-500 px-4 py-1.5 text-xs font-semibold text-white hover:bg-amber-600 disabled:opacity-40 transition-colors"
-        >
-          {isPending ? "Updating…" : `Apply to ${totalCount}`}
-        </button>
-
-        {/* Feedback */}
-        {feedback && (
-          <span
-            className={`flex items-center gap-1.5 text-xs font-medium ${
-              feedback.type === "success" ? "text-emerald-700" : "text-rose-700"
-            }`}
-          >
-            {feedback.type === "success" ? "✓" : "✗"} {feedback.msg}
-            <button onClick={() => setFeedback(null)}>
-              <X className="h-3 w-3 opacity-60 hover:opacity-100" />
-            </button>
-          </span>
-        )}
-      </div>
+      )}
     </div>
   );
 }

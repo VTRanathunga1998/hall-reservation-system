@@ -3579,7 +3579,7 @@ async function main() {
 
   const adminData = {
     username: "admin",
-    password: "@Abc5273", // change this after first login
+    password: "@Abc4565",
   };
 
   const clerk = await clerkClient();
