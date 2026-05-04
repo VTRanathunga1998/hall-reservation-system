@@ -33,14 +33,17 @@ export default async function Upcoming() {
   });
 
   return (
-    <div className="flex-1 p-2 md:p-4 text-2xl w-full h-full">
-      <div className="text-center mb-1 p-2 bg-white rounded-md">
-        <h1 className="text-xl md:text-3xl font-extrabold text-gray-900 mb-2">
-          Upcoming Lectures
-        </h1>
+    <div className="flex-1 text-2xl w-full h-full text-center md:text-left">
+      <div className="bg-white rounded-md p-2 md:p-4">
+        {/* Header */}
+        <div>
+          <h1 className="text-2xl font-black tracking-tight text-slate-800 ">
+            Upcoming Lectures
+          </h1>
+        </div>
       </div>
 
-      <div className="flex flex-col gap-4 w-full bg-white rounded-sm p-2">
+      <div className="flex flex-col gap-4 w-full bg-white rounded-sm">
         {reservations.length > 0 ? (
           reservations.map((res) => (
             <EventCard

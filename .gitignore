@@ -55,3 +55,4 @@ app/(dashboard)/list/students/page copy.tsx
 backup-full.json
 scripts/importFull.ts
 scripts/exportFull.ts
+prisma/seed_lec.ts

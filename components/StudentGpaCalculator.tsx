@@ -176,9 +176,9 @@ export default function StudentGpaCalculator({
 
   return (
     <div className="max-w-5xl mx-auto space-y-6">
-      <div className="bg-white p-6 rounded-lg shadow">
+      <div className="bg-white p-6">
         <div className="flex justify-between items-start">
-          <div>
+          <div className="text-center md:text-left">
             <h2 className="text-xl font-semibold">GPA Calculator</h2>
             <p className="text-sm text-gray-600 mt-1">
               Select the grade for each subject. Your selections are saved
