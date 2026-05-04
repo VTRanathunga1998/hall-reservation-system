@@ -30,23 +30,19 @@ const ReservationsListPage = async ({
   const currentUserId = userId;
 
   const resolvedSearchParams = await searchParams;
-
   const page = resolvedSearchParams.page
     ? parseInt(resolvedSearchParams.page)
     : 1;
 
   const queryParams = { ...resolvedSearchParams };
   delete queryParams.page;
-
   const p = page ? page : 1;
 
   const columns = [
     {
-      header: "ID",
-      accessor: "reservationId",
-      className: "hidden md:table-cell",
+      header: "Room",
+      accessor: "room",
     },
-    { header: "Room", accessor: "room" },
     {
       header: "Subject",
       accessor: "subject",
@@ -57,67 +53,100 @@ const ReservationsListPage = async ({
           {
             header: "Reserved By",
             accessor: "reservedBy",
-            className: "hidden md:table-cell",
+            className: "hidden lg:table-cell",
           },
         ]
       : []),
-    { header: "Date", accessor: "date" },
-    { header: "Start Time", accessor: "startTime" },
-    { header: "End Time", accessor: "endTime" },
+    {
+      header: "Date & Time",
+      accessor: "date",
+      className: "hidden sm:table-cell",
+    },
     ...(role === "admin" || role === "lecturer"
       ? [{ header: "Actions", accessor: "action" }]
       : []),
   ];
 
-  const renderRow = (item: ReservationList) => (
-    <tr
-      key={item.id}
-      className="border-b border-gray-200 even:bg-slate-50 text-sm hover:bg-[#F1F0FF]"
-    >
-      <td className="hidden md:table-cell py-4">{item.id}</td>
+  const renderRow = (item: ReservationList) => {
+    const date = new Date(item.startTime).toLocaleDateString("en-LK", {
+      timeZone: "Asia/Colombo",
+      day: "numeric",
+      month: "short",
+      year: "numeric",
+    });
+    const startTime = new Date(item.startTime).toLocaleTimeString("en-LK", {
+      hour: "2-digit",
+      minute: "2-digit",
+      timeZone: "Asia/Colombo",
+    });
+    const endTime = new Date(item.endTime).toLocaleTimeString("en-LK", {
+      hour: "2-digit",
+      minute: "2-digit",
+      timeZone: "Asia/Colombo",
+    });
 
-      <td className="py-4">{item.lectureRoom.name}</td>
-
-      <td className="hidden md:table-cell py-4">{item.subject.code}</td>
-
-      {role === "admin" && (
-        <td className="hidden md:table-cell py-4">
-          {item.lecturer.name.toUpperCase()} {item.lecturer.surname}
-        </td>
-      )}
-
-      <td className="py-4">
-        {new Date(item.startTime).toLocaleDateString("en-LK", {
-          timeZone: "Asia/Colombo",
-        })}
-      </td>
-
-      <td className="py-4">
-        {new Date(item.startTime).toLocaleTimeString("en-LK", {
-          hour: "2-digit",
-          minute: "2-digit",
-          timeZone: "Asia/Colombo",
-        })}
-      </td>
-
-      <td className="py-4">
-        {new Date(item.endTime).toLocaleTimeString("en-LK", {
-          hour: "2-digit",
-          minute: "2-digit",
-          timeZone: "Asia/Colombo",
-        })}
-      </td>
-
-      <td className="py-4">
-        {(role === "admin" || role === "lecturer") && (
-          <div className="flex gap-2">
-            <FormContainer table="reservation" type="update" data={item} />
-            <FormContainer table="reservation" type="delete" id={item.id} />
+    return (
+      <tr
+        key={item.id}
+        className="border-b border-gray-100 even:bg-slate-50 text-sm hover:bg-[#F1F0FF] transition-colors"
+      >
+        {/* Room + mobile-only stacked info */}
+        <td className="py-3 px-2">
+          <div className="flex flex-col gap-0.5">
+            <span className="font-medium text-gray-800">
+              {item.lectureRoom.name}
+            </span>
+            {/* Subject — shown only on mobile */}
+            <span className="text-xs text-gray-500 md:hidden">
+              {item.subject.code}
+            </span>
+            {/* Date & time — shown only on mobile */}
+            <span className="text-xs text-gray-400 sm:hidden">
+              {date} · {startTime} – {endTime}
+            </span>
+            {/* Reserved by — shown only on mobile for admin */}
+            {role === "admin" && (
+              <span className="text-xs text-gray-400 lg:hidden">
+                {item.lecturer.name.toUpperCase()} {item.lecturer.surname}
+              </span>
+            )}
           </div>
+        </td>
+
+        {/* Subject — hidden on mobile */}
+        <td className="hidden md:table-cell py-3 px-2 text-gray-700">
+          {item.subject.code}
+        </td>
+
+        {/* Reserved By — hidden on mobile/tablet */}
+        {role === "admin" && (
+          <td className="hidden lg:table-cell py-3 px-2 text-gray-700">
+            {item.lecturer.name.toUpperCase()} {item.lecturer.surname}
+          </td>
         )}
-      </td>
-    </tr>
-  );
+
+        {/* Date & Time — hidden on mobile */}
+        <td className="hidden sm:table-cell py-3 px-2">
+          <div className="flex flex-col gap-0.5">
+            <span className="text-gray-700">{date}</span>
+            <span className="text-xs text-gray-400">
+              {startTime} – {endTime}
+            </span>
+          </div>
+        </td>
+
+        {/* Actions */}
+        {(role === "admin" || role === "lecturer") && (
+          <td className="py-3 px-2">
+            <div className="flex gap-2">
+              <FormContainer table="reservation" type="update" data={item} />
+              <FormContainer table="reservation" type="delete" id={item.id} />
+            </div>
+          </td>
+        )}
+      </tr>
+    );
+  };
 
   // URL PARAMS CONDITIONS
   const query: Prisma.ReservationWhereInput = {};
@@ -136,11 +165,7 @@ const ReservationsListPage = async ({
                   ],
                 },
               },
-              {
-                subject: {
-                  name: { contains: value, mode: "insensitive" },
-                },
-              },
+              { subject: { name: { contains: value, mode: "insensitive" } } },
               {
                 lectureRoom: {
                   name: { contains: value, mode: "insensitive" },
@@ -152,8 +177,6 @@ const ReservationsListPage = async ({
       }
     }
   }
-
-  // ROLE CONDITIONS
 
   switch (role) {
     case "admin":
@@ -176,34 +199,23 @@ const ReservationsListPage = async ({
         subject: { select: { name: true, code: true, departmentId: true } },
       },
     }),
-    prisma.reservation.count({
-      where: query,
-    }),
+    prisma.reservation.count({ where: query }),
   ]);
 
   return (
-    <div className="flex-1 bg-white rounded-md md:p-4 mt-0">
+    <div className="flex-1 bg-white rounded-md p-3 md:p-4 mt-0">
       {/* TOP */}
-      <div className="flex items-center justify-between">
-        {/* Header */}
-        <div>
-          <h1 className="text-2xl font-black tracking-tight text-slate-800">
-            All Reservations
-          </h1>
-        </div>
-        <div className="flex flex-col md:flex-row items-center gap-4 w-full md:w-auto">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-4">
+        <h1 className="text-xl md:text-2xl font-black tracking-tight text-slate-800">
+          All Reservations
+        </h1>
+        <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 w-full sm:w-auto">
           <TableSearch />
-          <div className="flex items-center gap-4 self-end">
-            {/* <button className="w-8 h-8 flex items-center justify-center rounded-full bg-[#FAE27C] cursor-pointer">
-              <Image src="/filter.png" alt="Filter" width={14} height={14} />
-            </button>
-            <button className="w-8 h-8 flex items-center justify-center rounded-full bg-[#FAE27C] cursor-pointer">
-              <Image src="/sort.png" alt="Sort" width={14} height={14} />
-            </button> */}
-            {(role === "admin" || role === "lecturer") && (
+          {(role === "admin" || role === "lecturer") && (
+            <div className="self-end sm:self-auto">
               <FormContainer table="reservation" type="create" />
-            )}
-          </div>
+            </div>
+          )}
         </div>
       </div>
 
@@ -211,15 +223,12 @@ const ReservationsListPage = async ({
       {count === 0 ? (
         <EmptyState
           title="No reservations found"
-          description="Start by adding a new reservations."
+          description="Start by adding a new reservation."
           imageSrc="/no-data.gif"
         />
       ) : (
         <>
-          {/* LIST */}
           <Table columns={columns} renderRow={renderRow} data={data} />
-
-          {/* PAGINATION */}
           <Pagination page={p} count={count} />
         </>
       )}
