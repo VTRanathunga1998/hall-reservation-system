@@ -1,15 +1,10 @@
 "use server";
 
-import { revalidatePath } from "next/cache";
-import { UserSex } from "@prisma/client";
-
 import { prisma } from "@/lib/prisma";
 import {
-  DepartmentSchema,
   LecturerSchema,
   ReservationSchema,
   SelectSubjectSchema,
-  StudentSchema,
   SubjectSchema,
 } from "./formValidationsSchemas";
 import { clerkClient } from "@clerk/nextjs/server";
@@ -126,6 +121,8 @@ export const updateLecturer = async (
     };
   }
 
+  console.log("Updating lecturer with data:", data);
+
   try {
     const clerk = await clerkClient();
 
@@ -171,13 +168,9 @@ export const updateLecturer = async (
           surname: data.surname,
           phone: data.phone,
           sex: data.sex,
-          ...(data.subjects !== undefined
-            ? {
-                subjects: {
-                  set: data.subjects.map((subjectId) => ({ id: subjectId })),
-                },
-              }
-            : {}),
+          subjects: {
+            set: (data.subjects ?? []).map((subjectId) => ({ id: subjectId })),
+          },
           departmentId: data.departmentId,
         },
       });

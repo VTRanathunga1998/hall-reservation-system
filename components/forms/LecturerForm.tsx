@@ -36,7 +36,7 @@ function SubjectPicker({
     onChange(
       selected.includes(id)
         ? selected.filter((s) => s !== id)
-        : [...selected, id]
+        : [...selected, id],
     );
   }
 
@@ -66,8 +66,19 @@ function SubjectPicker({
 
       {subjects.length === 0 ? (
         <div className="flex items-center gap-2 rounded-lg ring-[1.5px] ring-gray-200 px-4 py-3 text-xs text-gray-400">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
-            <path strokeLinecap="round" strokeLinejoin="round" d="M12 6.042A8.967 8.967 0 0 0 6 3.75c-1.052 0-2.062.18-3 .512v14.25A8.987 8.987 0 0 1 6 18c2.305 0 4.408.867 6 2.292m0-14.25a8.966 8.966 0 0 1 6-2.292c1.052 0 2.062.18 3 .512v14.25A8.987 8.987 0 0 0 18 18a8.967 8.967 0 0 0-6 2.292m0-14.25v14.25" />
+          <svg
+            width="16"
+            height="16"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="1.5"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              d="M12 6.042A8.967 8.967 0 0 0 6 3.75c-1.052 0-2.062.18-3 .512v14.25A8.987 8.987 0 0 1 6 18c2.305 0 4.408.867 6 2.292m0-14.25a8.966 8.966 0 0 1 6-2.292c1.052 0 2.062.18 3 .512v14.25A8.987 8.987 0 0 0 18 18a8.967 8.967 0 0 0-6 2.292m0-14.25v14.25"
+            />
           </svg>
           No subjects for this department
         </div>
@@ -161,6 +172,12 @@ const LecturerForm = ({
   useEffect(() => {
     setValue("departmentId", depId);
     setValue("sex", sex);
+    // Sync initial subjects into RHF — without this, editing an existing
+    // lecturer sends subjects: undefined because RHF never saw the value
+    if (selectedSubjects.length > 0) {
+      setValue("subjects", selectedSubjects);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   return (
@@ -180,9 +197,28 @@ const LecturerForm = ({
         </span>
       </div>
       <div className="flex justify-between flex-wrap gap-4">
-        <InputField label="Username" name="username" defaultValue={data?.username} register={register} error={errors?.username} />
-        <InputField label="Email" name="email" defaultValue={data?.email} register={register} error={errors?.email} />
-        <InputField label="Password" name="password" type="password" defaultValue={data?.password} register={register} error={errors?.password} />
+        <InputField
+          label="Username"
+          name="username"
+          defaultValue={data?.username}
+          register={register}
+          error={errors?.username}
+        />
+        <InputField
+          label="Email"
+          name="email"
+          defaultValue={data?.email}
+          register={register}
+          error={errors?.email}
+        />
+        <InputField
+          label="Password"
+          name="password"
+          type="password"
+          defaultValue={data?.password}
+          register={register}
+          error={errors?.password}
+        />
       </div>
 
       {/* Personal */}
@@ -206,12 +242,32 @@ const LecturerForm = ({
             <option value="Ms">Ms</option>
           </select>
           {errors.title?.message && (
-            <p className="text-xs text-red-400">{errors.title.message.toString()}</p>
+            <p className="text-xs text-red-400">
+              {errors.title.message.toString()}
+            </p>
           )}
         </div>
-        <InputField label="First Name" name="name" defaultValue={data?.name} register={register} error={errors.name} />
-        <InputField label="Last Name" name="surname" defaultValue={data?.surname} register={register} error={errors.surname} />
-        <InputField label="Phone" name="phone" defaultValue={data?.phone} register={register} error={errors.phone} />
+        <InputField
+          label="First Name"
+          name="name"
+          defaultValue={data?.name}
+          register={register}
+          error={errors.name}
+        />
+        <InputField
+          label="Last Name"
+          name="surname"
+          defaultValue={data?.surname}
+          register={register}
+          error={errors.surname}
+        />
+        <InputField
+          label="Phone"
+          name="phone"
+          defaultValue={data?.phone}
+          register={register}
+          error={errors.phone}
+        />
 
         <div className="flex flex-col gap-2 w-full md:w-1/4">
           <CustomSelect
@@ -223,7 +279,9 @@ const LecturerForm = ({
             value={sex}
             onChange={(val) => {
               setSex(val as "MALE" | "FEMALE");
-              setValue("sex", val as "MALE" | "FEMALE", { shouldValidate: true });
+              setValue("sex", val as "MALE" | "FEMALE", {
+                shouldValidate: true,
+              });
             }}
             error={errors.sex?.message?.toString()}
           />
@@ -254,7 +312,9 @@ const LecturerForm = ({
         selected={selectedSubjects}
         onChange={(next) => {
           setSelectedSubjects(next);
-          setValue("subjects", next.length > 0 ? next : undefined, { shouldValidate: true });
+          setValue("subjects", next.length > 0 ? next : undefined, {
+            shouldValidate: true,
+          });
         }}
         error={errors.subjects?.message?.toString()}
       />
@@ -266,7 +326,11 @@ const LecturerForm = ({
         disabled={pending}
         className="w-full bg-violet-400 hover:bg-violet-500 disabled:opacity-50 text-white py-2.5 rounded-lg text-sm font-medium transition cursor-pointer"
       >
-        {pending ? "Saving..." : type === "create" ? "Create Lecturer" : "Update Lecturer"}
+        {pending
+          ? "Saving..."
+          : type === "create"
+            ? "Create Lecturer"
+            : "Update Lecturer"}
       </button>
     </form>
   );
